@@ -1,0 +1,16 @@
+menuconfig UART
+	bool "UART Subsystem"
+	depends on MACH_HAS_UART
+	help
+		Activate UART Subsystem
+	config UART_GENERIC_STRING
+		bool "UART Generic String implementation"
+		depends on UART
+		help
+			Some Devices can optimize the transfer of hohe Sting by buffer. This Option activate a software Variant without Buffering.
+	config UART_THREAD_SAVE
+		bool "UART is Therad Save"
+		depends on UART
+		depends on USE_MUTEXES
+		help
+			Make UART Thread save

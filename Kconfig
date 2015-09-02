@@ -1,0 +1,14 @@
+menu "Driver"
+config GPIO 
+	bool "GPIO subsystem"
+	depends on MACH_HAS_GPIO
+	help
+		Activate GPIO Subsystem
+config LED 
+	bool "LED subsystem"
+	select GPIO
+	depends on BOARD_HAS_LED
+	help
+		Activate LED Subsystem
+source driver/uart/Kconfig
+endmenu
