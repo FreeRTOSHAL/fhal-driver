@@ -5,7 +5,11 @@
 #endif
 #include <FreeRTOS.h>
 #include <semphr.h>
+#include <stdint.h>
+#include <stdbool.h>
+#define UART_ALREDY_INITED 1
 struct uart_generic {
+	bool init;
 #ifndef UART_THREAD_SAVE
 	SemaphoreHandle_t lock;	
 #endif

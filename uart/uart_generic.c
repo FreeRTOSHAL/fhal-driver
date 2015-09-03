@@ -1,13 +1,17 @@
 #include <FreeRTOS.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <uart.h>
 #define UART_PRV
 #include <uart_prv.h>
 
 #include <semphr.h>
 int32_t uart_generic_init(struct uart *uart) {
-#ifdef CONFIG_UART_THREAD_SAVE
 	struct uart_prv *uart_prv = (struct uart_prv *) uart;
+	if (uart_prv->generic.init) {
+		return UART_ALREDY_INITED;
+	}
+#ifdef CONFIG_UART_THREAD_SAVE
 	{
 		uart_prv->generic.lock = xSemaphoreCreateRecursiveMutex();
 		if (uart_prv->generic.lock == NULL) {
@@ -15,6 +19,7 @@ int32_t uart_generic_init(struct uart *uart) {
 		}
 	}
 #endif
+	uart_prv->generic.init = true;
 	return 0;
 }
 int uart_lock(struct uart *uart, TickType_t waittime);
