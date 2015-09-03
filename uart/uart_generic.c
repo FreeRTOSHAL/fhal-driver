@@ -18,7 +18,7 @@ int32_t uart_generic_init(struct uart *uart) {
 int uart_lock(struct uart *uart, TickType_t waittime);
 int uart_unlock(struct uart *uart);
 #ifdef CONFIG_UART_GENERIC_STRING
-int32_t uart_writeString(struct uart *uart, char *s, TickType_t waittime) {
+int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime) {
 	char c;
 	int32_t ret;
 	uart_lock(uart, waittime);
@@ -43,13 +43,13 @@ uart_writeString_0:
 	uart_unlock(uart);
 	return ret;
 }
-int32_t uart_readString(struct uart *uart, char *s, TickType_t waittime) {
+int32_t uart_gets(struct uart *uart, char *s, TickType_t waittime) {
 	/* TODO */
 	return -1;
 }
 #endif
 #ifdef CONFIG_UART_GENERIC_BYTE
-int32_t uart_readBytes(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime) {
+int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime) {
 	int ret;
 	size_t i = 0;
 	ret = uart_lock(uart, waittime);
@@ -66,7 +66,7 @@ int32_t uart_readBytes(struct uart *uart, uint8_t *data, size_t length, TickType
 	}
 	return i;
 }
-int32_t uart_writeBytes(struct uart *uart, uint8_t *c, size_t length, TickType_t waittime) {
+int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime) {
 	size_t i = 0;
 	int ret;
 	int32_t retd;
