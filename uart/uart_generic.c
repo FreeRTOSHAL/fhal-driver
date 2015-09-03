@@ -26,12 +26,12 @@ int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime) {
 		c = *s;
 		if (c != '\0') {
 			if (c == '\n') {
-				ret = uart_write(uart, '\r', waittime);
+				ret = uart_putc(uart, '\r', waittime);
 				if (ret < 0) {
 					goto uart_writeString_0;
 				}
 			}
-			ret = uart_write(uart, c, waittime);
+			ret = uart_putc(uart, c, waittime);
 			if (ret < 0) {
 				goto uart_writeString_0;
 			}
@@ -57,7 +57,7 @@ int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t wa
 		return -1;
 	}
 	while (i < length) {
-		*data = uart_read(uart, waittime);
+		*data = uart_getc(uart, waittime);
 		i++;
 		data++;
 	}
@@ -75,7 +75,7 @@ int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t w
 		return -1;
 	}
 	while (i < length) {
-		retd = uart_write(uart, *(c++), waittime);
+		retd = uart_putc(uart, *(data++), waittime);
 		if (retd < 0 ) {
 			goto uart_writeBytes_0;
 		}
