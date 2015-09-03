@@ -17,11 +17,11 @@ int32_t uart_generic_init(struct uart *uart);
 #ifdef CONFIG_UART_THREAD_SAVE
 inline int uart_lock(struct uart *uart, TickType_t waittime) {
 	struct uart_prv *uart_prv = (struct uart_prv *) uart;
-	return xSemaphoreTake(uart_prv->generic.lock, waittime);
+	return xSemaphoreTakeRecursive(uart_prv->generic.lock, waittime);
 }
 inline int uart_unlock(struct uart *uart) {
 	struct uart_prv *uart_prv = (struct uart_prv *) uart;
-	return xSemaphoreGive(uart_prv->generic.lock);
+	return xSemaphoreGiveRecursive(uart_prv->generic.lock);
 }
 #else
 inline int uart_lock(struct uart *uart, TickType_t waittime) {

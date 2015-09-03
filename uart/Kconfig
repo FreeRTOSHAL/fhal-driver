@@ -17,5 +17,6 @@ menuconfig UART
 		bool "UART is Therad Save"
 		depends on UART
 		depends on USE_MUTEXES
+		depends on USE_RECURSIVE_MUTEXES
 		help
 			Make UART Thread save
