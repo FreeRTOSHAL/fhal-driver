@@ -90,8 +90,8 @@ int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t w
 	if (ret != 1) {
 		return -1;
 	}
-	while (i < length) {
-		retd = uart_putc(uart, *(data++), waittime);
+	for (i = 0; i < length; i++, data++) {
+		retd = uart_putc(uart, *data, waittime);
 		if (retd < 0 ) {
 			goto uart_writeBytes_0;
 		}
