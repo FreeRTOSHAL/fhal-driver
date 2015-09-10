@@ -1,1 +1,2 @@
-obj-$(CONFIG_UART):=uart/
+obj-y += newlib/
+obj-$(CONFIG_UART) += uart/

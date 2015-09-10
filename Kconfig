@@ -11,4 +11,5 @@ config LED
 	help
 		Activate LED Subsystem
 source driver/uart/Kconfig
+source driver/newlib/Kconfig
 endmenu

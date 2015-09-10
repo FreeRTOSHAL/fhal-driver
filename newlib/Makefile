@@ -1,0 +1,6 @@
+obj-y += exit.o
+obj-$(CONFIG_NEWLIB_UART) += stdio.o
+obj-$(CONFIG_NEWLIB_MALLOC) += malloc.o
+obj-$(CONFIG_MALLOC_1) += malloc_1.o
+obj-$(CONFIG_MALLOC_2) += malloc_2.o
+obj-$(CONFIG_MALLOC_3) += malloc_3.o
