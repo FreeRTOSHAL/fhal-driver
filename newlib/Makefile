@@ -1,4 +1,4 @@
-obj-y += exit.o
+obj-$(CONFIG_MACH_HAS_NEWLIB) += exit.o
 obj-$(CONFIG_NEWLIB_UART) += stdio.o
 obj-$(CONFIG_NEWLIB_MALLOC) += malloc.o
 obj-$(CONFIG_MALLOC_1) += malloc_1.o
