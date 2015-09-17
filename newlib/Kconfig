@@ -45,7 +45,6 @@ config NEWLIB_TOTAL_HEAP_SIZE
 		Total Heap Size
 config NEWLIB_MALLOC_THREAD_SAFE
 	bool "Make malloc Thread Safe"
-	depends on NEWLIB
 	depends on NEWLIB_MALLOC
 	select USE_MUTEXES
 	select USE_RECURSIVE_MUTEXES
