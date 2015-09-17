@@ -153,6 +153,9 @@ int32_t buffer_write(struct buffer *buffer, uint8_t *data, int32_t size) {
 	int32_t wsize;
 	uint32_t writeP;
 	uint32_t writeSize = 0;
+	if (size == 0) {
+		return BUFFER_EINVAL;
+	}
 	/* 
 	 * Scale size to bytes
 	 */
@@ -205,12 +208,12 @@ int32_t buffer_read(struct buffer *buffer, uint8_t *data, int32_t size, TickType
 		return BUFFER_OPERATION_NOT_SUPPORTED;
 	}
 	buffer_wfi(buffer, waittime);
-	do {
+	while(!buffer_empty(buffer) && readSize < size) {
 		readP = getReadP(buffer);
 		memcpy(data, base->buffer + readP, base->sizeOfEntry);
 		data+=base->sizeOfEntry;
 		readSize+=base->sizeOfEntry;
 		incrementReadP(buffer);
-	} while(!buffer_empty(buffer) && readSize < size);
+	}
 	return readSize / base->sizeOfEntry;
 }
