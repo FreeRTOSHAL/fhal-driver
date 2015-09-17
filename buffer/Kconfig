@@ -1,0 +1,6 @@
+config BUFFER
+	bool "Shared Memmory for heterogeneous Multicore Possessor"
+	depends on MACH_HAS_BUFFER
+	help
+		Shared Memmory for heterogeneous Multicore Possessor
+	

@@ -12,4 +12,9 @@ config LED
 		Activate LED Subsystem
 source driver/uart/Kconfig
 source driver/newlib/Kconfig
+source driver/buffer/Kconfig
+config CACHE
+	bool
+	help
+		Cache Subsystem Support
 endmenu
