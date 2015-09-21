@@ -63,18 +63,16 @@ static bool isPowerOf2(uint32_t n) {
 	return (n != 0 && ((n & (n - 1)) == 0));
 }
 
-struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t sizeOfEntry, bool readOnly) {
+struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t sizeOfEntry, bool readOnly, uint32_t irqnr) {
 	int32_t ret;
 	struct buffer *buffer = pvPortMalloc(sizeof(struct buffer));
 	if (buffer == NULL) {
 		goto buffer_init_error_0;
 	}
-	ret = buffer_init_prv(buffer);
-	if (ret < 0) {
-		goto buffer_init_error_1;
-	}
 	buffer->base = base;
 	buffer->readOnly = readOnly;
+	buffer->irqnr = irqnr;
+	buffer->buffer = ((uint8_t *) base) + sizeof(struct buffer_base);
 	/*
 	 * Init Shared Memmory
 	 */
@@ -91,7 +89,6 @@ struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t size
 
 		base->readP = 0;
 		base->writeP = 0;
-		base->buffer = ((uint8_t *) base) + sizeof(struct buffer_base);
 		base->magicNr = 0x42424343;
 #ifdef CONFIG_CACHE
 		cache_flushData((uint32_t *) base, sizeof(struct buffer) / 4);
@@ -103,6 +100,10 @@ struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t size
 		) {
 			goto buffer_init_error_1;
 		}
+	}
+	ret = buffer_init_prv(buffer);
+	if (ret < 0) {
+		goto buffer_init_error_1;
 	}
 	return buffer;
 buffer_init_error_1:
@@ -178,12 +179,12 @@ int32_t buffer_write(struct buffer *buffer, uint8_t *data, int32_t size) {
 			wsize = base->sizeOfEntry;
 		}
 		writeP = getWriteP(buffer);
-		memcpy(base->buffer + writeP, data, wsize);
+		memcpy(buffer->buffer + writeP, data, wsize);
 #ifdef CONFIG_CACHE
 		/* 
 		 * Write Entry to SRAM
 		 */
-		cache_flushData((uint32_t *) (base->buffer + writeP), wsize);
+		cache_flushData((uint32_t *) (buffer->buffer + writeP), wsize);
 #endif
 		data += wsize;
 		size -= wsize;
@@ -210,7 +211,13 @@ int32_t buffer_read(struct buffer *buffer, uint8_t *data, int32_t size, TickType
 	buffer_wfi(buffer, waittime);
 	while(!buffer_empty(buffer) && readSize < size) {
 		readP = getReadP(buffer);
-		memcpy(data, base->buffer + readP, base->sizeOfEntry);
+#ifdef CONFIG_CACHE
+		/* 
+		 * Read Entry to Cache
+		 */
+		cache_invalidData((uint32_t *) (buffer->buffer + readP), base->sizeOfEntry);
+#endif
+		memcpy(data, buffer->buffer + readP, base->sizeOfEntry);
 		data+=base->sizeOfEntry;
 		readSize+=base->sizeOfEntry;
 		incrementReadP(buffer);

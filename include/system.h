@@ -5,5 +5,6 @@
 #define INTERRUPT(x) __attribute__ ((interrut(x)))
 #define SECTION(x) __attribute__ ((section(x)))
 #define NAKED __attribute__ ((naked))
+#define USED __attribute__ ((used))
 #endif
 #define BIT(x) (1 << x)

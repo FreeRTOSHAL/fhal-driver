@@ -62,6 +62,7 @@ int _write(int file, char *data, int len) {
 		goto _write_error_0;
 	}
 	for (i = 0; i < len; i++, data++) {
+#ifdef CONFIG_NEWLIB_UART_NEWLINE
 		/* replace \n with \r\n only if file == stdout */
 		if (file == 1 && *data == '\n') {
 			ret = uart_putc(uart, '\r', portMAX_DELAY);
@@ -70,6 +71,7 @@ int _write(int file, char *data, int len) {
 				goto _write_error_1;
 			}
 		}
+#endif
 		ret = uart_putc(uart, *data, portMAX_DELAY);
 		if (ret < 0 ) {
 			errno = EIO;

@@ -10,8 +10,9 @@ struct buffer;
 
 #define BUFFER_OPERATION_NOT_SUPPORTED -1
 #define BUFFER_NO_SPACE_LEFT -2
+#define BUFFER_EINVAL -3 
 
-struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t sizeOfEntry, bool readOnly);
+struct buffer *buffer_init(struct buffer_base *base, uint32_t len, uint32_t sizeOfEntry, bool readOnly, uint32_t irqnr);
 int32_t buffer_deinit(struct buffer *buffer);
 int32_t buffer_is_full(struct buffer *buffer);
 int32_t buffer_empty(struct buffer *buffer);

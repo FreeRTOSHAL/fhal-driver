@@ -10,6 +10,8 @@ struct buffer {
 	struct buffer_prv *prv;
 	struct buffer_base *base;
 	bool readOnly;
+	uint32_t irqnr;
+	uint8_t *buffer;
 };
 
 struct buffer_base {
@@ -20,7 +22,6 @@ struct buffer_base {
 
 	uint32_t readP;
 	uint32_t writeP;
-	uint8_t *buffer;
 };
 
 int32_t buffer_init_prv(struct buffer *buffer);
