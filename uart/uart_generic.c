@@ -22,8 +22,10 @@ int32_t uart_generic_init(struct uart *uart) {
 	uart_prv->generic.init = true;
 	return 0;
 }
+#ifdef CONFIG_UART_THREAD_SAVE
 int uart_lock(struct uart *uart, TickType_t waittime);
 int uart_unlock(struct uart *uart);
+#endif
 #ifdef CONFIG_UART_GENERIC_STRING
 int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime) {
 	char c;
@@ -55,7 +57,7 @@ int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime) {
 	}
 	return 0;
 uart_writeString_1:
-	uart_unlock(uart);
+	(void) uart_unlock(uart);
 uart_writeString_0:
 	return ret;
 }
@@ -101,7 +103,7 @@ int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t w
 		return -1;
 	}
 uart_writeBytes_0:
-	uart_unlock(uart);
+	(void) uart_unlock(uart);
 	return i;
 }
 #endif
