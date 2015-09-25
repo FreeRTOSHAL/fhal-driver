@@ -28,14 +28,7 @@ inline int uart_unlock(struct uart *uart) {
 	return xSemaphoreGiveRecursive(uart_prv->generic.lock);
 }
 #else
-inline int uart_lock(struct uart *uart, TickType_t waittime) {
-	(void) uart;
-	(void) waittime;
-	return 1;
-}
-inline int uart_unlock(struct uart *uart) {
-	(void) uart;
-	return 1;
-}
+# define uart_lock(u, w) 1
+# define uart_unlock(u) 1
 #endif
 #endif
