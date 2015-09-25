@@ -85,7 +85,7 @@ int _write(int file, char *data, int len) {
 	}
 	return i;
 _write_error_1:
-	uart_unlock(uart);
+	(void) uart_unlock(uart);
 _write_error_0:
 	return -1;
 }
