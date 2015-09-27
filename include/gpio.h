@@ -11,7 +11,7 @@ enum gpio_direction {
 	GPIO_OUTPUT
 };
 
-struct gpio *gpio_init(uint8_t bank, struct mux* mux);
+struct gpio *gpio_init();
 int32_t gpio_deinit(struct gpio *gpio);
 struct gpio_pin *gpio_getPin(struct gpio *gpio, uint8_t pin, enum gpio_direction dir);
 int32_t gpio_setDirection(struct gpio_pin *pin, enum gpio_direction dir);
