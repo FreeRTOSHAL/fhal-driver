@@ -134,7 +134,7 @@ int32_t buffer_getFreeSpace(struct buffer *buffer) {
 		 */
 		return (buffer->base->size - buffer->base->sizeOfEntry) - (writeP - readP);
 	} else {
-		return readP - writeP;
+		return (readP - writeP) - buffer->base->sizeOfEntry;
 	}
 }
 int32_t buffer_deinit(struct buffer *buffer) {
