@@ -13,6 +13,7 @@ config LED
 source driver/uart/Kconfig
 source driver/newlib/Kconfig
 source driver/buffer/Kconfig
+source driver/spi/Kconfig
 config CACHE
 	bool
 	help

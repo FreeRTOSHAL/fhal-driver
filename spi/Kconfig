@@ -1,0 +1,12 @@
+menuconfig SPI
+	bool "SPI Subsystem"
+	depends on MACH_HAS_SPI
+	help
+		Activate SPI Subsystem
+	config SPI_THREAD_SAVE
+		bool "SPI is Therad Save"
+		depends on SPI
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		help
+			Make SPI Thread save
