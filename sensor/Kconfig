@@ -1,0 +1,9 @@
+menuconfig SENSOR
+	bool "Sensor Driver"
+	help
+		Sensor Driver
+config MPU9250
+	bool "MCU-9250"
+	depends on SENSOR
+	help
+		MPU-9250 Driver

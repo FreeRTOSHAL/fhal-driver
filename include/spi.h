@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <system.h>
+#include <FreeRTOS.h>
 
 #define SPI_OPT_GPIO_DIS 0xFF
 #define SPI_OPT_CS_DIS 0x7
