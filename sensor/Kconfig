@@ -5,5 +5,7 @@ menuconfig SENSOR
 config MPU9250
 	bool "MCU-9250"
 	depends on SENSOR
+	select USE_MUTEXES
+	select USE_RECURSIVE_MUTEXES
 	help
 		MPU-9250 Driver
