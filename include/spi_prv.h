@@ -10,7 +10,7 @@
 #define SPI_ALREDY_INITED 1
 struct spi_generic {
 	bool init;
-#ifndef CONFIG_SPI_THREAD_SAVE
+#ifdef CONFIG_SPI_THREAD_SAVE
 	SemaphoreHandle_t lock;	
 #endif
 };
