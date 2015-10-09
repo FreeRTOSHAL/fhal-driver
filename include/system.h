@@ -8,4 +8,9 @@
 #define USED __attribute__ ((used))
 #define NSEC_PER_SEC 1000000000ULL
 #define BIT(x) (1 << x)
+/*
+ * Get Array Size
+ * Waring only posibile with const arrays!
+ */
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
