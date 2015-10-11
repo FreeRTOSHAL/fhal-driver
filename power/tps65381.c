@@ -252,11 +252,8 @@ int32_t tps_mux(struct tps65381 *tps, enum tps_diag diag, TickType_t waittime) {
 	return tps_write(tps, TPS_WR_DIAG_MUX_SEL, mux, waittime);
 }
 float tps_diag(struct tps65381 *tps, enum tps_diag diag, struct adc *adc, uint32_t adcChannel, TickType_t waittime) {
-	uint32_t ret = tps_mux(tps, diag, waittime);
+	uint32_t ret;
 	float val;
-	if (ret < 0) {
-		return NAN;
-	}
 	ret = adc_get(adc, adcChannel, waittime);
 	if (ret < 0) {
 		return NAN;
