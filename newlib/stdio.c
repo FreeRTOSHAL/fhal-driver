@@ -56,11 +56,11 @@ int _write(int file, char *data, int len) {
 		errno = EBADF;
 		goto _write_error_0;
 	}
-	ret = uart_lock(uart, portMAX_DELAY);
-	if (ret != 1) {
+	uart_lock(uart, portMAX_DELAY, -1);
+	/*if (ret != 1) {
 		errno = EIO;
 		goto _write_error_0;
-	}
+	}*/ /* TODO */
 	for (i = 0; i < len; i++, data++) {
 #ifdef CONFIG_NEWLIB_UART_NEWLINE
 		/* replace \n with \r\n only if file == stdout */
@@ -78,14 +78,16 @@ int _write(int file, char *data, int len) {
 			goto _write_error_1;
 		}
 	}
-	ret = uart_unlock(uart);
+	uart_unlock(uart, -1);
+	/*
 	if (ret != 1) {
 		errno = EIO;
 		goto _write_error_0;
 	}
+	*/ /* TODO */
 	return i;
 _write_error_1:
-	(void) uart_unlock(uart);
+	uart_unlock(uart, -1);
 _write_error_0:
 	return -1;
 }

@@ -20,3 +20,8 @@ menuconfig UART
 		select USE_RECURSIVE_MUTEXES
 		help
 			Make UART Thread save
+	config UART_MULTI
+		bool "Multiply UARTs"
+		depends on UART
+		help
+			Multiply UARTs
