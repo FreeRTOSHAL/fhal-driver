@@ -51,7 +51,6 @@ uart_puts_0:
 	uart_unlock(uart, ret);
 	return ret;
 }
-# ifdef UART_THREAD_SAVE
 int32_t uart_putsISR(struct uart *uart, char *s) {
 	char c;
 	int32_t ret;
@@ -75,7 +74,6 @@ uart_putsISR_0:
 	uart_unlock(uart, ret);
 	return ret;
 }
-# endif
 #endif
 #ifdef CONFIG_UART_GENERIC_BYTE
 int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime) {
@@ -100,40 +98,31 @@ int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t w
 		}
 	}
 	uart_unlock(uart, -1);
+	return i;
 uart_write_0:
 	uart_unlock(uart, i);
 	return i;
 }
-# ifdef UART_THREAD_SAVE
 int32_t uart_readISR(struct uart *uart, uint8_t *data, size_t length) {
-	int ret;
 	size_t i = 0;
-	uart_lock(uart, waittime, -1);
 	while (i < length) {
 		*data = uart_getcISR(uart);
 		i++;
 		data++;
 	}
-	uart_unlock(uart, -1);
 	return i;
 }
 int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length) {
 	size_t i = 0;
-	int ret;
 	int32_t retd;
-	uart_lock(uart, waittime, -1);
 	for (i = 0; i < length; i++, data++) {
-		retd = uart_putc(uart, *data);
+		retd = uart_putcISR(uart, *data);
 		if (retd < 0 ) {
-			goto uart_write_0;
+			return i;
 		}
 	}
-	uart_unlock(uart, -1);
-uart_write_0:
-	uart_unlock(uart, i);
 	return i;
 }
-# endif
 #endif
 #ifdef CONFIG_UART_MULTI
 struct uart *uart_init(uint8_t port, uint32_t bautrate);
