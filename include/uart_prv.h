@@ -21,6 +21,7 @@ int32_t uart_generic_init(struct uart *uart);
 #define UART_ADDDEV(ns, p) static struct uart_generic SECTION(".rodata.dev.uart") USED const * const ns##_##p = (struct uart_generic const *) &p
 #ifndef CONFIG_UART_MULTI
 # define UART_OPS(ns)
+# define UART_INIT_DEV(ns) 
 # define UART_INIT(ns, port, bautrate) struct uart *uart_init(uint8_t port, uint32_t bautrate) 
 # define UART_DEINIT(ns, uart) int32_t uart_deinit(struct uart *uart)
 # define UART_GETC(ns, uart, waittime) char uart_getc(struct uart *uart, TickType_t waittime) 
@@ -38,41 +39,32 @@ int32_t uart_generic_init(struct uart *uart);
 # ifndef CONFIG_UART_GENERIC_BYTE
 #  define UART_READ_WRITE_OPS(ns) .uart_read = &ns##_uart_read, \
 	.uart_write = &ns##_uart_write, \
+	.uart_readISR = &ns##_uart_readISR, \
+	.uart_writeISR = &ns##_uart_writeISR,
 # else
 #  define UART_READ_WRITE_OPS(ns)
 # endif
 
 # ifndef CONFIG_UART_GENERIC_STRING
-#  define UART_STRING_OPS(ns) .uart_puts = &ns##_uart_puts,
+#  define UART_STRING_OPS(ns) .uart_puts = &ns##_uart_puts, \
+	.uart_putsISR = &ns##_uart_putsISR,
 # else
 #  define UART_STRING_OPS(ns)
 #endif
 
-# ifndef CONFIG_UART_GENERIC_BYTE
-#  define UART_ISR_READ_WRITE_OPS(ns) .uart_readISR = &ns##_uart_readISR, \
-	.uart_writeISR = &ns##_uart_writeISR,
-# else
-#  define UART_ISR_READ_WRITE_OPS(ns)
-# endif
-# ifndef CONFIG_UART_GENERIC_STRING
-#  define UART_ISR_STRING_OPS(ns) .uart_putsISR = &ns##_uart_putsISR,
-# else
-#  define UART_ISR_STRING_OPS(ns)
-# endif
-# define UART_ISR_OPS(ns) .uart_getcISR = &ns##_uart_getcISR, \
-	.uart_putcISR = &ns##_uart_putcISR, \
-	UART_ISR_READ_WRITE_OPS(ns) \
-	UART_ISR_STRING_OPS(ns)
 
-# define UART_OPS(ns) static struct uart_ops ops = { \
+# define UART_OPS(ns) static const struct uart_ops ns##ops = { \
 	.uart_init = &ns##_uart_init, \
 	.uart_deinit = &ns##_uart_deinit, \
 	.uart_getc = &ns##_uart_getc, \
 	.uart_putc = &ns##_uart_putc, \
-	/*UART_READ_WRITE_OPS(ns) \*/ /* TODO */ \
+	.uart_getcISR = &ns##_uart_getcISR, \
+	.uart_putcISR = &ns##_uart_putcISR, \
+	UART_READ_WRITE_OPS(ns) \
 	UART_STRING_OPS(ns) \
-	UART_ISR_OPS(ns) \
 }
+
+# define UART_INIT_DEV(ns) .gen.ops = &ns##ops,
 
 # define UART_INIT(ns, port, bautrate) static struct uart *ns##_uart_init(uint8_t port, uint32_t bautrate) 
 # define UART_DEINIT(ns, uart) static int32_t ns##_uart_deinit(struct uart *uart)

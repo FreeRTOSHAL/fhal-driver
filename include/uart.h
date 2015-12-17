@@ -38,7 +38,7 @@ struct uart_generic {
 	SemaphoreHandle_t lock;	
 #endif
 #ifdef CONFIG_UART_MULTI
-	struct uart_ops *ops;
+	const struct uart_ops *ops;
 #endif
 };
 extern struct uart **uarts;
