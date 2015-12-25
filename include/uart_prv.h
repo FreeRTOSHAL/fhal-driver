@@ -18,7 +18,7 @@ int32_t uart_generic_init(struct uart *uart);
 # define uart_unlock(u, e)
 #endif
 
-#define UART_ADDDEV(ns, p) static struct uart_generic SECTION(".rodata.dev.uart") USED const * const ns##_##p = (struct uart_generic const *) &p
+#define UART_ADDDEV(ns, p) HAL_ADDDEV(uart, ns, p)
 #ifndef CONFIG_UART_MULTI
 # define UART_OPS(ns)
 # define UART_INIT_DEV(ns) 

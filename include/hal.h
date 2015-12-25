@@ -47,4 +47,6 @@ inline int32_t hal_unlock(void *data) {
 	} \
 } while(0)
 
+#define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED const * const ns##_##p = (struct gns##_generic const *) &p
+
 #endif
