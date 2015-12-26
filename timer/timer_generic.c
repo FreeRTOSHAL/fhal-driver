@@ -20,7 +20,7 @@ int32_t timer_deinit(struct timer *timer);
 int32_t timer_setOverflowCallback(struct timer *timer, bool (*callback)(struct timer *timer, void *data), void * data);
 int32_t timer_start(struct timer *timer);
 int32_t timer_stop(struct timer *timer);
-int32_t timer_oneshort(struct timer *timer, uint64_t us);
+int32_t timer_oneshot(struct timer *timer, uint64_t us);
 int32_t timer_periodic(struct timer *timer, uint64_t us);
 int64_t timer_getTime(struct timer *timer);
 #endif
