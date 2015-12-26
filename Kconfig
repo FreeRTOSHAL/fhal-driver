@@ -17,6 +17,7 @@ source driver/spi/Kconfig
 source driver/sensor/Kconfig
 source driver/adc/Kconfig
 source driver/power/Kconfig
+source driver/timer/Kconfig
 config CACHE
 	bool
 	help

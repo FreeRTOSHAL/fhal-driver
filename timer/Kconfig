@@ -1,0 +1,10 @@
+menuconfig TIMER
+	bool "Timer Subsystem"
+	depends on MACH_HAS_TIMER
+	help
+		Activate Timer Subsystem
+	config TIMER_MULTI
+		bool "Multiply Timerss"
+		depends on TIMER
+		help
+			Multiply Timers
