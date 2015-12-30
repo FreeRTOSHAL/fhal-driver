@@ -1,0 +1,10 @@
+menuconfig PWM
+	bool "PWM Subsystem"
+	depends on MACH_HAS_PWM
+	help
+		Activate Timer Subsystem
+	config PWM_MULTI
+		bool "Multiply PWMs"
+		depends on PWM
+		help
+			Multiply PWMs
