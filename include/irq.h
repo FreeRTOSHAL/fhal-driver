@@ -9,4 +9,6 @@ int32_t irq_clear(int32_t irqnr);
 int32_t irq_getCPUID();
 int32_t irq_setPrio(int32_t irqnr, int32_t prio);
 int32_t irq_getPrio(int32_t irqnr);
+int32_t irq_mask(int32_t irqnr);
+int32_t irq_unmask(int32_t irqnr);
 #endif
