@@ -1,0 +1,10 @@
+menuconfig CAPTURE
+	bool "Capture Subsystem"
+	depends on MACH_HAS_CAPTURE
+	help
+		Activate Capture Subsystem
+	config CAPTURE_MULTI
+		bool "Multiply Captures"
+		depends on CAPTURE
+		help
+			Multiply Captures
