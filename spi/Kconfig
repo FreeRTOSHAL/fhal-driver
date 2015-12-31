@@ -10,3 +10,8 @@ menuconfig SPI
 		select USE_RECURSIVE_MUTEXES
 		help
 			Make SPI Thread save
+	config SPI_MULTI
+		bool "Multiply SPIs"
+		depends on SPI
+		help
+			Multiply SPIs

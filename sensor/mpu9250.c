@@ -28,7 +28,7 @@ static inline int32_t mpu9250_send(struct mpu9250 *mpu, uint8_t reg, uint8_t dat
 		(uint16_t) reg, 
 		(uint16_t) data
 	};
-	return spi_send(mpu->slave, wdata, 2, waittime);
+	return spiSlave_send(mpu->slave, wdata, 2, waittime);
 }
 
 static int32_t mpu9250_recv(struct mpu9250 *mpu, uint8_t reg, uint8_t *data, uint32_t len, TickType_t waittime) {
@@ -40,7 +40,7 @@ static int32_t mpu9250_recv(struct mpu9250 *mpu, uint8_t reg, uint8_t *data, uin
 	memset(wdata, 0xFF, size);
 	memset(rdata, 0x00, size);
 	wdata[0] = MPU_READ | ((uint16_t) reg);
-	ret = spi_sendRecv(mpu->slave, wdata, rdata, (len + 1), waittime);
+	ret = spiSlave_transver(mpu->slave, wdata, rdata, (len + 1), waittime);
 	for (i = 1; i < (len + 1); i++) {
 		data[i - 1] = (uint8_t) rdata[i];
 	}
