@@ -14,7 +14,7 @@ int32_t pwm_generic_init(struct pwm *t) {
 	return 0;
 }
 #ifdef CONFIG_PWM_MULTI
-struct pwm *pwm_init(int32_t index, void *settings);
+struct pwm *pwm_init(int32_t index);
 int32_t pwm_deinit(struct pwm *pwm);
 
 int32_t pwm_setPeriod(struct pwm *pwm, uint64_t us);

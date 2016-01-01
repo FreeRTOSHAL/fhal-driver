@@ -9,7 +9,7 @@
 struct pwm;
 #ifdef CONFIG_PWM_MULTI
 struct pwm_ops {
-	struct pwm *(*pwm_init)(int32_t index, void *settings);
+	struct pwm *(*pwm_init)(int32_t index);
 	int32_t (*pwm_deinit)(struct pwm *pwm);
 
 	int32_t (*pwm_setPeriod)(struct pwm *pwm, uint64_t us);
@@ -24,15 +24,15 @@ struct pwm_generic {
 };
 extern struct pwm **pwms;
 #ifndef CONFIG_PWM_MULTI
-struct pwm *pwm_init(int32_t index, void *settings);
+struct pwm *pwm_init(int32_t index);
 int32_t pwm_deinit(struct pwm *pwm);
 
 int32_t pwm_setPeriod(struct pwm *pwm, uint64_t us);
 int32_t pwm_setDutyCycle(struct pwm *pwm, uint64_t us);
 #else
-inline struct pwm *pwm_init(int32_t index, void *settings) {
+inline struct pwm *pwm_init(int32_t index) {
 	struct pwm_generic *p = (struct pwm_generic *) pwms[index];
-	return p->ops->pwm_init(index, settings);
+	return p->ops->pwm_init(index);
 }
 inline int32_t pwm_deinit(struct pwm *pwm) {
 	struct pwm_generic *p = (struct pwm_generic *) pwm;

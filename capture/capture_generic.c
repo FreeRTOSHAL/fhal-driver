@@ -14,7 +14,7 @@ int32_t capture_generic_init(struct capture *t) {
 	return 0;
 }
 #ifdef CONFIG_CAPTURE_MULTI
-struct capture *capture_init(uint32_t index, void *settings);
+struct capture *capture_init(uint32_t index);
 int32_t capture_deinit(struct capture *capture);
 
 int32_t capture_setCallback(struct capture *capture, bool (*callback)(struct capture *capture, uint32_t index, uint64_t time, void *data), void *data);

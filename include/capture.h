@@ -5,7 +5,7 @@
 struct capture;
 #ifdef CONFIG_CAPTURE_MULTI
 struct capture_ops {
-	struct capture *(*capture_init)(uint32_t index, void *settings);
+	struct capture *(*capture_init)(uint32_t index);
 	int32_t (*capture_deinit)(struct capture *capture);
 
 	int32_t (*capture_setCallback)(struct capture *capture, bool (*callback)(struct capture *capture, uint32_t index, uint64_t time, void *data), void *data);
@@ -23,7 +23,7 @@ struct capture_generic  {
 };
 extern struct capture **captures;
 #ifndef CONFIG_CAPTURE_MULTI
-struct capture *capture_init(uint32_t index, void *settings);
+struct capture *capture_init(uint32_t index);
 int32_t capture_deinit(struct capture *capture);
 
 int32_t capture_setCallback(struct capture *capture, bool (*callback)(struct capture *capture, uint32_t index, uint64_t time, void *data), void *data);
@@ -32,9 +32,9 @@ int32_t capture_setPeriod(struct capture *capture, uint64_t us);
 uint64_t capture_getTime(struct capture *capture);
 uint64_t capture_getChannelTime(struct capture *capture);
 #else
-inline struct capture *capture_init(uint32_t index, void *settings) {
+inline struct capture *capture_init(uint32_t index) {
 	struct capture_generic *p = (struct capture_generic *) captures[index];
-	return p->ops->capture_init(index, settings);
+	return p->ops->capture_init(index);
 }
 inline int32_t capture_deinit(struct capture *capture) {
 	struct capture_generic *p = (struct capture_generic *) capture;

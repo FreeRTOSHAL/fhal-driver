@@ -15,7 +15,7 @@ int32_t capture_generic_init(struct capture *capture);
 # define CAPTURE_OPS(ns)
 # define CAPTURE_INIT_DEV(ns) 
 
-# define CAPTURE_INIT(ns, index, settings) struct capture *capture_init(uint32_t index, void *settings)
+# define CAPTURE_INIT(ns, index) struct capture *capture_init(uint32_t index)
 # define CAPTURE_DEINIT(ns, c) int32_t capture_deinit(struct capture *c)
 
 # define CAPTURE_SET_CALLBACK(ns, c, callback, data) int32_t capture_setCallback(struct capture *c, bool (*callback)(struct capture *capture, uint32_t index, uint64_t time, void *data), void *data)
@@ -34,7 +34,7 @@ int32_t capture_generic_init(struct capture *capture);
 };
 # define CAPTURE_INIT_DEV(ns) .gen.ops = &ns##_capture_ops,
 
-# define CAPTURE_INIT(ns, index, settings) static struct capture *ns##_capture_init(uint32_t index, void *settings)
+# define CAPTURE_INIT(ns, index) static struct capture *ns##_capture_init(uint32_t index)
 # define CAPTURE_DEINIT(ns, c) static int32_t ns##_capture_deinit(struct capture *c)
 
 # define CAPTURE_SET_CALLBACK(ns, c, callback, data) static int32_t ns##_capture_setCallback(struct capture *c, bool (*callback)(struct capture *capture, uint32_t index, uint64_t time, void *data), void *data)

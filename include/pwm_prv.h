@@ -15,7 +15,7 @@ int32_t pwm_generic_init(struct pwm *pwm);
 # define PWM_OPS(ns)
 # define PWM_INIT_DEV(ns) 
 
-# define PWM_INIT(ns, index, settings) struct pwm *pwm_init(int32_t index, void *settings)
+# define PWM_INIT(ns, index) struct pwm *pwm_init(int32_t index)
 # define PWM_DEINIT(ns, p) int32_t pwm_deinit(struct pwm *p)
 
 # define PWM_SET_PERIOD(ns, p, us) int32_t pwm_setPeriod(struct pwm *p, uint64_t us)
@@ -29,7 +29,7 @@ int32_t pwm_generic_init(struct pwm *pwm);
 }
 # define PWM_INIT_DEV(ns) .gen.ops = &ns##_pwm_ops,
 
-# define PWM_INIT(ns, index, settings) struct pwm *ns##_pwm_init(int32_t index, void *settings)
+# define PWM_INIT(ns, index) struct pwm *ns##_pwm_init(int32_t index)
 # define PWM_DEINIT(ns, p) int32_t ns##_pwm_deinit(struct pwm *p)
 
 # define PWM_SET_PERIOD(ns, p, us) int32_t ns##_pwm_setPeriod(struct pwm *p, uint64_t us)
