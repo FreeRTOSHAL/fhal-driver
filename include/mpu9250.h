@@ -2,6 +2,8 @@
 #define MPU_9250_H_
 #include <stdint.h>
 #include <spi.h>
+#include <vec.h>
+#include <accel.h>
 
 #define MPU_READ BIT(7)
 
@@ -174,11 +176,24 @@
 #define MPU_GRAVITY 16384
 
 struct mpu9250;
+struct mpu9250_accel {
+	struct accel_generic gen;
+	struct mpu9250 *mpu;
+	struct vector accelBasis;
+};
 
-struct mpu9250_vectorRAW {
-	int16_t x;
-	int16_t y;
-	int16_t z;
+struct mpu9250 {
+	bool init;
+	SemaphoreHandle_t lock;	
+
+	const struct spi_opt opt;
+	const uint32_t spi;
+
+	SemaphoreHandle_t mutex;
+	uint32_t index;
+	struct spi_slave *slave;
+	struct vector gyroBasis;
+	struct mpu9250_accel *accel;
 };
 
 struct mpu9250_vector {
@@ -187,11 +202,52 @@ struct mpu9250_vector {
 	float z;
 };
 
-struct mpu9250 *mpu9250_init(struct spi_slave *slave, TickType_t waittime);
+struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime);
 int32_t mpu9250_deinit(struct mpu9250 *mpu);
 int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime);
-int32_t mpu9250_getAccelRAW(struct mpu9250 *mpu, struct mpu9250_vectorRAW *vec, TickType_t waittime);
-int32_t mpu9250_getGyroRAW(struct mpu9250 *mpu, struct mpu9250_vectorRAW *vec, TickType_t waittime);
 int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime);
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime);
+#define ACCEL_PRV
+#include <accel_prv.h>
+extern const struct accel_ops mpu9250_accel_ops;
+/** 
+ * The Number of MPU9250 is Board spezific, the User Code must Call
+ * this Macro to define a new MPU9250 dev
+ * @warning do not use the Variable directly! Use the init function!
+ * @param id Unique identifier
+ * @param spi_id Index of SPI Dev
+ * @param cs_id CS Number or SPI_OPT_CS_DIS
+ * @param gpio_id GPIO Pin Number or SPI_OPT_GPIO_DIS
+ * @param baut Bautratbaut Bautratee
+ */
+#define MPU9250_ADDDEV(id, spi_id, cs_id, gpio_id, baut) \
+		struct mpu9250 mpu9250_##id; \
+		struct mpu9250_accel mpu9250_accel_##id = { \
+			ACCEL_INIT_DEV(mpu9250) \
+			.mpu = &mpu9250_##id, \
+			.accelBasis = {0, 0, 0}, \
+		};\
+		struct mpu9250 mpu9250_##id = { \
+			.init = false, \
+			.mutex = NULL, \
+			.spi = spi_id, \
+			.opt = { \
+				.lsb = false, \
+				.cpol = false, \
+				.cpha = false, \
+				.cs = cs_id, \
+				.csLowInactive = false, \
+				.gpio = gpio_id, \
+				.size = 8, \
+				.wdelay = 0, \
+				.cs_hold = 8, \
+				.cs_delay = 500, \
+				.bautrate = baut, \
+			}, \
+			.slave = NULL, \
+			.gyroBasis = {0, 0, 0}, \
+			.accel = &mpu9250_accel_##id, \
+		}; \
+		ACCEL_ADDDEV(mpu9250, mpu9250_accel_##id); \
+		HAL_ADD(mpu9250, mpu9250_##id)
 #endif

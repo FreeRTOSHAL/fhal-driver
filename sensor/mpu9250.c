@@ -5,23 +5,14 @@
 #include <semphr.h>
 #include <task.h>
 #include <mpu9250.h>
+#include <vec.h>
 #include <spi.h>
+#include <hal.h>
 
-struct mpu9250 {
-	SemaphoreHandle_t mutex;
-	struct spi_slave *slave;
-	struct mpu9250_vectorRAW accelBasis;
-	struct mpu9250_vectorRAW gyroBasis;
-};
 
-static inline int32_t mpu9250_lock(struct mpu9250 *mpu, TickType_t waittime) {
-	return xSemaphoreTakeRecursive(mpu->mutex, waittime);
-}
 
-static inline int32_t mpu9250_unlock(struct mpu9250 *mpu) {
-	return xSemaphoreGiveRecursive(mpu->mutex);
-}
-
+#define mpu9250_lock(u, w, e) HAL_LOCK(u, w, e)
+#define mpu9250_unlock(u, e) HAL_UNLOCK(u, e)
 
 static inline int32_t mpu9250_send(struct mpu9250 *mpu, uint8_t reg, uint8_t data, TickType_t waittime) {
 	uint16_t wdata[] = {
@@ -59,7 +50,7 @@ static inline int32_t mpu9250_clearSetBit(struct mpu9250 *mpu, uint8_t reg, uint
 	return mpu9250_send(mpu, reg, val, waittime);
 }
 
-static inline void mpu9250_buildVec(struct mpu9250_vectorRAW *vec, uint8_t *data) {
+static inline void mpu9250_buildVec(struct vector *vec, uint8_t *data) {
 	vec->x = (((uint16_t) data[0]) << 8) | (((uint16_t) data[1]) << 0);
 	vec->y = (((uint16_t) data[2]) << 8) | (((uint16_t) data[3]) << 0);
 	vec->z = (((uint16_t) data[4]) << 8) | (((uint16_t) data[5]) << 0);
@@ -150,8 +141,8 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			memset(gyroVec32, 0, sizeof(gyroVec32));
 			for (i = 0; i < count; i+=12) {
 				uint8_t data[12];
-				struct mpu9250_vectorRAW accelVec;
-				struct mpu9250_vectorRAW gyroVec;
+				struct vector accelVec;
+				struct vector gyroVec;
 				ret = mpu9250_recv(mpu, MPU_FIFO_R_W, data, 12, waittime);
 				if (ret < 0) {
 					goto mpu9250_calibrate_error0;
@@ -165,18 +156,18 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 				gyroVec32[1] += gyroVec.y;
 				gyroVec32[2] += gyroVec.z;
 			}
-			mpu->accelBasis.x = (int16_t) (accelVec32[0] / (count / 12));
-			mpu->accelBasis.y = (int16_t) (accelVec32[1] / (count / 12));
-			mpu->accelBasis.z = (int16_t) (accelVec32[2] / (count / 12));
+			mpu->accel->accelBasis.x = (int16_t) (accelVec32[0] / (count / 12));
+			mpu->accel->accelBasis.y = (int16_t) (accelVec32[1] / (count / 12));
+			mpu->accel->accelBasis.z = (int16_t) (accelVec32[2] / (count / 12));
 			mpu->gyroBasis.x = (int16_t) (gyroVec32[0] / (count / 12));
 			mpu->gyroBasis.y = (int16_t) (gyroVec32[1] / (count / 12));
 			mpu->gyroBasis.z = (int16_t) (gyroVec32[2] / (count / 12));
 
 			/* Remove Gravity */
-			if (mpu->accelBasis.z > 0) {
-				mpu->accelBasis.z -= MPU_GRAVITY;
+			if (mpu->accel->accelBasis.z > 0) {
+				mpu->accel->accelBasis.z -= MPU_GRAVITY;
 			} else {
-				mpu->accelBasis.z += MPU_GRAVITY;
+				mpu->accel->accelBasis.z += MPU_GRAVITY;
 			}
 		}
 
@@ -202,13 +193,25 @@ mpu9250_calibrate_error0:
 	return -1;
 }
 
-struct mpu9250 *mpu9250_init(struct spi_slave *slave, TickType_t waittime) {
+struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	int32_t ret;
-	struct mpu9250 *mpu = pvPortMalloc(sizeof(struct mpu9250));
-	if (mpu == NULL) {
+	struct mpu9250 *mpu = (struct mpu9250 *) hals[index];
+	if (mpu->init) {
+		return mpu;
+	}
+	ret = hal_init(mpu);
+	if (ret < 0) {
 		goto mpu9250_init_error0;
 	}
-	mpu->slave = slave;
+	mpu->index = index;
+	mpu->init = true;
+	{
+		struct spi *spi = spi_init(mpu->spi, SPI_3WIRE_CS, NULL);
+		if (spi == NULL) {
+			goto mpu9250_init_error1;
+		}
+		mpu->slave = spiSlave_init(spi, (struct spi_opt *) &mpu->opt);
+	}
 	mpu->mutex = xSemaphoreCreateRecursiveMutex();
 	if (mpu->mutex == NULL) {
 		goto mpu9250_init_error1;
@@ -323,21 +326,19 @@ struct mpu9250 *mpu9250_init(struct spi_slave *slave, TickType_t waittime) {
 mpu9250_init_error2:
 	vSemaphoreDelete(mpu->mutex);
 mpu9250_init_error1:
-	vPortFree(mpu);
+	hal_deinit(mpu);	
 mpu9250_init_error0:
+	mpu->init = false;
 	return NULL;
 }
 int32_t mpu9250_deinit(struct mpu9250 *mpu) {
 	vSemaphoreDelete(mpu->mutex);
-	vPortFree(mpu);
+	hal_deinit(mpu);	
 	return 0;
 }
 int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime) {
 	int32_t ret;
-	ret = mpu9250_lock(mpu, waittime);
-	if (ret != 1) {
-		goto mpu9250_reset_error0;
-	}
+	mpu9250_lock(mpu, waittime, -1);
 	ret = mpu9250_send(mpu, MPU_PWR_MGMT_1, MPU_PWR_MGMT_1_H_RESET, waittime);
 	if (ret < 0) {
 		goto mpu9250_reset_error1;
@@ -351,7 +352,7 @@ int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime) {
 	vTaskDelay(100 / portTICK_PERIOD_MS);
 	ret = mpu9250_send(mpu, MPU_PWR_MGMT_1, MPU_PWR_MGMT_1_CLKSEL(1), waittime);
 	if (ret < 0) {
-		return -1;
+		goto mpu9250_reset_error1;
 	}
 	vTaskDelay(100 / portTICK_PERIOD_MS);
 	/*
@@ -359,75 +360,88 @@ int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime) {
 	 */
 	ret = mpu9250_send(mpu, MPU_PWR_MGMT_2, 0x0, waittime);
 	if (ret < 0) {
-		return -1;
+		goto mpu9250_reset_error1;
 	}
-	ret = mpu9250_unlock(mpu);
-	if (ret != 1) {
-		goto mpu9250_reset_error0;
-	}
+	mpu9250_unlock(mpu, -1);
 	return 0;
 mpu9250_reset_error1:
-	mpu9250_unlock(mpu);
-mpu9250_reset_error0:
+	mpu9250_unlock(mpu, -1);
 	return -1;
 }
-int32_t mpu9250_getAccelRAW(struct mpu9250 *mpu, struct mpu9250_vectorRAW *vec, TickType_t waittime) {
+
+ACCEL_INIT(mpu9250, index) {
+	int32_t ret;
+	struct mpu9250_accel *accel = (struct mpu9250_accel *) accels[index];
+	if (!accel->mpu->init) {
+		return NULL;
+	}
+	ret = accel_generic_init((struct accel *) accel);
+	if (ret < 0) {
+		return NULL;
+	}
+	if (ret > 0) {
+		return (struct accel *) accel;
+	}
+	accel->gen.init = true;
+	return (struct accel *) accel;
+}
+ACCEL_DEINIT(mpu9250, a) {
+	struct mpu9250_accel *accel = (struct mpu9250_accel *) a;
+	hal_deinit(accel);
+	accel->gen.init = false;
+	return 0;
+}
+ACCEL_GET(mpu9250, a, vec, waittime) {
+	struct mpu9250_accel *accel = (struct mpu9250_accel *) a;
+	struct mpu9250 *mpu = accel->mpu;
 	int32_t ret;
 	uint8_t data[6];
-	ret = mpu9250_lock(mpu, waittime);
-	if (ret != 1) {
-		goto mpu9259_getAccel_error0;
-	}
+	accel_lock(accel, waittime, -1);
+	mpu9250_lock(mpu, waittime, -1);
 	ret = mpu9250_recv(mpu, MPU_ACCEL_XOUT_H, data, 6, waittime);
 	if (ret < 0) {
-		goto mpu9259_getAccel_error1;
+		goto mpu9259_accel_get_error0;
 	}
-	ret = mpu9250_unlock(mpu);
-	if (ret != 1) {
-		goto mpu9259_getAccel_error0;
-	}
+	mpu9250_unlock(mpu, -1);
 	mpu9250_buildVec(vec, data);
 	return 0;
-mpu9259_getAccel_error1:
-	mpu9250_unlock(mpu);
-mpu9259_getAccel_error0:
+mpu9259_accel_get_error0:
+	mpu9250_unlock(mpu, -1);
 	return -1;
 }
-int32_t mpu9250_getGyroRAW(struct mpu9250 *mpu, struct mpu9250_vectorRAW *vec, TickType_t waittime) {
+ACCEL_GET_ISR(mpu9250, accel, vec) {
+	/* TODO */
+	return -1;
+}
+ACCEL_OPS(mpu9250);
+int32_t mpu9250_getGyroRAW(struct mpu9250 *mpu, struct vector *vec, TickType_t waittime) {
 	int32_t ret;
 	uint8_t data[6];
-	ret = mpu9250_lock(mpu, waittime);
-	if (ret != 1) {
-		goto mpu9259_getAccel_error0;
-	}
+	mpu9250_lock(mpu, waittime, -1);
 	ret = mpu9250_recv(mpu, MPU_GYRO_XOUT_H, data, 6, waittime);
 	if (ret < 0) {
 		goto mpu9259_getAccel_error1;
 	}
-	ret = mpu9250_unlock(mpu);
-	if (ret != 1) {
-		goto mpu9259_getAccel_error0;
-	}
+	mpu9250_unlock(mpu, -1);
 	mpu9250_buildVec(vec, data);
 	return 0;
 mpu9259_getAccel_error1:
-	mpu9250_unlock(mpu);
-mpu9259_getAccel_error0:
+	mpu9250_unlock(mpu, -1);
 	return -1;
 }
 int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime) {
-	struct mpu9250_vectorRAW vecRAW;
-	int32_t ret = mpu9250_getAccelRAW(mpu, &vecRAW, waittime);
+	struct vector vecRAW;
+	int32_t ret = accel_get((struct accel *) mpu->accel, &vecRAW, waittime);
 	if (ret < 0) {
 		return ret;
 	}
-	vec->x = (((float) vecRAW.x) * (2.0/32768.0)) - (((float) mpu->accelBasis.x) / (float) MPU_GRAVITY);
-	vec->y = (((float) vecRAW.y) * (2.0/32768.0)) - (((float) mpu->accelBasis.y) / (float) MPU_GRAVITY);
-	vec->z = (((float) vecRAW.z) * (2.0/32768.0)) - (((float) mpu->accelBasis.z) / (float) MPU_GRAVITY);
+	vec->x = (((float) vecRAW.x) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.x) / (float) MPU_GRAVITY);
+	vec->y = (((float) vecRAW.y) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.y) / (float) MPU_GRAVITY);
+	vec->z = (((float) vecRAW.z) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.z) / (float) MPU_GRAVITY);
 	return 0;
 }
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime) {
-	struct mpu9250_vectorRAW vecRAW;
+	struct vector vecRAW;
 	int32_t ret = mpu9250_getGyroRAW(mpu, &vecRAW, waittime);
 	if (ret < 0) {
 		return ret;

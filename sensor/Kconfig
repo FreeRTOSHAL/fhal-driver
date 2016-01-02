@@ -2,10 +2,29 @@ menuconfig SENSOR
 	bool "Sensor Driver"
 	help
 		Sensor Driver
+menuconfig ACCEL
+	bool "Accelerator Subssystem"
+	depends on SENSOR
+	help
+		Activate Accelerator Subssystem
+	config ACCEL_THREAD_SAVE
+		bool "Accelerator is Thread Save"
+		depends on ACCEL
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		help
+			Make Accelerator Thread save
+	config ACCEL_MULTI
+		bool "Multiply Accelerators"
+		depends on ACCEL
+		help
+			Multiply Accelerators
+
 config MPU9250
 	bool "MCU-9250"
 	depends on SENSOR
 	select USE_MUTEXES
 	select USE_RECURSIVE_MUTEXES
+	select ACCEL
 	help
 		MPU-9250 Driver

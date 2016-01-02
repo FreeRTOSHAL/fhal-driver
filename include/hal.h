@@ -18,6 +18,12 @@ inline int32_t hal_init(void *data) {
 	return 0;
 }
 
+inline int32_t hal_deinit(void *data) {
+	struct hal *hal = data;
+	vSemaphoreDelete(hal->lock);
+	return 0;
+}
+
 inline bool hal_isInit(void *data) {
 	struct hal *hal = data;
 	return hal->init;
@@ -48,5 +54,11 @@ inline int32_t hal_unlock(void *data) {
 } while(0)
 
 #define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED const * const ns##_##p = (struct gns##_generic const *) &p
+
+/*
+ * Container for Driver without Interface like the MPU9250 Driver
+ */
+extern void **hals;
+#define HAL_ADD(ns, p) static void SECTION(".rodata.dev.hal") USED const * const ns##_##p = (void const *) &p
 
 #endif
