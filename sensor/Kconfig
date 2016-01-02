@@ -1,10 +1,12 @@
 menuconfig SENSOR
 	bool "Sensor Driver"
+	default n
 	help
 		Sensor Driver
 menuconfig ACCEL
 	bool "Accelerator Subssystem"
 	depends on SENSOR
+	default n
 	help
 		Activate Accelerator Subssystem
 	config ACCEL_THREAD_SAVE
@@ -12,13 +14,35 @@ menuconfig ACCEL
 		depends on ACCEL
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
+		default n
 		help
 			Make Accelerator Thread save
 	config ACCEL_MULTI
 		bool "Multiply Accelerators"
 		depends on ACCEL
+		default n
 		help
 			Multiply Accelerators
+menuconfig GYRO
+	bool "Gyro Subssystem"
+	depends on SENSOR
+	default n
+	help
+		Activate Accelerator Subssystem
+	config GYRO_THREAD_SAVE
+		bool "Gyro is Thread Save"
+		depends on GYRO
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make Accelerator Thread save
+	config GYRO_MULTI
+		bool "Multiply Gyros"
+		depends on GYRO
+		default n
+		help
+			Multiply Gyros
 
 config MPU9250
 	bool "MCU-9250"
@@ -26,5 +50,7 @@ config MPU9250
 	select USE_MUTEXES
 	select USE_RECURSIVE_MUTEXES
 	select ACCEL
+	select GYRO
+	default n
 	help
 		MPU-9250 Driver

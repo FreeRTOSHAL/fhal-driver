@@ -159,9 +159,9 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			mpu->accel->accelBasis.x = (int16_t) (accelVec32[0] / (count / 12));
 			mpu->accel->accelBasis.y = (int16_t) (accelVec32[1] / (count / 12));
 			mpu->accel->accelBasis.z = (int16_t) (accelVec32[2] / (count / 12));
-			mpu->gyroBasis.x = (int16_t) (gyroVec32[0] / (count / 12));
-			mpu->gyroBasis.y = (int16_t) (gyroVec32[1] / (count / 12));
-			mpu->gyroBasis.z = (int16_t) (gyroVec32[2] / (count / 12));
+			mpu->gyro->gyroBasis.x = (int16_t) (gyroVec32[0] / (count / 12));
+			mpu->gyro->gyroBasis.y = (int16_t) (gyroVec32[1] / (count / 12));
+			mpu->gyro->gyroBasis.z = (int16_t) (gyroVec32[2] / (count / 12));
 
 			/* Remove Gravity */
 			if (mpu->accel->accelBasis.z > 0) {
@@ -414,7 +414,31 @@ ACCEL_GET_ISR(mpu9250, accel, vec) {
 	return -1;
 }
 ACCEL_OPS(mpu9250);
-int32_t mpu9250_getGyroRAW(struct mpu9250 *mpu, struct vector *vec, TickType_t waittime) {
+GYRO_INIT(mpu9250, index) {
+	int32_t ret;
+	struct mpu9250_gyro *gyro = (struct mpu9250_gyro *) gyros[index];
+	if (!gyro->mpu->init) {
+		return NULL;
+	}
+	ret = gyro_generic_init((struct gyro *) gyro);
+	if (ret < 0) {
+		return NULL;
+	}
+	if (ret > 0) {
+		return (struct gyro *) gyro;
+	}
+	gyro->gen.init = true;
+	return (struct gyro *) gyro;
+}
+GYRO_DEINIT(mpu9250, g) {
+	struct mpu9250_gyro *gyro = (struct mpu9250_gyro *) g;
+	hal_deinit(gyro);
+	gyro->gen.init = false;
+	return 0;
+}
+GYRO_GET(mpu9250, g, vec, waittime) {
+	struct mpu9250_gyro *gyro = (struct mpu9250_gyro *) g;
+	struct mpu9250 *mpu = gyro->mpu;
 	int32_t ret;
 	uint8_t data[6];
 	mpu9250_lock(mpu, waittime, -1);
@@ -429,6 +453,11 @@ mpu9259_getAccel_error1:
 	mpu9250_unlock(mpu, -1);
 	return -1;
 }
+GYRO_GET_ISR(mpu9250, gyro, vec) {
+	/* TODO */
+	return -1;
+}
+GYRO_OPS(mpu9250);
 int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime) {
 	struct vector vecRAW;
 	int32_t ret = accel_get((struct accel *) mpu->accel, &vecRAW, waittime);
@@ -442,12 +471,12 @@ int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTy
 }
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime) {
 	struct vector vecRAW;
-	int32_t ret = mpu9250_getGyroRAW(mpu, &vecRAW, waittime);
+	int32_t ret = gyro_get((struct gyro *) mpu->gyro, &vecRAW, waittime);
 	if (ret < 0) {
 		return ret;
 	}
-	vec->x = (((float) vecRAW.x) * (250.0/32768.0)) - (((float) mpu->gyroBasis.x) / 131.);
-	vec->y = (((float) vecRAW.y) * (250.0/32768.0)) - (((float) mpu->gyroBasis.y) / 131.);
-	vec->z = (((float) vecRAW.z) * (250.0/32768.0)) - (((float) mpu->gyroBasis.z) / 131.);
+	vec->x = (((float) vecRAW.x) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.x) / 131.);
+	vec->y = (((float) vecRAW.y) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.y) / 131.);
+	vec->z = (((float) vecRAW.z) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.z) / 131.);
 	return 0;
 }

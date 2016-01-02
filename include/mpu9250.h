@@ -4,6 +4,7 @@
 #include <spi.h>
 #include <vec.h>
 #include <accel.h>
+#include <gyro.h>
 
 #define MPU_READ BIT(7)
 
@@ -182,6 +183,12 @@ struct mpu9250_accel {
 	struct vector accelBasis;
 };
 
+struct mpu9250_gyro {
+	struct gyro_generic gen;
+	struct mpu9250 *mpu;
+	struct vector gyroBasis;
+};
+
 struct mpu9250 {
 	bool init;
 	SemaphoreHandle_t lock;	
@@ -192,8 +199,8 @@ struct mpu9250 {
 	SemaphoreHandle_t mutex;
 	uint32_t index;
 	struct spi_slave *slave;
-	struct vector gyroBasis;
 	struct mpu9250_accel *accel;
+	struct mpu9250_gyro *gyro;
 };
 
 struct mpu9250_vector {
@@ -209,7 +216,9 @@ int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTy
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime);
 #define ACCEL_PRV
 #include <accel_prv.h>
-extern const struct accel_ops mpu9250_accel_ops;
+#define GYRO_PRV
+#include <gyro_prv.h>
+extern const struct gyro_ops mpu9250_gyro_ops;
 /** 
  * The Number of MPU9250 is Board spezific, the User Code must Call
  * this Macro to define a new MPU9250 dev
@@ -226,6 +235,11 @@ extern const struct accel_ops mpu9250_accel_ops;
 			ACCEL_INIT_DEV(mpu9250) \
 			.mpu = &mpu9250_##id, \
 			.accelBasis = {0, 0, 0}, \
+		};\
+		struct mpu9250_gyro mpu9250_gyro_##id = { \
+			GYRO_INIT_DEV(mpu9250) \
+			.mpu = &mpu9250_##id, \
+			.gyroBasis = {0, 0, 0}, \
 		};\
 		struct mpu9250 mpu9250_##id = { \
 			.init = false, \
@@ -245,8 +259,8 @@ extern const struct accel_ops mpu9250_accel_ops;
 				.bautrate = baut, \
 			}, \
 			.slave = NULL, \
-			.gyroBasis = {0, 0, 0}, \
 			.accel = &mpu9250_accel_##id, \
+			.gyro = &mpu9250_gyro_##id, \
 		}; \
 		ACCEL_ADDDEV(mpu9250, mpu9250_accel_##id); \
 		HAL_ADD(mpu9250, mpu9250_##id)
