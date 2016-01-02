@@ -219,6 +219,7 @@ int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTyp
 #define GYRO_PRV
 #include <gyro_prv.h>
 extern const struct gyro_ops mpu9250_gyro_ops;
+extern const struct accel_ops mpu9250_accel_ops;
 /** 
  * The Number of MPU9250 is Board spezific, the User Code must Call
  * this Macro to define a new MPU9250 dev
