@@ -18,5 +18,5 @@ enum tps_diag {
 struct tps65381 *tps_init(struct spi_slave *slave, TickType_t waittime);
 int32_t tps_deinit(struct tps65381 *tps);
 int32_t tps_mux(struct tps65381 *tps, enum tps_diag diag, TickType_t waittime);
-float tps_diag(struct tps65381 *tps, enum tps_diag diag, struct adc *adc, uint32_t adcChannel, TickType_t waittime);
+float tps_diag(struct tps65381 *tps, enum tps_diag diag, struct adc *adc, TickType_t waittime);
 #endif

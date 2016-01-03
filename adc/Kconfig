@@ -10,3 +10,8 @@ menuconfig ADC
 		select USE_RECURSIVE_MUTEXES
 		help
 			Make ADC Thread save
+	config ADC_MULTI
+		bool "Multiply ADCs"
+		depends on ADC
+		help
+			Multiply ADCs
