@@ -264,5 +264,6 @@ extern const struct accel_ops mpu9250_accel_ops;
 			.gyro = &mpu9250_gyro_##id, \
 		}; \
 		ACCEL_ADDDEV(mpu9250, mpu9250_accel_##id); \
+		GYRO_ADDDEV(mpu9250, mpu9250_gyro_##id); \
 		HAL_ADD(mpu9250, mpu9250_##id)
 #endif

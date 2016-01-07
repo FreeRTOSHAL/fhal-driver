@@ -51,6 +51,7 @@ config MPU9250
 	select USE_RECURSIVE_MUTEXES
 	select ACCEL
 	select GYRO
+	select SPI
 	default n
 	help
 		MPU-9250 Driver
