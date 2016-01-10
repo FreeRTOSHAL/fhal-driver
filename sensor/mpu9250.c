@@ -249,22 +249,24 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			mpu, 
 			MPU_CONFIG, 
 			MPU_CONFIG_DLPF_CFG(0x7), 
-			MPU_CONFIG_DLPF_CFG(0x3),
+			MPU_CONFIG_DLPF_CFG(0x2), /* 98 */
 			waittime
 		);
 		if (ret < 0) {
 			goto mpu9250_init_error2;
 		}
 	}
-	
+	/* 
+	 * Setup Sample Frequenz
+	 */	
 	{
-		ret = mpu9250_send(mpu, MPU_SMPLRT_DIV, 0x4, waittime);
+		ret = mpu9250_send(mpu, MPU_SMPLRT_DIV, 0x1, waittime);
 		if (ret < 0) {
 			goto mpu9250_init_error2;
 		}
 	}
 	/* 
-	 * Setup Gyro Full Scale to +250dps
+	 * Setup Gyro Full Scale to +2000dps
 	 */
 	{
 		ret = mpu9250_clearSetBit(
@@ -277,7 +279,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 				MPU_GYRO_CONFIG_GYRO_FS_SEL(0x3) |
 				MPU_GYRO_CONFIG_FCHOICE_B(0x3)
 			), 
-			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0),
+			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x3),
 			waittime
 		);
 		if (ret < 0) {
@@ -285,7 +287,8 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 		}
 	}
 	/* 
-	 * Setup Accel Full Scale to +-2g
+	 * Setup Accel Full Scale to +-8g
+	 * TODO Confgiuerable over KConfig
 	 */
 	{
 		ret = mpu9250_clearSetBit(
@@ -297,7 +300,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 				MPU_ACCEL_CONFIG_AX_ST_EN | 
 				MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x3)
 			), 
-			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x0),
+			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x2),
 			waittime
 		);
 		if (ret < 0) {
@@ -307,6 +310,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	/* 
 	 * Setup Accel to 1 kHz and 42 HZ bandwidth
 	 */
+#if 0
 	{
 		ret = mpu9250_clearSetBit(
 			mpu, 
@@ -316,12 +320,14 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 				MPU_ACCEL_CONFIG_2_A_DLPF_CFG(0x3)
 			), 
 			MPU_ACCEL_CONFIG_2_A_DLPF_CFG(0x3),
+			0,
 			waittime
 		);
 		if (ret < 0) {
 			goto mpu9250_init_error2;
 		}
 	}
+#endif
 	return mpu;
 mpu9250_init_error2:
 	vSemaphoreDelete(mpu->mutex);
@@ -464,9 +470,9 @@ int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTy
 	if (ret < 0) {
 		return ret;
 	}
-	vec->x = (((float) vecRAW.x) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.x) / (float) MPU_GRAVITY);
-	vec->y = (((float) vecRAW.y) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.y) / (float) MPU_GRAVITY);
-	vec->z = (((float) vecRAW.z) * (2.0/32768.0)) - (((float) mpu->accel->accelBasis.z) / (float) MPU_GRAVITY);
+	vec->x = (((float) vecRAW.x) * (8.0/32768.0)) - (((float) mpu->accel->accelBasis.x) / (float) MPU_GRAVITY);
+	vec->y = (((float) vecRAW.y) * (8.0/32768.0)) - (((float) mpu->accel->accelBasis.y) / (float) MPU_GRAVITY);
+	vec->z = (((float) vecRAW.z) * (8.0/32768.0)) - (((float) mpu->accel->accelBasis.z) / (float) MPU_GRAVITY);
 	return 0;
 }
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime) {
@@ -475,8 +481,8 @@ int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTyp
 	if (ret < 0) {
 		return ret;
 	}
-	vec->x = (((float) vecRAW.x) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.x) / 131.);
-	vec->y = (((float) vecRAW.y) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.y) / 131.);
-	vec->z = (((float) vecRAW.z) * (250.0/32768.0)) - (((float) mpu->gyro->gyroBasis.z) / 131.);
+	vec->x = (((float) vecRAW.x) * (2000.0/32768.0)) - (((float) mpu->gyro->gyroBasis.x) / 131.);
+	vec->y = (((float) vecRAW.y) * (2500.0/32768.0)) - (((float) mpu->gyro->gyroBasis.y) / 131.);
+	vec->z = (((float) vecRAW.z) * (2500.0/32768.0)) - (((float) mpu->gyro->gyroBasis.z) / 131.);
 	return 0;
 }
