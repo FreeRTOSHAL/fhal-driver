@@ -6,13 +6,13 @@
 #include <stdbool.h>
 struct hal {
 	bool init;
-#ifdef USE_RECURSIVE_MUTEXES
+#ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	SemaphoreHandle_t lock;	
 #endif
 };
 
 inline int32_t hal_init(void *data) {
-#ifdef USE_RECURSIVE_MUTEXES
+#ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	struct hal *hal = data;
 	hal->lock = xSemaphoreCreateRecursiveMutex();
 	if (hal->lock == NULL) {
@@ -23,7 +23,7 @@ inline int32_t hal_init(void *data) {
 }
 
 inline int32_t hal_deinit(void *data) {
-#ifdef USE_RECURSIVE_MUTEXES
+#ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	struct hal *hal = data;
 	vSemaphoreDelete(hal->lock);
 #endif
@@ -36,20 +36,20 @@ inline bool hal_isInit(void *data) {
 }
 
 inline int32_t hal_lock(void *data, TickType_t waittime) {
-#ifdef USE_RECURSIVE_MUTEXES
+#ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	struct hal *hal = data;
 	return xSemaphoreTakeRecursive(hal->lock, waittime);
 #else
-	return 0;
+	return 1;
 #endif
 }
 
 inline int32_t hal_unlock(void *data) {
-#ifdef USE_RECURSIVE_MUTEXES
+#ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	struct hal *hal = data;
 	return xSemaphoreGiveRecursive(hal->lock);
 #else
-	return 0;
+	return 1;
 #endif
 }
 
