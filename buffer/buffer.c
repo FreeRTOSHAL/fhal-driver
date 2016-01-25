@@ -208,7 +208,9 @@ int32_t buffer_read(struct buffer *buffer, uint8_t *data, int32_t size, TickType
 	if (!buffer->readOnly) {
 		return BUFFER_OPERATION_NOT_SUPPORTED;
 	}
-	buffer_wfi(buffer, waittime);
+	if (buffer_empty(buffer)) {
+		buffer_wfi(buffer, waittime);
+	}
 	while(!buffer_empty(buffer) && readSize < size) {
 		readP = getReadP(buffer);
 #ifdef CONFIG_CACHE
