@@ -1,0 +1,29 @@
+menuconfig EXAMPLE
+	bool "Example Subsystem"
+	help
+		Activate Example Subsystem
+
+		This Subsystem is only a demonstration of driver system 
+	config EXAMPLE_MULTI
+		bool "Multiply Example driver"
+		depends on EXAMPLE
+		help
+			Multiply Example driver
+	config EXAMPLE_THREAD_SAVE
+		bool "Example is Thread Save"
+		depends on EXAMPLE
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make Example Thread save
+	config EXAMPLE_DEV0
+		bool "Example Driver 0"
+		depends on EXAMPLE
+		help
+			Example driver Dev 0
+	config EXAMPLE_DEV1
+		bool "Example Driver 1"
+		depends on EXAMPLE
+		help
+			Example driver Dev 1

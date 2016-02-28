@@ -212,13 +212,9 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 		}
 		mpu->slave = spiSlave_init(spi, (struct spi_opt *) &mpu->opt);
 	}
-	mpu->mutex = xSemaphoreCreateRecursiveMutex();
-	if (mpu->mutex == NULL) {
-		goto mpu9250_init_error1;
-	}
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error2;
+		goto mpu9250_init_error1;
 	}
 	/* 
 	 * Check MPU is alive
@@ -227,21 +223,21 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 		uint8_t val;
 		ret = mpu9250_recv(mpu, MPU_WHO_AM_I, &val, 1, waittime);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 		if (val != MPU_WHO_AM_I_VAL) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 
 	ret = mpu9250_calibrate(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error2;
+		goto mpu9250_init_error1;
 	}
 
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error2;
+		goto mpu9250_init_error1;
 	}
 
 	{
@@ -253,7 +249,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 	/* 
@@ -262,7 +258,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	{
 		ret = mpu9250_send(mpu, MPU_SMPLRT_DIV, 0x1, waittime);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 	/* 
@@ -283,7 +279,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 	/* 
@@ -304,7 +300,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 	/* 
@@ -324,13 +320,11 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error2;
+			goto mpu9250_init_error1;
 		}
 	}
 #endif
 	return mpu;
-mpu9250_init_error2:
-	vSemaphoreDelete(mpu->mutex);
 mpu9250_init_error1:
 	hal_deinit(mpu);	
 mpu9250_init_error0:
@@ -338,7 +332,6 @@ mpu9250_init_error0:
 	return NULL;
 }
 int32_t mpu9250_deinit(struct mpu9250 *mpu) {
-	vSemaphoreDelete(mpu->mutex);
 	hal_deinit(mpu);	
 	return 0;
 }

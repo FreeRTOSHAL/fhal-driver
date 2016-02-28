@@ -5,7 +5,18 @@
 #include <vec.h>
 #include <accel.h>
 #include <gyro.h>
+/**
+ * \defgroup MPU9250 MPU9250 driver
+ * \ingroup HAL
+ * \code
+ * #include <mpu9250.h>
+ * \endcode
+ * 
+ * This is the MPU9250 Driver.
+ * \{
+ */
 
+/**\cond INTERNAL*/
 #define MPU_READ BIT(7)
 
 #define MPU_SELF_TEST_X_GYRO 0x00
@@ -173,62 +184,160 @@
 #define MPU_YA_OFFSET_L 0x7B
 #define MPU_ZA_OFFSET_H 0x7D
 #define MPU_ZA_OFFSET_L 0x7E
-
+/**\endcond*/
+/**
+ * MPU9250 Gravity Constant 
+ */
 #define MPU_GRAVITY 16384
 
+/**
+ * Private Structure of MPU9250 driver
+ */
 struct mpu9250;
+/**
+ * Accelerator Driver Structure
+ */
 struct mpu9250_accel {
+	/**
+	 * Generic Accelerator Structure
+	 */
 	struct accel_generic gen;
+	/**
+	 * MPU9250 Instance
+	 */
 	struct mpu9250 *mpu;
+	/**
+	 * Basis Values
+	 */
 	struct vector accelBasis;
 };
-
+/**
+ * Gyroscope Driver Structure
+ */
 struct mpu9250_gyro {
+	/**
+	 * Generic Gyroscope Structure
+	 */
 	struct gyro_generic gen;
+	/**
+	 * MPU9250 Instance
+	 */
 	struct mpu9250 *mpu;
+	/**
+	 * Basis Values
+	 */
 	struct vector gyroBasis;
 };
 
+/**
+ * Private Structure of MPU9250 driver
+ */
 struct mpu9250 {
+	/**
+	 * true = is init
+	 * false = is not init
+	 */
 	bool init;
+	/**
+	 * Mutex
+	 */
 	SemaphoreHandle_t lock;	
-
+	/**
+	 * SPI Options
+	 */
 	const struct spi_opt opt;
+	/**
+	 * SPI Index ID
+	 */
 	const uint32_t spi;
 
-	SemaphoreHandle_t mutex;
+	/**
+	 * Index of Driver
+	 */
 	uint32_t index;
+	/**
+	 * SPI Slave Instance
+	 */
 	struct spi_slave *slave;
+	/**
+	 * Accelerator Instance
+	 */
 	struct mpu9250_accel *accel;
+	/**
+	 * Gyro Instance
+	 */
 	struct mpu9250_gyro *gyro;
 };
-
+/**
+ * Vector
+ */
 struct mpu9250_vector {
+	/**
+	 * x Value
+	 */ 
 	float x;
+	/**
+	 * y Value
+	 */
 	float y;
+	/**
+	 * z Value
+	 */
 	float z;
 };
-
+/**
+ * MPU9250 init
+ * \param index Driver Index
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return MPU9250 Instance or NULL on error
+ */
 struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime);
+/**
+ * Deinit MPU9250 Instance
+ * \param mpu MPU9250 Instance
+ * \return -1 on error 0 on ok
+ */
 int32_t mpu9250_deinit(struct mpu9250 *mpu);
+/**
+ * Reset MPU9250
+ * \param mpu MPU9250 Instance
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error 0 on ok
+ */
 int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime);
+/**
+ * Get actual Accelerator Value
+ * \param mpu MPU9250 Instance
+ * \param vec Value
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error 0 on ok
+ */
 int32_t mpu9250_getAccel(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime);
+/**
+ * Get actual Gyroscope Value
+ * \param mpu MPU9250 Instance
+ * \param vec Value
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error 0 on ok
+ */
 int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickType_t waittime);
+/**\cond INTERNAL*/
 #define ACCEL_PRV
 #include <accel_prv.h>
 #define GYRO_PRV
 #include <gyro_prv.h>
 extern const struct gyro_ops mpu9250_gyro_ops;
 extern const struct accel_ops mpu9250_accel_ops;
+/**\endcond*/
 /** 
  * The Number of MPU9250 is Board spezific, the User Code must Call
  * this Macro to define a new MPU9250 dev
- * @warning do not use the Variable directly! Use the init function!
- * @param id Unique identifier
- * @param spi_id Index of SPI Dev
- * @param cs_id CS Number or SPI_OPT_CS_DIS
- * @param gpio_id GPIO Pin Number or SPI_OPT_GPIO_DIS
- * @param baut Bautratbaut Bautratee
+ * \warning do not use the created Variable directly! Use the init function!
+ * \param id Unique identifier
+ * \param spi_id Index of SPI Dev
+ * \param cs_id CS Number or SPI_OPT_CS_DIS
+ * \param gpio_id GPIO Pin Number or SPI_OPT_GPIO_DIS
+ * \param baut Bautrate
  */
 #define MPU9250_ADDDEV(id, spi_id, cs_id, gpio_id, baut) \
 		struct mpu9250 mpu9250_##id; \
@@ -244,7 +353,6 @@ extern const struct accel_ops mpu9250_accel_ops;
 		};\
 		struct mpu9250 mpu9250_##id = { \
 			.init = false, \
-			.mutex = NULL, \
 			.spi = spi_id, \
 			.opt = { \
 				.lsb = false, \
@@ -266,4 +374,5 @@ extern const struct accel_ops mpu9250_accel_ops;
 		ACCEL_ADDDEV(mpu9250, mpu9250_accel_##id); \
 		GYRO_ADDDEV(mpu9250, mpu9250_gyro_##id); \
 		HAL_ADD(mpu9250, mpu9250_##id)
+/**\}*/
 #endif

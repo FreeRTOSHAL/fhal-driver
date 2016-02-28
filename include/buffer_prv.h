@@ -4,6 +4,7 @@
 #error "Never include this file out of a Buffer driver"
 #endif
 #include <stdbool.h>
+/**\cond INTERNAL*/
 struct buffer_prv;
 
 struct buffer {
@@ -27,5 +28,5 @@ struct buffer_base {
 int32_t buffer_init_prv(struct buffer *buffer);
 int32_t buffer_wfi(struct buffer *buffer, TickType_t waittime);
 void buffer_notify(struct buffer *buffer);
-
+/**\endcond*/
 #endif

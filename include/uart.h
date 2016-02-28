@@ -5,8 +5,24 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <system.h>
+/**
+ * \defgroup UART UART Subsystem
+ * \ingroup HAL
+ * \code
+ * #include <uart.h>
+ * \endcode
+ * 
+ * This is the UART Subsystem for controlling UART of a SOC. 
+ * \{
+ */
+/**
+ * Private Structure of UART driver
+ */
 struct uart;
 #ifdef CONFIG_UART_MULTI
+/**
+ * Function of UART driver in Multi Driver implementation mode 
+ */
 struct uart_ops {
 	struct uart *(*uart_init)(uint8_t port, uint32_t bautrate);
 	int32_t (*uart_deinit)(struct uart *uart);
@@ -32,32 +48,122 @@ struct uart_ops {
 };
 #endif
 
+/**
+ * Generic UART Interface  
+ */
 struct uart_generic {
+	/**
+	 * true = is init
+	 * false = is not init
+	 */
 	bool init;
 #ifdef CONFIG_UART_THREAD_SAVE
+	/**
+	 * Mutex
+	 */
 	SemaphoreHandle_t lock;	
 #endif
 #ifdef CONFIG_UART_MULTI
+	/**
+	 * Ops of driver in Multi mode
+	 */
 	const struct uart_ops *ops;
 #endif
 };
+/**
+ * Global container of all UART instances
+ */
 extern struct uart **uarts;
 #ifndef CONFIG_UART_MULTI
+/**
+ * Init UART Instance
+ * \param port Index of UART
+ * \param bautrate UART Bautrate if bautrate == 0 only get Instance
+ * \return UART Instance NULL on error
+ */
 struct uart *uart_init(uint8_t port, uint32_t bautrate);
+/**
+ * Deinit UART Instance
+ * \param uart UART Instance 
+ * \return -1 on error 0 on ok
+ */
 int32_t uart_deinit(struct uart *uart);
+/**
+ * reads the next character from UART
+ * \param uart UART Instance 
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return character
+ */
 char uart_getc(struct uart *uart, TickType_t waittime);
+/**
+ * wirte character on UART 
+ * \param uart UART Instance 
+ * \param c character
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error 0 on ok
+ */
 int32_t uart_putc(struct uart *uart, char c, TickType_t waittime);
+/**
+ * Read Data form UART
+ * \param uart UART Instance 
+ * \param data Data
+ * \param length Length of Data
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error >= 0 length read from UART
+ */
 int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime);
+/**
+ * Write Data on UART
+ * \param uart UART Instance 
+ * \param data Data
+ * \param length Length of Data
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error >= 0 length write on UART
+ */
 int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime);
-/*
- * Platorm independet if CONFIG_UART_GENERIC_STRING
+/**
+ * Write String on UART
+ * \param uart UART Instance 
+ * \param s String
+ * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \return -1 on error >= 0 length write on UART
  */
 int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime);
-
+/**
+ * reads the next character from UART in ISR
+ * \param uart UART Instance 
+ * \return character
+ */
 char uart_getcISR(struct uart *uart);
+/**
+ * wirte character on UART in ISR
+ * \param uart UART Instance 
+ * \param c character
+ * \return -1 on error 0 on ok
+ */
 int32_t uart_putcISR(struct uart *uart, char c);
+/**
+ * Read Data form UART in ISR
+ * \param uart UART Instance 
+ * \param data Data
+ * \param length Length of Data
+ * \return -1 on error >= 0 length read from UART
+ */
 int32_t uart_readISR(struct uart *uart, uint8_t *data, size_t length);
+/**
+ * Write Data on UART in ISR
+ * \param uart UART Instance 
+ * \param data Data
+ * \param length Length of Data
+ * \return -1 on error >= 0 length write on UART
+ */
 int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length);
+/**
+ * Write String on UART in ISR
+ * \param uart UART Instance 
+ * \param s String
+ * \return -1 on error >= 0 length write on UART
+ */
 int32_t uart_putsISR(struct uart *uart, char *s);
 #else
 /* #ifdef CONFIG_UART_MULTI */
@@ -123,4 +229,5 @@ inline int32_t uart_putsISR(struct uart *uart, char *s) {
 }
 # endif
 #endif
+/**\}*/
 #endif

@@ -23,7 +23,7 @@ int32_t timer_generic_init(struct timer *timer);
 #define TIMER_STOP(ns, t) int32_t timer_stop(struct timer *t)
 #define TIMER_ONESHOT(ns, t, us) int32_t timer_oneshot(struct timer *t, uint64_t us)
 #define TIMER_PERIODIC(ns, t, us) int32_t timer_periodic(struct timer *t, uint64_t us)
-#define TIMER_GET_TIME(ns, t) int64_t timer_getTime(struct timer *t)
+#define TIMER_GET_TIME(ns, t) uint64_t timer_getTime(struct timer *t)
 #else
 #define TIMER_OPS(ns) static const struct timer_ops ns##ops = { \
 	.timer_init = &ns##_timer_init, \
@@ -44,6 +44,6 @@ int32_t timer_generic_init(struct timer *timer);
 #define TIMER_STOP(ns, t) static int32_t ns##_timer_stop(struct timer *t)
 #define TIMER_ONESHOT(ns, t, us) static int32_t ns##_timer_oneshot(struct timer *t, uint64_t us)
 #define TIMER_PERIODIC(ns, t, us) static int32_t ns##_timer_periodic(struct timer *t, uint64_t us)
-#define TIMER_GET_TIME(ns, t) static int64_t ns##_timer_getTime(struct timer *t)
+#define TIMER_GET_TIME(ns, t) static uint64_t ns##_timer_getTime(struct timer *t)
 #endif
 #endif

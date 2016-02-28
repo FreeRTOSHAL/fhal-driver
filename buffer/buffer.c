@@ -144,7 +144,7 @@ int32_t buffer_is_full(struct buffer *buffer) {
 	struct buffer_base *base = buffer->base;
 	return (getWriteP(buffer) + base->sizeOfEntry) % (base->len * base->sizeOfEntry) == getReadP(buffer);
 }
-int32_t buffer_empty(struct buffer *buffer) {
+bool buffer_empty(struct buffer *buffer) {
 	return getWriteP(buffer) == getReadP(buffer);
 }
 
