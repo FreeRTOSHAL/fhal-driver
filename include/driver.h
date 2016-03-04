@@ -24,6 +24,7 @@
  * \param location Location
  */
 #define DEV_DEFAULT(location) DEV(hal, location) \
+	DEV(gpio, location) \
 	DEV(uart, location) \
 	DEV(timer, location) \
 	DEV(pwm, location) \

@@ -1,5 +1,6 @@
 obj-y += hal.o
 obj-y += newlib/
+obj-$(CONFIG_GPIO) += gpio/
 obj-$(CONFIG_UART) += uart/
 obj-$(CONFIG_BUFFER) += buffer/
 obj-$(CONFIG_SPI) += spi/

@@ -73,11 +73,61 @@ enum gpio_interrupt  {
 	GPIO_EITHER
 };
 
+#ifdef CONFIG_GPIO_MULTI
+/**
+ * Function of GPIO driver in Multi Driver implementation mode 
+ */
+struct gpio_ops {
+	struct gpio *(*gpio_init)(uint32_t index);
+	int32_t (*gpio_deinit)(struct gpio *gpio);
+	struct gpio_pin *(*gpioPin_init)(struct gpio *gpio, uint8_t pin, enum gpio_direction dir, enum gpio_setting setting);
+	int32_t (*gpioPin_deinit)(struct gpio_pin *pin);
+	int32_t (*gpioPin_enableInterrupt)(struct gpio_pin *pin);
+	int32_t (*gpioPin_disableInterrupt)(struct gpio_pin *pin);
+	int32_t (*gpioPin_setCallback)(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, void *data), void *data, enum gpio_interrupt inter);
+	int32_t (*gpioPin_setDirection)(struct gpio_pin *pin, enum gpio_direction dir);
+	int32_t (*gpioPin_setSetting)(struct gpio_pin *pin, enum gpio_setting setting);
+	int32_t (*gpioPin_SchmittTrigger)(struct gpio_pin *pin, bool schmitt);
+	int32_t (*gpioPin_setValue)(struct gpio_pin *pin, bool value);
+	int32_t (*gpioPin_setPin)(struct gpio_pin *pin);
+	int32_t (*gpioPin_clearPin)(struct gpio_pin *pin);
+	int32_t (*gpioPin_togglePin)(struct gpio_pin *pin);
+	bool (*gpioPin_getValue)(struct gpio_pin *pin);
+};
+#endif
+/**
+ * Generic GPIO Interface  
+ */
+struct gpio_generic {
+	/**
+	 * true = is init
+	 * false = is not init
+	 */
+	bool init;
+#ifdef CONFIG_GPIO_MULTI
+	/**
+	 * Ops of driver in Multi mode
+	 */
+	const struct gpio_ops *ops;
+#endif
+};
+/**
+ * Generic GPIO Pin Interface  
+ */
+struct gpio_pin_generic {
+	struct gpio_generic *gpio;
+};
+/**
+ * Global container of all GPIO instances
+ */
+extern struct gpio **gpios;
+
+#ifndef CONFIG_GPIO_MULTI
 /**
  * Init GPIO Subssystem
  * \return GPIO Handle
  */
-struct gpio *gpio_init();
+struct gpio *gpio_init(uint32_t index);
 /**
  * Deinit GPIO Subssystem 
  * \param gpio GPIO Handle
@@ -185,5 +235,79 @@ int32_t gpioPin_togglePin(struct gpio_pin *pin);
  */
 bool gpioPin_getValue(struct gpio_pin *pin);
 /**\}*/
+#else
+inline struct gpio *gpio_init(uint32_t index) {
+	struct gpio_generic *gpio = (struct gpio_generic *) gpios[index];
+	return gpio->ops->gpio_init(index);
+}
+inline int32_t gpio_deinit(struct gpio *gpio) {
+	struct gpio_generic *g = (struct gpio_generic *) gpio;
+	return g->ops->gpio_deinit(gpio);
+}
+inline struct gpio_pin *gpioPin_init(struct gpio *gpio, uint8_t pin, enum gpio_direction dir, enum gpio_setting setting) {
+	struct gpio_generic *g = (struct gpio_generic *) gpio;
+	return g->ops->gpioPin_init(gpio, pin, dir, setting);
+}
+inline int32_t gpioPin_deinit(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_deinit(pin);
+}
+inline int32_t gpioPin_enableInterrupt(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_enableInterrupt(pin);
+}
+inline int32_t gpioPin_disableInterrupt(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_disableInterrupt(pin);
+}
+inline int32_t gpioPin_setCallback(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, void *data), void *data, enum gpio_interrupt inter) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_setCallback(pin, callback, data, inter);
+}
+inline int32_t gpioPin_setDirection(struct gpio_pin *pin, enum gpio_direction dir) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_setDirection(pin, dir);
+}
+inline int32_t gpioPin_setSetting(struct gpio_pin *pin, enum gpio_setting setting) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_setSetting(pin, setting);
+}
+inline int32_t gpioPin_SchmittTrigger(struct gpio_pin *pin, bool schmitt) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_SchmittTrigger(pin, schmitt);
+}
+inline int32_t gpioPin_setValue(struct gpio_pin *pin, bool value) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_setValue(pin, value);
+}
+inline int32_t gpioPin_setPin(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_setPin(pin);
+}
+inline int32_t gpioPin_clearPin(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_clearPin(pin);
+}
+inline int32_t gpioPin_togglePin(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_togglePin(pin);
+}
+inline bool gpioPin_getValue(struct gpio_pin *pin) {
+	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
+	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
+	return g->ops->gpioPin_getValue(pin);
+}
+#endif
 /**\}*/
 #endif

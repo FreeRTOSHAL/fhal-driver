@@ -1,0 +1,10 @@
+menuconfig GPIO 
+	bool "GPIO subsystem"
+	depends on MACH_HAS_GPIO
+	help
+		Activate GPIO Subsystem
+	config GPIO_MULTI
+		bool "Multiply GPIOs"
+		depends on GPIO
+		help
+			Multiply GPIOs
