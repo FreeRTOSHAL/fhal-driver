@@ -22,5 +22,5 @@ int32_t timer_start(struct timer *timer);
 int32_t timer_stop(struct timer *timer);
 int32_t timer_oneshot(struct timer *timer, uint64_t us);
 int32_t timer_periodic(struct timer *timer, uint64_t us);
-int64_t timer_getTime(struct timer *timer);
+uint64_t timer_getTime(struct timer *timer);
 #endif
