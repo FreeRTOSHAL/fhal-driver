@@ -47,6 +47,7 @@ menuconfig GYRO
 config MPU9250
 	bool "MCU-9250"
 	depends on SENSOR
+	depends on MACH_HAS_SPI
 	select USE_MUTEXES
 	select USE_RECURSIVE_MUTEXES
 	select ACCEL
