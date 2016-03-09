@@ -142,7 +142,7 @@ inline int32_t hal_unlock(void *data) {
  * \param ns Namespace of Driver
  * \param p Pointer to Driver Struct
  */
-#define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED const * const ns##_##p = (struct gns##_generic const *) &p
+#define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED NO_REORDER const * const ns##_##p = (void const *) &p
 
 /**
  * Container for Driver without Interface like the MPU9250 Driver
@@ -151,6 +151,6 @@ extern void **hals;
 /**
  * Add some Devices without Global Namespace like a instances of MPU9250 Driver
  */
-#define HAL_ADD(ns, p) static void SECTION(".rodata.dev.hal") USED const * const ns##_##p = (void const *) &p
+#define HAL_ADD(ns, p) HAL_ADDDEV(hal, ns, p)
 /**\}*/
 #endif

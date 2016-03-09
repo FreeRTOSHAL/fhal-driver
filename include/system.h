@@ -82,6 +82,18 @@
  * You may only specify the packed attribute attribute on the definition of an enum, struct or union, not on a typedef that does not also define the enumerated type, structure or union. 
  */
 #define PACKED __attribute__ ((__packed__))
+#if __GNUC__ >= 5 
+#define NO_REORDER __attribute__ ((no_reorder))
+#else
+/* Not GCC or < GCC 5.0 has no no_reoder attribute */
+/**
+ * Do not reorder functions or variables marked no_reorder against each other or top level assembler statements the executable. The actual order in the program will depend on the linker command line. Static variables marked like this are also not removed. This has a similar effect as the -fno-toplevel-reorder option, but only applies to the marked symbols. 
+ * 
+ * Needed for Globale Device Instance Table
+ * \warning in < GCC 5.0 not available -fno-toplevel-reorder automated activated in Makefile
+ */
+#define NO_REORDER
+#endif
 /**
  * Nanosecond per Second 
  */
