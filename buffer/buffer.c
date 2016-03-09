@@ -199,7 +199,7 @@ int32_t buffer_write(struct buffer *buffer, uint8_t *data, int32_t size) {
 }
 int32_t buffer_read(struct buffer *buffer, uint8_t *data, int32_t size, TickType_t waittime) {
 	struct buffer_base *base = buffer->base;
-	uint32_t readSize = 0;
+	int32_t readSize = 0;
 	uint32_t readP;
 	size *= base->sizeOfEntry;
 	/* 
