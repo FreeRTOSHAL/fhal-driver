@@ -14,7 +14,7 @@ int32_t timer_generic_init(struct timer *t) {
 	return 0;
 }
 #ifdef CONFIG_TIMER_MULTI
-struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust);
+struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust);
 int32_t timer_deinit(struct timer *timer);
 
 int32_t timer_setOverflowCallback(struct timer *timer, bool (*callback)(struct timer *timer, void *data), void * data);

@@ -15,7 +15,7 @@ int32_t timer_generic_init(struct timer *timer);
 #ifndef CONFIG_TIMER_MULTI
 #define TIMER_OPS(ns)
 # define TIMER_INIT_DEV(ns) 
-#define TIMER_INIT(ns, index, prescaler, basetime, adjust) struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust)
+#define TIMER_INIT(ns, index, prescaler, basetime, adjust) struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust)
 #define TIMER_DEINIT(ns, t) int32_t timer_deinit(struct timer *t)
 
 #define TIMER_SET_OVERFLOW_CALLBACK(ns, t, callback, data) int32_t timer_setOverflowCallback(struct timer *t, bool (*callback)(struct timer *timer, void *d), void * data)
@@ -36,7 +36,7 @@ int32_t timer_generic_init(struct timer *timer);
 	.timer_getTime = &ns##_timer_getTime, \
 }
 # define TIMER_INIT_DEV(ns) .gen.ops = &ns##ops,
-#define TIMER_INIT(ns, index, prescaler, basetime, adjust) static struct timer *ns##_timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust)
+#define TIMER_INIT(ns, index, prescaler, basetime, adjust) static struct timer *ns##_timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust)
 #define TIMER_DEINIT(ns, t) static int32_t ns##_timer_deinit(struct timer *t)
 
 #define TIMER_SET_OVERFLOW_CALLBACK(ns, t, callback, data) static int32_t ns##_timer_setOverflowCallback(struct timer *t, bool (*callback)(struct timer *timer, void *d), void * data)

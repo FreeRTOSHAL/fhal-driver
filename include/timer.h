@@ -39,7 +39,7 @@ struct timer_generic {
  * Function of timer driver in Multi Driver implementation mode 
  */
 struct timer_ops {
-	struct timer *(*timer_init)(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust);
+	struct timer *(*timer_init)(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust);
 	int32_t (*timer_deinit)(struct timer *timer);
 
 	int32_t (*timer_setOverflowCallback)(struct timer *timer, bool (*callback)(struct timer *timer, void *data), void * data);
@@ -64,7 +64,7 @@ extern struct timer **timers;
  * \param adjust Diff to basetime for example 10us
  * \return Timer instance NULL on Error or not init if prescaler = 0
  */
-struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust);
+struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust);
 /**
  * Deinit Timer
  * \param timer Timer instance
@@ -112,7 +112,7 @@ int32_t timer_periodic(struct timer *timer, uint64_t us);
  */
 uint64_t timer_getTime(struct timer *timer);
 #else
-inline struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, uint64_t adjust) {
+inline struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust) {
 	struct timer_generic *timer = (struct timer_generic *)timers[index];
 	return timer->ops->timer_init(index, prescaler, basetime, adjust);
 }
