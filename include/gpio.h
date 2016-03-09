@@ -84,7 +84,7 @@ struct gpio_ops {
 	int32_t (*gpioPin_deinit)(struct gpio_pin *pin);
 	int32_t (*gpioPin_enableInterrupt)(struct gpio_pin *pin);
 	int32_t (*gpioPin_disableInterrupt)(struct gpio_pin *pin);
-	int32_t (*gpioPin_setCallback)(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, void *data), void *data, enum gpio_interrupt inter);
+	int32_t (*gpioPin_setCallback)(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, uint8_t pinID, void *data), void *data, enum gpio_interrupt inter);
 	int32_t (*gpioPin_setDirection)(struct gpio_pin *pin, enum gpio_direction dir);
 	int32_t (*gpioPin_setSetting)(struct gpio_pin *pin, enum gpio_setting setting);
 	int32_t (*gpioPin_SchmittTrigger)(struct gpio_pin *pin, bool schmitt);
@@ -181,7 +181,7 @@ int32_t gpioPin_disableInterrupt(struct gpio_pin *pin);
  * \param inter Interrupt Setting
  * \return -1 on Error 0 on ok
  */
-int32_t gpioPin_setCallback(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, void *data), void *data, enum gpio_interrupt inter);
+int32_t gpioPin_setCallback(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, uint8_t pinID, void *data), void *data, enum gpio_interrupt inter);
 /**
  * Set Direction
  * \param pin GPIO Pin Handle
@@ -263,7 +263,7 @@ inline int32_t gpioPin_disableInterrupt(struct gpio_pin *pin) {
 	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
 	return g->ops->gpioPin_disableInterrupt(pin);
 }
-inline int32_t gpioPin_setCallback(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, void *data), void *data, enum gpio_interrupt inter) {
+inline int32_t gpioPin_setCallback(struct gpio_pin *pin, bool (*callback)(struct gpio_pin *pin, uint8_t pinID, void *data), void *data, enum gpio_interrupt inter) {
 	struct gpio_pin_generic *p = (struct gpio_pin_generic *) pin;
 	struct gpio_generic *g = (struct gpio_generic *) p->gpio;
 	return g->ops->gpioPin_setCallback(pin, callback, data, inter);
