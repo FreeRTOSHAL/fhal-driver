@@ -1,10 +1,11 @@
-menu "Power Supply Driver"
-config TPS65381
-	bool "TPS65381"
-	depends on MACH_HAS_SPI
-	depends on MACH_HAS_ADC
-	select SPI
-	select ADC
-	help
-		TPS65381 Driver
-endmenu
+menuconfig POWER
+	bool "Power Supply Driver"
+	config TPS65381
+		bool "TPS65381"
+		depends on POWER
+		depends on MACH_HAS_SPI
+		depends on MACH_HAS_ADC
+		select SPI
+		select ADC
+		help
+			TPS65381 Driver
