@@ -122,7 +122,7 @@ int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t wa
  */
 int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime);
 /**
- * Write String on UART
+ * Write String on UART and a trailing newline
  * \param uart UART Instance 
  * \param s String
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
@@ -159,7 +159,7 @@ int32_t uart_readISR(struct uart *uart, uint8_t *data, size_t length);
  */
 int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length);
 /**
- * Write String on UART in ISR
+ * Write String on UART and a trailing newline in ISR
  * \param uart UART Instance 
  * \param s String
  * \return -1 on error >= 0 length write on UART

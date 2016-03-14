@@ -45,6 +45,15 @@ int32_t uart_puts(struct uart *uart, char *s, TickType_t waittime) {
 			}
 		}
 	} while (c != '\0');
+	/* man puts(3) puts() writes the string s and a trailing newline to stdout. */
+	ret = uart_putc(uart, '\n', waittime);
+	if (ret < 0) {
+		goto uart_puts_0;
+	}
+	ret = uart_putc(uart, '\r', waittime);
+	if (ret < 0) {
+		goto uart_puts_0;
+	}
 	uart_unlock(uart, -1);
 	return 0;
 uart_puts_0:
@@ -69,9 +78,17 @@ int32_t uart_putsISR(struct uart *uart, char *s) {
 			}
 		}
 	} while (c != '\0');
+	/* man puts(3) puts() writes the string s and a trailing newline to stdout. */
+	ret = uart_putcISR(uart, '\n');
+	if (ret < 0) {
+		goto uart_putsISR_0;
+	}
+	ret = uart_putcISR(uart, '\r');
+	if (ret < 0) {
+		goto uart_putsISR_0;
+	}
 	return 0;
 uart_putsISR_0:
-	uart_unlock(uart, ret);
 	return ret;
 }
 #endif
