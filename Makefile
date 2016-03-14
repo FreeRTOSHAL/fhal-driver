@@ -1,5 +1,5 @@
 obj-y += hal.o
-obj-y += newlib/
+obj-$(CONFIG_NEWLIB) += newlib/
 obj-$(CONFIG_GPIO) += gpio/
 obj-$(CONFIG_UART) += uart/
 obj-$(CONFIG_BUFFER) += buffer/
@@ -10,4 +10,5 @@ obj-$(CONFIG_TIMER) += timer/
 obj-$(CONFIG_PWM) += pwm/
 obj-$(CONFIG_CAPTURE) += capture/
 obj-$(CONFIG_EXAMPLE) += example/
+obj-$(CONFIG_NLIBC) += nlibc/
 obj-y += power/

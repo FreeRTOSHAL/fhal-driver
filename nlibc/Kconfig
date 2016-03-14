@@ -1,0 +1,37 @@
+menuconfig NLIBC
+	bool "Use Nano Libc (no extern lib needed)"
+	help
+		Use Nano Libc (is in Conflicted with Newlib or other libc implementation)
+config NLIBC_PRINTF
+	bool "printf, sprintf, snprintf"
+	depends on NLIBC
+	default n
+	help
+		Activate Support for printf, sprintf, snprintf, ... (Without Floating Point Support) 
+config NLIBC_PRINTF_NEWLINE
+	bool "Replace \n to \r\n. Needed for minicom, putty,..."
+	depends on NLIBC
+	depends on NLIBC_PRINTF
+	default y
+	help
+		The most UART Programms use \r\n as new line. 
+		The Api Replace the \n aganst \r\n
+config NLIBC_MEMCPY 
+	bool "memcpy"
+	depends on NLIBC
+	default y
+	help
+		Add Support for memcpy
+config NLIBC_MEMSET
+	bool "memset"
+	depends on NLIBC
+	default y
+	help
+		Add Support for memset
+config NLIBC_STRING
+	bool "strlen, strcpy, strncpy, ..."
+	depends on NLIBC
+	default n
+	help
+		Add Support for strlen, strcpy, strncpy, ...
+		

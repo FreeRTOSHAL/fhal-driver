@@ -11,6 +11,7 @@ source driver/timer/Kconfig
 source driver/pwm/Kconfig
 source driver/capture/Kconfig
 source driver/example/Kconfig
+source driver/nlibc/Kconfig
 config CACHE
 	bool
 	help
