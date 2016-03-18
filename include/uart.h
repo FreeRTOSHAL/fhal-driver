@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <system.h>
+#include <hal.h>
 /**
  * \defgroup UART UART Subsystem
  * \ingroup HAL
@@ -70,10 +71,6 @@ struct uart_generic {
 	const struct uart_ops *ops;
 #endif
 };
-/**
- * Global container of all UART instances
- */
-extern struct uart **uarts;
 #ifndef CONFIG_UART_MULTI
 /**
  * Init UART Instance
@@ -168,7 +165,11 @@ int32_t uart_putsISR(struct uart *uart, char *s);
 #else
 /* #ifdef CONFIG_UART_MULTI */
 inline struct uart *uart_init(uint8_t port, uint32_t bautrate) {
-	struct uart_generic *uart = (struct uart_generic *) uarts[port];
+	HAL_DEFINE_GLOBAL_ARRAY(uart);
+	struct uart_generic *uart = (struct uart_generic *) HAL_GET_DEV(uart, port);
+	if (uart == NULL) {
+		return NULL;
+	}
 	return uart->ops->uart_init(port, bautrate);
 }
 inline int32_t uart_deinit(struct uart *uart) {

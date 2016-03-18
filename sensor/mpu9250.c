@@ -195,7 +195,7 @@ mpu9250_calibrate_error0:
 
 struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	int32_t ret;
-	struct mpu9250 *mpu = (struct mpu9250 *) hals[index];
+	struct mpu9250 *mpu = (struct mpu9250 *) HAL_GET_GLOBAL_DEV(index);
 	if (mpu->init) {
 		return mpu;
 	}
@@ -370,7 +370,10 @@ mpu9250_reset_error1:
 
 ACCEL_INIT(mpu9250, index) {
 	int32_t ret;
-	struct mpu9250_accel *accel = (struct mpu9250_accel *) accels[index];
+	struct mpu9250_accel *accel = (struct mpu9250_accel *) ACCEL_GET_DEV(index);
+	if (accel == NULL) {
+		return NULL;
+	}
 	if (!accel->mpu->init) {
 		return NULL;
 	}
@@ -415,7 +418,10 @@ ACCEL_GET_ISR(mpu9250, accel, vec) {
 ACCEL_OPS(mpu9250);
 GYRO_INIT(mpu9250, index) {
 	int32_t ret;
-	struct mpu9250_gyro *gyro = (struct mpu9250_gyro *) gyros[index];
+	struct mpu9250_gyro *gyro = (struct mpu9250_gyro *) GYRO_GET_DEV(index);
+	if (gyro == NULL) {
+		return NULL;
+	}
 	if (!gyro->mpu->init) {
 		return NULL;
 	}

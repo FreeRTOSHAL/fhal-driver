@@ -19,6 +19,8 @@ int32_t gyro_generic_init(struct gyro *gyro);
 #endif
 
 #define GYRO_ADDDEV(ns, p) HAL_ADDDEV(gyro, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(gyro);
+#define GYRO_GET_DEV(index) HAL_GET_DEV(gyro, index)
 #ifndef CONFIG_GYRO_MULTI
 # define GYRO_OPS(ns)
 # define GYRO_INIT_DEV(ns) 

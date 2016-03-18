@@ -20,6 +20,8 @@ int32_t adc_generic_init(struct adc *adc);
 # define adc_unlock(u, r)
 #endif
 #define ADC_ADDDEV(ns, p) HAL_ADDDEV(adc, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(adc);
+#define ADC_GET_DEV(index) HAL_GET_DEV(adc, index)
 #ifndef CONFIG_ADC_MULTI
 # define ADC_OPS(ns)
 # define ADC_INIT_DEV(ns) 

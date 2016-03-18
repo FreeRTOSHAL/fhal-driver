@@ -9,6 +9,8 @@
 #define GPIO_ALREDY_INITED 1
 int32_t gpio_genericInit(struct gpio *gpio);
 #define GPIO_ADDDEV(ns, p) HAL_ADDDEV(gpio, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(gpio);
+#define GPIO_GET_DEV(index) HAL_GET_DEV(gpio, index)
 #ifndef CONFIG_GPIO_MULTI
 # define GPIO_OPS(ns)
 # define GPIO_INIT_DEV(ns) 

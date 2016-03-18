@@ -55,10 +55,6 @@ struct gyro_generic {
 	const struct gyro_ops *ops;
 #endif
 };
-/**
- * Global container of all Gyroscope instances
- */
-extern struct gyro **gyros;
 
 #ifndef CONFIG_GYRO_MULTI
 /**
@@ -90,7 +86,11 @@ int32_t gyro_get(struct gyro *gyro, struct vector *vector, TickType_t waittime);
 int32_t gyro_getISR(struct gyro *gyro, struct vector *vector);
 #else
 inline struct gyro *gyro_init(uint32_t index) {
-	struct gyro_generic *a = (struct gyro_generic *) gyros[index];
+	HAL_DEFINE_GLOBAL_ARRAY(gyro);
+	struct gyro_generic *a = (struct gyro_generic *) HAL_GET_DEV(gyro, index);
+	if (a == NULL) {
+		return NULL;
+	}
 	return a->ops->gyro_init(index);
 }
 inline int32_t gyro_deinit(struct gyro *gyro) {

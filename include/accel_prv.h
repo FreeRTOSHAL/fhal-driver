@@ -19,6 +19,8 @@ int32_t accel_generic_init(struct accel *accel);
 #endif
 
 #define ACCEL_ADDDEV(ns, p) HAL_ADDDEV(accel, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(accel);
+#define ACCEL_GET_DEV(index) HAL_GET_DEV(accel, index)
 #ifndef CONFIG_ACCEL_MULTI
 # define ACCEL_OPS(ns)
 # define ACCEL_INIT_DEV(ns) 

@@ -2,6 +2,8 @@
 #define CAPTURE_H_
 #include <stdint.h>
 #include <stdbool.h>
+#include <system.h>
+#include <hal.h>
 /**
  * \defgroup CAPTURE Capture Subsystem
  * \ingroup HAL
@@ -46,10 +48,6 @@ struct capture_generic  {
 	const struct capture_ops *ops;
 #endif
 };
-/**
- * Global container of all Capture instances
- */
-extern struct capture **captures;
 #ifndef CONFIG_CAPTURE_MULTI
 /**
  * Init capture instances
@@ -92,7 +90,8 @@ uint64_t capture_getTime(struct capture *capture);
 uint64_t capture_getChannelTime(struct capture *capture);
 #else
 inline struct capture *capture_init(uint32_t index) {
-	struct capture_generic *p = (struct capture_generic *) captures[index];
+	HAL_DEFINE_GLOBAL_ARRAY(capture);
+	struct capture_generic *p = (struct capture_generic *) HAL_GET_DEV(capture, index);
 	return p->ops->capture_init(index);
 }
 inline int32_t capture_deinit(struct capture *capture) {

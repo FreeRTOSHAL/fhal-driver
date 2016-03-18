@@ -2,6 +2,7 @@
 #define TIMER_H_
 #include <stdbool.h>
 #include <stdint.h>
+#include <hal.h>
 /**
  * \defgroup TIMER Timer Subsystem
  * \ingroup HAL
@@ -50,10 +51,6 @@ struct timer_ops {
 	uint64_t (*timer_getTime)(struct timer *timer);
 };
 #endif
-/**
- * Global container of all Timer instances
- */
-extern struct timer **timers;
 #ifndef CONFIG_TIMER_MULTI
 /**
  * Init Timer
@@ -113,7 +110,11 @@ int32_t timer_periodic(struct timer *timer, uint64_t us);
 uint64_t timer_getTime(struct timer *timer);
 #else
 inline struct timer *timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust) {
-	struct timer_generic *timer = (struct timer_generic *)timers[index];
+	HAL_DEFINE_GLOBAL_ARRAY(timer);
+	struct timer_generic *timer = (struct timer_generic *)HAL_GET_DEV(timer, index);
+	if (timer == NULL) {
+		return NULL;
+	}
 	return timer->ops->timer_init(index, prescaler, basetime, adjust);
 }
 inline int32_t timer_deinit(struct timer *timer) {

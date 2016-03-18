@@ -112,6 +112,35 @@ inline int32_t hal_unlock(void *data) {
 #endif
 }
 /**
+ * Get Device form global Array
+ * \param devs Array
+ * \param end Last Position in Array
+ * \param index Index in Array
+ * \return NULL if index to big else pointer to dev
+ */
+inline uint32_t *hal_getDev(uint32_t **devs, uint32_t **end, uint32_t index) {
+	if ((devs + index) >= end) {
+		return NULL;
+	}
+	return devs[index];
+}
+/**
+ * Define Global Array for Namespace
+ * \param gns Namespace like uart
+ */
+#define HAL_DEFINE_GLOBAL_ARRAY(gns) \
+		extern uint32_t *_dev_##gns; \
+		extern uint32_t *_dev_##gns##_end
+/**
+ * Get Device form global Array
+ * 
+ * Call HAL_DEFINE_GLOBAL_ARRAY() before
+ * \param gns Namespace like uart
+ * \param index Index in Array
+ * \return see hal_getDev()
+ */
+#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_dev_##gns, &_dev_##gns##_end, index)
+/**
  * Lock Driver
  * \param data Driver Struct like {@link hal}
  * \param waittime Max Waittime see xSemaphoreTakeRecursive()
@@ -145,12 +174,13 @@ inline int32_t hal_unlock(void *data) {
 #define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED NO_REORDER const * const ns##_##p = (void const *) &p
 
 /**
- * Container for Driver without Interface like the MPU9250 Driver
- */
-extern void **hals;
-/**
  * Add some Devices without Global Namespace like a instances of MPU9250 Driver
  */
 #define HAL_ADD(ns, p) HAL_ADDDEV(hal, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(hal);
+/**
+ * Get device form global Namespace
+ */
+#define HAL_GET_GLOBAL_DEV(index) HAL_GET_DEV(hal, index)
 /**\}*/
 #endif

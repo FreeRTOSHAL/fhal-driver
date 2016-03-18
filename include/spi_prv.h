@@ -16,6 +16,8 @@ int32_t spi_genericInit(struct spi *spi);
 # define spi_unlock(u, e)
 #endif
 #define SPI_ADDDEV(ns, p) HAL_ADDDEV(spi, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(spi);
+#define SPI_GET_DEV(index) HAL_GET_DEV(spi, index)
 #ifndef CONFIG_SPI_MULTI
 # define SPI_OPS(ns)
 # define SPI_INIT_DEV(ns) 

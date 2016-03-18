@@ -55,10 +55,6 @@ struct accel_generic {
 	const struct accel_ops *ops;
 #endif
 };
-/**
- * Global container of all Accelerator instances
- */
-extern struct accel **accels;
 
 #ifndef CONFIG_ACCEL_MULTI
 /**
@@ -90,7 +86,11 @@ int32_t accel_get(struct accel *accel, struct vector *vector, TickType_t waittim
 int32_t accel_getISR(struct accel *accel, struct vector *vector);
 #else
 inline struct accel *accel_init(uint32_t index) {
-	struct accel_generic *a = (struct accel_generic *) accels[index];
+	HAL_DEFINE_GLOBAL_ARRAY(accel);
+	struct accel_generic *a = (struct accel_generic *) HAL_GET_DEV(accel, index);
+	if (a == NULL) {
+		return NULL;
+	}
 	return a->ops->accel_init(index);
 }
 inline int32_t accel_deinit(struct accel *accel) {

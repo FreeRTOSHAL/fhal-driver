@@ -12,7 +12,10 @@ struct example {
 
 EXAMPLE_INIT(exDev0, index) {
 	int32_t ret;
-	struct example *ex = examples[index];
+	struct example *ex = EXAMPLE_GET_DEV(index);
+	if  (ex == NULL) {
+		return NULL;
+	}
 	ret = example_genericInit(ex);
 	if (ret < 0) {
 		return NULL;

@@ -5,8 +5,6 @@
 #include <adc.h>
 #define ADC_PRV
 #include <adc_prv.h>
-extern int32_t _dev_adc;
-struct adc **adcs = (struct adc **) &_dev_adc;
 int32_t adc_generic_init(struct adc *a) {
 	struct adc_generic *adc = (struct adc_generic *) a;
 	if(adc->init) {

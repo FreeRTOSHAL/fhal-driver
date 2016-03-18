@@ -19,6 +19,8 @@ int32_t uart_generic_init(struct uart *uart);
 #endif
 
 #define UART_ADDDEV(ns, p) HAL_ADDDEV(uart, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(uart);
+#define UART_GET_DEV(index) HAL_GET_DEV(uart, index)
 #ifndef CONFIG_UART_MULTI
 # define UART_OPS(ns)
 # define UART_INIT_DEV(ns) 

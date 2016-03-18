@@ -174,12 +174,6 @@ struct spi_slave_generic {
 	struct spi *spi;
 };
 
-/**
- * Global container of all SPI instances
- * \ingroup SPI
- */
-extern struct spi **spis;
-
 #ifndef CONFIG_SPI_MULTI
 /**
  * Init SPI 
@@ -292,7 +286,11 @@ int32_t spiSlave_recvISR(struct spi_slave *slave, uint16_t *data, uint32_t len);
 /**\}*/
 #else
 inline struct spi *spi_init(uint32_t index, enum spi_mode mode, struct spi_opt *opt) {
-	struct spi_generic *s = (struct spi_generic *) spis[index];
+	HAL_DEFINE_GLOBAL_ARRAY(spi);
+	struct spi_generic *s = (struct spi_generic *) HAL_GET_DEV(spi, index);
+	if (s == NULL) {
+		return NULL;
+	}
 	return s->ops->spi_init(index, mode, opt);
 }
 inline int32_t spi_deinit(struct spi *spi) {

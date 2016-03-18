@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <mux.h> 
+#include <hal.h>
 
 /**
  * \defgroup GPIO GPIO Subsystem
@@ -117,10 +118,6 @@ struct gpio_generic {
 struct gpio_pin_generic {
 	struct gpio_generic *gpio;
 };
-/**
- * Global container of all GPIO instances
- */
-extern struct gpio **gpios;
 
 #ifndef CONFIG_GPIO_MULTI
 /**
@@ -237,7 +234,11 @@ bool gpioPin_getValue(struct gpio_pin *pin);
 /**\}*/
 #else
 inline struct gpio *gpio_init(uint32_t index) {
-	struct gpio_generic *gpio = (struct gpio_generic *) gpios[index];
+	HAL_DEFINE_GLOBAL_ARRAY(gpio);
+	struct gpio_generic *gpio = (struct gpio_generic *) HAL_GET_DEV(gpio, index);
+	if (gpio == NULL) {
+		return NULL;
+	}
 	return gpio->ops->gpio_init(index);
 }
 inline int32_t gpio_deinit(struct gpio *gpio) {

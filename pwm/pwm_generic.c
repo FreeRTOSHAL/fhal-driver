@@ -2,9 +2,6 @@
 #define PWM_PRV
 #include <pwm_prv.h>
 
-extern uint32_t _dev_pwm;
-struct pwm **pwms = (struct pwm **) &_dev_pwm;
-
 int32_t pwm_generic_init(struct pwm *t) {
 	struct pwm_generic *pwm = (struct pwm_generic *) t;
 	if (hal_isInit(pwm)) {

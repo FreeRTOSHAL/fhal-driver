@@ -18,6 +18,7 @@
 	SECTION_START(.rodata.dev.##name) \
 	SYMBOL(_dev_##name); \
 	KEEP(*(.rodata.dev.##name)) \
+	SYMBOL(_dev_##name##_end); \
 	SECTION_STOP(location)
 /**
  * Default Devices

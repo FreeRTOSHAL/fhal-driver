@@ -11,7 +11,8 @@
 #define TIMER_ALREDY_INITED 1
 int32_t timer_generic_init(struct timer *timer);
 #define TIMER_ADDDEV(ns, p) HAL_ADDDEV(timer, ns, p)
-
+HAL_DEFINE_GLOBAL_ARRAY(timer);
+#define TIMER_GET_DEV(index) HAL_GET_DEV(timer, index)
 #ifndef CONFIG_TIMER_MULTI
 #define TIMER_OPS(ns)
 # define TIMER_INIT_DEV(ns) 

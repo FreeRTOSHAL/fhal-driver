@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <system.h>
+#include <hal.h>
 /**
  * \defgroup PWM PWM Subsystem
  * \ingroup HAL
@@ -49,10 +50,6 @@ struct pwm_generic {
 	const struct pwm_ops *ops;
 #endif
 };
-/**
- * Global container of all PWM instances
- */
-extern struct pwm **pwms;
 #ifndef CONFIG_PWM_MULTI
 /**
  * Init PWM instances 
@@ -100,7 +97,11 @@ int32_t pwm_setPeriod(struct pwm *pwm, uint64_t us);
 int32_t pwm_setDutyCycle(struct pwm *pwm, uint64_t us);
 #else
 inline struct pwm *pwm_init(uint32_t index) {
-	struct pwm_generic *p = (struct pwm_generic *) pwms[index];
+	HAL_DEFINE_GLOBAL_ARRAY(pwm);
+	struct pwm_generic *p = (struct pwm_generic *) HAL_GET_DEV(pwm, index);
+	if (p == NULL) {
+		return NULL;
+	}
 	return p->ops->pwm_init(index);
 }
 inline int32_t pwm_deinit(struct pwm *pwm) {

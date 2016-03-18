@@ -6,10 +6,6 @@
 #define SPI_PRV
 #include <spi_prv.h>
 
-
-extern uint32_t _dev_spi;
-struct spi **spis = (struct spi **) &_dev_spi;
-
 int32_t spi_genericInit(struct spi *spi) {
 	struct spi_generic * s = (struct spi_generic *) spi;
 	if(hal_isInit(s)) {

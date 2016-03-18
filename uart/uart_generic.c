@@ -7,12 +7,10 @@
 #include <uart_prv.h>
 
 #include <semphr.h>
-extern uint32_t _dev_uart;
-struct uart **uarts = (struct uart **) &_dev_uart;
 int32_t uart_generic_init(struct uart *u) {
 	struct uart_generic *uart = (struct uart_generic *) u;
 	if (hal_isInit(uart)) {
-		return -UART_ALREDY_INITED;
+		return UART_ALREDY_INITED;
 	}
 	uart->init = true;
 #ifdef CONFIG_UART_THREAD_SAVE

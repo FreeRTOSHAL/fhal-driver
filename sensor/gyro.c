@@ -7,9 +7,6 @@
 #include <gyro_prv.h>
 
 
-extern uint32_t _dev_gyro;
-struct gyro **gyros = (struct gyro **) &_dev_gyro;
-
 int32_t gyro_generic_init(struct gyro *gyro) {
 	struct gyro_generic * s = (struct gyro_generic *) gyro;
 	if(hal_isInit(s)) {

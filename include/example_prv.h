@@ -53,6 +53,16 @@ int32_t example_genericInit(struct example *example);
  * \param p Pointer to driver instance
  */
 #define EXAMPLE_ADDDEV(ns, p) HAL_ADDDEV(example, ns, p)
+/*
+ * Define Global Array for Driver Access
+ */
+HAL_DEFINE_GLOBAL_ARRAY(example);
+/**
+ * Simple function for access a dev from driver
+ * \param index index
+ * \return see HAL_GET_DEV
+ */
+#define EXAMPLE_GET_DEV(index) HAL_GET_DEV(example, index)
 #ifndef CONFIG_EXAMPLE_MULTI
 # define EXAMPLE_OPS(ns)
 # define EXAMPLE_INIT_DEV(ns) 

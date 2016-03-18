@@ -7,8 +7,6 @@
 #include <gpio_prv.h>
 
 #include <semphr.h>
-extern uint32_t _dev_gpio;
-struct gpio **gpios = (struct gpio **) &_dev_gpio;
 int32_t gpio_genericInit(struct gpio *g) {
 	struct gpio_generic *gpio = (struct gpio_generic *) g;
 	if (hal_isInit(gpio)) {

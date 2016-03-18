@@ -11,6 +11,8 @@
 #define PWM_ALREDY_INITED 1
 int32_t pwm_generic_init(struct pwm *pwm);
 #define PWM_ADDDEV(ns, p) HAL_ADDDEV(pwm, ns, p)
+HAL_DEFINE_GLOBAL_ARRAY(pwm);
+#define PWM_GET_DEV(index) HAL_GET_DEV(pwm, index)
 #ifndef CONFIG_PWM_MULTI
 # define PWM_OPS(ns)
 # define PWM_INIT_DEV(ns) 

@@ -2,9 +2,6 @@
 #define TIMER_PRV
 #include <timer_prv.h>
 
-extern uint32_t _dev_timer;
-struct timer **timers = (struct timer **) &_dev_timer;
-
 int32_t timer_generic_init(struct timer *t) {
 	struct timer_generic *timer = (struct timer_generic *) t;
 	if (hal_isInit(timer)) {

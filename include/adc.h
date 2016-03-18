@@ -56,10 +56,6 @@ struct adc_generic {
 	const struct adc_ops *ops;
 #endif
 };
-/**
- * Global container of all ADC instances
- */
-extern struct adc **adcs;
 #ifndef CONFIG_ADC_MULTI
 /**
  * init ADC instance
@@ -110,7 +106,11 @@ int32_t adc_start(struct adc *adc);
 int32_t adc_stop(struct adc *adc);
 #else
 inline struct adc *adc_init(uint32_t index, uint8_t bits, uint32_t hz) {
-	struct adc_generic *a = (struct adc_generic *) adcs[index];
+	HAL_DEFINE_GLOBAL_ARRAY(adc);
+	struct adc_generic *a = (struct adc_generic *) HAL_GET_DEV(adc, index);
+	if (a == NULL) {
+		return NULL;
+	}
 	return a->ops->adc_init(index, bits, hz);
 }
 inline int32_t adc_deinit(struct adc *adc) {

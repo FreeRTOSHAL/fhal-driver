@@ -2,9 +2,6 @@
 #define EXAMPLE_PRV
 #include <example_prv.h>
 
-extern uint32_t _dev_example;
-struct example **examples = (struct example **) &_dev_example;
-
 int32_t example_genericInit(struct example *t) {
 	struct example_generic *example = (struct example_generic *) t;
 	if (hal_isInit(example)) {

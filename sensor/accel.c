@@ -7,9 +7,6 @@
 #include <accel_prv.h>
 
 
-extern uint32_t _dev_accel;
-struct accel **accels = (struct accel **) &_dev_accel;
-
 int32_t accel_generic_init(struct accel *accel) {
 	struct accel_generic * s = (struct accel_generic *) accel;
 	if(hal_isInit(s)) {

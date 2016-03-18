@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <system.h>
 #include <semphr.h>
+#include <hal.h>
 /**
  * \defgroup example_driver Example driver 
  * \ingroup HAL
@@ -77,10 +78,6 @@ struct example_generic {
 	const struct example_ops *ops;
 #endif
 };
-/**
- * Global container of all example instances
- */
-extern struct example **examples;
 #ifndef CONFIG_EXAMPLE_MULTI
 /**
  * Init Function
@@ -108,7 +105,18 @@ int32_t example_funcname(struct example *example, uint32_t params);
  * \return Example Instants or NULL
  */
 inline struct example *example_init(uint32_t index) {
-	struct example_generic *p = (struct example_generic *) examples[index];
+	/*
+	 * Define Global Array in local space
+	 * Userspace din't need it
+	 */
+	HAL_DEFINE_GLOBAL_ARRAY(example);
+	/*
+	 * Get Dev from array if NULL dev not exists 
+	 */
+	struct example_generic *p = (struct example_generic *) HAL_GET_DEV(example, index);
+	if (p == NULL) {
+		return NULL;
+	}
 	return p->ops->example_init(index);
 }
 /**

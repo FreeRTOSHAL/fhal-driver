@@ -2,9 +2,6 @@
 #define CAPTURE_PRV
 #include <capture_prv.h>
 
-extern uint32_t _dev_capture;
-struct capture **captures = (struct capture **) &_dev_capture;
-
 int32_t capture_generic_init(struct capture *t) {
 	struct capture_generic *capture = (struct capture_generic *) t;
 	if (hal_isInit(capture)) {
