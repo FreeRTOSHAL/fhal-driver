@@ -4,9 +4,6 @@
 #include <semphr.h>
 #include <system.h>
 #include <stdbool.h>
-#ifdef CONFIG_INSTANCE_NAME
-#include <stdio.h>
-#endif
 
 /**
  * \defgroup HAL Hardware Abstraction Layer for FreeRTOS
