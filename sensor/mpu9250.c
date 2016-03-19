@@ -196,7 +196,7 @@ mpu9250_calibrate_error0:
 struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	int32_t ret;
 	struct mpu9250 *mpu = (struct mpu9250 *) HAL_GET_GLOBAL_DEV(index);
-	if (mpu->init) {
+	if (mpu->gen.init) {
 		return mpu;
 	}
 	ret = hal_init(mpu);
@@ -204,7 +204,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 		goto mpu9250_init_error0;
 	}
 	mpu->index = index;
-	mpu->init = true;
+	mpu->gen.init = true;
 	{
 		struct spi *spi = spi_init(mpu->spi, SPI_3WIRE_CS, NULL);
 		if (spi == NULL) {
@@ -328,7 +328,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 mpu9250_init_error1:
 	hal_deinit(mpu);	
 mpu9250_init_error0:
-	mpu->init = false;
+	mpu->gen.init = false;
 	return NULL;
 }
 int32_t mpu9250_deinit(struct mpu9250 *mpu) {
@@ -374,7 +374,7 @@ ACCEL_INIT(mpu9250, index) {
 	if (accel == NULL) {
 		return NULL;
 	}
-	if (!accel->mpu->init) {
+	if (!accel->mpu->gen.init) {
 		return NULL;
 	}
 	ret = accel_generic_init((struct accel *) accel);
@@ -422,7 +422,7 @@ GYRO_INIT(mpu9250, index) {
 	if (gyro == NULL) {
 		return NULL;
 	}
-	if (!gyro->mpu->init) {
+	if (!gyro->mpu->gen.init) {
 		return NULL;
 	}
 	ret = gyro_generic_init((struct gyro *) gyro);

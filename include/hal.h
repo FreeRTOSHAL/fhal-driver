@@ -4,6 +4,9 @@
 #include <semphr.h>
 #include <system.h>
 #include <stdbool.h>
+#ifdef CONFIG_INSTANCE_NAME
+#include <stdio.h>
+#endif
 
 /**
  * \defgroup HAL Hardware Abstraction Layer for FreeRTOS
@@ -40,6 +43,12 @@ struct hal {
 	 * Detect driver is Init or not
 	 */
 	bool init;
+#ifdef CONFIG_INSTANCE_NAME
+	/**
+	 * Name of Driver Instance for Debugging 
+	 */
+	const char *name;
+#endif
 #ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	/**
 	 * Driver Access Lock
@@ -111,6 +120,14 @@ inline int32_t hal_unlock(void *data) {
 	return 1;
 #endif
 }
+#ifdef CONFIG_INSTANCE_NAME
+/**
+ * Print All Driver Name and her Index
+ * printf is needet!!
+ * \return -1 on error and 0 on ok
+ */
+int32_t hal_printNames();
+#endif
 /**
  * Get Device form global Array
  * \param devs Array
@@ -118,7 +135,7 @@ inline int32_t hal_unlock(void *data) {
  * \param index Index in Array
  * \return NULL if index to big else pointer to dev
  */
-inline uint32_t *hal_getDev(uint32_t **devs, uint32_t **end, uint32_t index) {
+inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) {
 	if ((devs + index) >= end) {
 		return NULL;
 	}
@@ -129,8 +146,8 @@ inline uint32_t *hal_getDev(uint32_t **devs, uint32_t **end, uint32_t index) {
  * \param gns Namespace like uart
  */
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
-		extern uint32_t *_dev_##gns; \
-		extern uint32_t *_dev_##gns##_end
+		extern uintptr_t *_dev_##gns; \
+		extern uintptr_t *_dev_##gns##_end
 /**
  * Get Device form global Array
  * 
@@ -182,5 +199,14 @@ HAL_DEFINE_GLOBAL_ARRAY(hal);
  * Get device form global Namespace
  */
 #define HAL_GET_GLOBAL_DEV(index) HAL_GET_DEV(hal, index)
+#ifdef CONFIG_INSTANCE_NAME
+/**
+ * Define Driver Instance Name
+ * \param n Name
+ */
+# define HAL_NAME(n) .gen.name = n,
+#else
+# define HAL_NAME(n)
+#endif
 /**\}*/
 #endif

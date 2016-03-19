@@ -41,6 +41,12 @@ struct capture_generic  {
 	 * false = is not init
 	 */
 	bool init;
+#ifdef CONFIG_INSTANCE_NAME
+	/**
+	 * Name of Driver Instance for Debugging 
+	 */
+	const char *name;
+#endif
 #ifdef CONFIG_CAPTURE_MULTI
 	/**
 	 * Ops of driver in Multi mode
