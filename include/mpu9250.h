@@ -233,15 +233,7 @@ struct mpu9250_gyro {
  * Private Structure of MPU9250 driver
  */
 struct mpu9250 {
-	/**
-	 * true = is init
-	 * false = is not init
-	 */
-	bool init;
-	/**
-	 * Mutex
-	 */
-	SemaphoreHandle_t lock;	
+	struct hal gen;
 	/**
 	 * SPI Options
 	 */
@@ -343,16 +335,19 @@ extern const struct accel_ops mpu9250_accel_ops;
 		struct mpu9250 mpu9250_##id; \
 		struct mpu9250_accel mpu9250_accel_##id = { \
 			ACCEL_INIT_DEV(mpu9250) \
+			HAL_NAME("MPU9250 " #id " Accelerator") \
 			.mpu = &mpu9250_##id, \
 			.accelBasis = {0, 0, 0}, \
 		};\
 		struct mpu9250_gyro mpu9250_gyro_##id = { \
 			GYRO_INIT_DEV(mpu9250) \
+			HAL_NAME("MPU9250 " #id " Gyro") \
 			.mpu = &mpu9250_##id, \
 			.gyroBasis = {0, 0, 0}, \
 		};\
 		struct mpu9250 mpu9250_##id = { \
-			.init = false, \
+			HAL_NAME("MPU9250 " #id) \
+			.gen.init = false, \
 			.spi = spi_id, \
 			.opt = { \
 				.lsb = false, \

@@ -1,4 +1,11 @@
 menu "Driver"
+menu "Generic Driver Settings"
+	config INSTANCE_NAME
+		bool "Instance Name Support"
+		default n
+		help
+			Support Print Instance Name. Each Driver Add a Uniqe Instance Name. 
+endmenu
 source driver/gpio/Kconfig
 source driver/uart/Kconfig
 source driver/newlib/Kconfig
