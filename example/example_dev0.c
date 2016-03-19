@@ -38,9 +38,11 @@ EXAMPLE_FUNCNAME(exDev0, ex, param) {
 EXAMPLE_OPS(exDev0);
 static struct example ex0 = {
 	EXAMPLE_INIT_DEV(exDev0)
+	HAL_NAME("Example 0 Driver 0")
 };
 EXAMPLE_ADDDEV(exDev0, ex0);
 static struct example ex1 = {
 	EXAMPLE_INIT_DEV(exDev0)
+	HAL_NAME("Example 0 Driver 1")
 };
 EXAMPLE_ADDDEV(exDev0, ex1);
