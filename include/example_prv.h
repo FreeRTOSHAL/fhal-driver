@@ -114,20 +114,20 @@ HAL_DEFINE_GLOBAL_ARRAY(example);
  * \param ns Driver namespace Variablenname
  * \param index Index Variablenname
  */
-# define EXAMPLE_INIT(ns, index) struct example *ns##_example_init(uint32_t index)
+# define EXAMPLE_INIT(ns, index) static struct example *ns##_example_init(uint32_t index)
 /**
  * Define example_deinit() Implementation
  * \param ns Driver namespace Variablenname
  * \param p Instance Variablenname
  */
-# define EXAMPLE_DEINIT(ns, p) int32_t ns##_example_deinit(struct example *p)
+# define EXAMPLE_DEINIT(ns, p) static int32_t ns##_example_deinit(struct example *p)
 /**
  * Define example_funcname() Implementation
  * \param ns Driver namespace Variablenname
  * \param p Instance Variablenname
  * \param param Param Variablenname
  */
-# define EXAMPLE_FUNCNAME(ns, p, param) int32_t ns##_example_funcname(struct example *p, uint32_t param)
+# define EXAMPLE_FUNCNAME(ns, p, param) static int32_t ns##_example_funcname(struct example *p, uint32_t param)
 #endif
 /**\}*/
 #endif
