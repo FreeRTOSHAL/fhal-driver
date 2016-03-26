@@ -27,7 +27,7 @@
 int32_t timer_generic_init(struct timer *t) {
 	struct timer_generic *timer = (struct timer_generic *) t;
 	if (hal_isInit(timer)) {
-		return -TIMER_ALREDY_INITED;
+		return TIMER_ALREDY_INITED;
 	}
 	timer->init = true;
 	return 0;

@@ -27,7 +27,7 @@
 int32_t capture_generic_init(struct capture *t) {
 	struct capture_generic *capture = (struct capture_generic *) t;
 	if (hal_isInit(capture)) {
-		return -CAPTURE_ALREDY_INITED;
+		return CAPTURE_ALREDY_INITED;
 	}
 	capture->init = true;
 	return 0;

@@ -27,7 +27,7 @@
 int32_t pwm_generic_init(struct pwm *t) {
 	struct pwm_generic *pwm = (struct pwm_generic *) t;
 	if (hal_isInit(pwm)) {
-		return -PWM_ALREDY_INITED;
+		return PWM_ALREDY_INITED;
 	}
 	pwm->init = true;
 	return 0;

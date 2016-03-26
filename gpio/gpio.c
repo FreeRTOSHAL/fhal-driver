@@ -32,7 +32,7 @@
 int32_t gpio_genericInit(struct gpio *g) {
 	struct gpio_generic *gpio = (struct gpio_generic *) g;
 	if (hal_isInit(gpio)) {
-		return -GPIO_ALREDY_INITED;
+		return GPIO_ALREDY_INITED;
 	}
 	gpio->init = true;
 #ifdef CONFIG_GPIO_THREAD_SAVE
