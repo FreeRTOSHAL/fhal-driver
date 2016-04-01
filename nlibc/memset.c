@@ -23,10 +23,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 void *memset(void *s, int c, size_t n) {
-	int8_t *dest = s;
-	while (n > 0) {
-		*(dest++) = (int8_t) c;
-		n--;
+	volatile int8_t *dest = s;
+	for (dest = s; n > 0; dest++, n--) {
+		*dest = (int8_t) c;
 	}
 	return s;
 }

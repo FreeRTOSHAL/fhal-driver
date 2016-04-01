@@ -24,17 +24,14 @@
 #include <stdint.h>
 
 size_t strlen(const char *s) {
-	size_t n = 0;
-	while(*s != '\0') {
-		s++;
-		n++;
-	}
+	size_t n;
+	for (n = 0; *s != '\0';s++,n++);
 	return n;
 }
 char *strcpy(char *dest, const char *src) {
 	char *olddest = dest;
-	while(*src != '\0') {
-		*(dest++) = *(src++);
+	for (;*src != '\0';dest++, src++) {
+		*dest = *src;
 	}
 	/* copy  '\0' */
 	*dest = *(src);
@@ -48,6 +45,14 @@ char *strncpy(char *dest, const char *src, size_t n) {
 	for (; i < n; i++) {
 		dest[i] = '\0';
 	}
+	return dest;
+}
+char *stpcpy(char *dest, const char *src) {
+	while(*src != '\0') {
+		*(dest++) = *(src++);
+	}
+	/* copy  '\0' */
+	*dest = *(src);
 	return dest;
 }
 
