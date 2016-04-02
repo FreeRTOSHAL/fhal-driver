@@ -200,6 +200,13 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
 		return errcode; \
 	} \
 } while(0)
+/**
+ * Define Device Entry
+ * \param gns Global Namespace of Driver like uart, pwm, ...
+ * \param ns Namespace of Driver
+ * \param p Pointer to Driver Struct
+ */
+#define HAL_DEFINE_DEVICE_ENTRY(gns, ns, p) extern struct gns##_generic const * const ns##_##p
 
 /**
  * Add Device Entry to Device Array
@@ -207,7 +214,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param ns Namespace of Driver
  * \param p Pointer to Driver Struct
  */
-#define HAL_ADDDEV(gns, ns, p) static struct gns##_generic SECTION(".rodata.dev." #gns) USED NO_REORDER const * const ns##_##p = (void const *) &p
+#define HAL_ADDDEV(gns, ns, p) struct gns##_generic SECTION(".rodata.dev." #gns) USED NO_REORDER const * const ns##_##p = (void const *) &p
 
 /**
  * Add some Devices without Global Namespace like a instances of MPU9250 Driver
@@ -227,5 +234,17 @@ HAL_DEFINE_GLOBAL_ARRAY(hal);
 #else
 # define HAL_NAME(n)
 #endif
+/**
+ * Get Unique ID based on driver pointer
+ * \param gns Namespace like uart
+ * \param ns Namespace of Driver
+ * \param p Pointer to Driver Struct
+ */
+#define HAL_GET_ID(gns, ns, p) ({ \
+		HAL_DEFINE_DEVICE_ENTRY(gns, ns, p); \
+		uint32_t ret; \
+		ret = (uint32_t) ((((uintptr_t) (&ns##_##p)) - ((uintptr_t) (&_dev_##gns))) / sizeof(uintptr_t)); \
+		ret; \
+	})
 /**\}*/
 #endif
