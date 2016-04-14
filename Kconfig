@@ -19,6 +19,7 @@ source driver/pwm/Kconfig
 source driver/capture/Kconfig
 source driver/example/Kconfig
 source driver/nlibc/Kconfig
+source driver/sd/Kconfig
 config CACHE
 	bool
 	help

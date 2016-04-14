@@ -11,4 +11,5 @@ obj-$(CONFIG_PWM) += pwm/
 obj-$(CONFIG_CAPTURE) += capture/
 obj-$(CONFIG_EXAMPLE) += example/
 obj-$(CONFIG_NLIBC) += nlibc/
+obj-$(CONFIG_SD) += sd/
 obj-y += power/

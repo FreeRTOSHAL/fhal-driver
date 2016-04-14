@@ -37,6 +37,25 @@
  * 
  * This is a implementation of a sample driver. This Driver interface has no function and is only for demonstration how to write a new driver 
  * interface and implement a driver. 
+ * 
+ * Use a Instance of the driver:
+ * \code
+ * #include <devs.h>
+ * #include <example.h>
+ * struct example *ex1;
+ * struct example *ex2;
+ * int32_t ret;
+ * ex1 = example_init(EXAMPLE1); // EXAMPLE1 is defined by Hartware Interface
+ * CONFIG_ASSERT(ex1 != NULL);
+ * ex2 = example_init(EXAMPLE2);
+ * CONFIG_ASSERT(ex1 != NULL);
+ * //Call Funcname on device EXAMPLE1
+ * ret = example_funcname(ex1, 0x42);
+ * CONFIG_ASSERT(ret >= 0);
+ * //Call Funcname on device EXAMPLE2
+ * ret = example_funcname(ex2, 0x42);
+ * CONFIG_ASSERT(ret >= 0);
+ * \endcode
  * \{
  */
 /**

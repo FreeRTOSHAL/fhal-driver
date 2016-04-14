@@ -56,7 +56,8 @@
 	DEV(accel, location) \
 	DEV(gyro, location) \
 	DEV(adc, location) \
-	DEV(example, location) 
+	DEV(example, location) \
+	DEV(sd, location) 
 #endif
 /**\}*/
 #endif

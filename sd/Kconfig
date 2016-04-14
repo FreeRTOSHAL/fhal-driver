@@ -1,0 +1,18 @@
+menuconfig SD
+	bool "SD / SDIO Subsystem"
+	depends on MACH_HAS_SD || MACH_HAS_SDIO 
+	help
+		Activate SD / SDIO Subsystem
+	config SD_MULTI
+		bool "Multiply SD driver"
+		depends on SD
+		help
+			Multiply SD / SDIO driver
+	config SD_THREAD_SAVE
+		bool "SD is Thread Save"
+		depends on SD
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make SD Thread save
