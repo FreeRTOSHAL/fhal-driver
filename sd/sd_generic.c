@@ -46,7 +46,6 @@ sd_generic_init_error0:
 #endif
 
 }
-#define CMD(x) x
 #define R1_SIZE SD_SHORT
 #define R1B_SIZE SD_SHORT
 #define R2_SIZE SD_LONG

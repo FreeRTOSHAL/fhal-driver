@@ -20,6 +20,7 @@ source driver/capture/Kconfig
 source driver/example/Kconfig
 source driver/nlibc/Kconfig
 source driver/sd/Kconfig
+source driver/WICED/Kconfig
 config CACHE
 	bool
 	help

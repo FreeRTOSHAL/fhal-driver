@@ -98,6 +98,19 @@
  */
 #define SD_ERROR_FUNCTION_NUMBER -16
 /**
+ * Define a CMD
+ * \param x CMD ID
+ * \return command
+ */
+#define CMD(x) (x)
+/**
+ * ACMD 
+ * CMD(55) shall send before!
+ * \param x CMD ID
+ * \return ACMD
+ */
+#define ACMD(x) (x)
+/**
  * Handle of a Instants of a SD Contoller
  */
 struct sd;
@@ -260,7 +273,7 @@ int32_t sd_setClock(struct sd *sd, uint64_t clock);
  * Send Command
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param response Card Response NULL on not needed
  * \param waittime Waittime
  * \return < 0 on error 0 on ok 
@@ -302,7 +315,7 @@ int32_t sd_sendCommand(struct sd *sd, uint32_t command, uint32_t argument, struc
  * Wirte Data to SD
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param size Buffer Size
  * \param data Buffer Pointer
  * \param waittime Waittime
@@ -345,7 +358,7 @@ int32_t sd_write(struct sd *sd, uint32_t command, uint32_t argument, size_t size
  * Read Data to SD
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param size Buffer Size
  * \param data Buffer Pointer
  * \param waittime Waittime
@@ -388,7 +401,7 @@ int32_t sd_read(struct sd *sd, uint32_t command, uint32_t argument, size_t size,
  * Send Command
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param response Card Response
  * \return < 0 on error 0 on ok
  *  -1 == Unkown Error
@@ -429,7 +442,7 @@ int32_t sd_sendCommandISR(struct sd *sd, uint32_t command, uint32_t argument, st
  * Wirte Data to SD
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param size Buffer Size
  * \param data Buffer Pointer
  * \return < 0 on error 0 on ok 
@@ -471,7 +484,7 @@ int32_t sd_writeISR(struct sd *sd, uint32_t command, uint32_t argument, size_t s
  * Read Data to SD
  * \param sd Instants
  * \param command Command
- * \param argument Command Argument
+ * \param argument Command Argument without CMD ID and CRC. CRC is Calculated by Driver or Hardware
  * \param size Buffer Size
  * \param data Buffer Pointer
  * \return < 0 on error 0 on ok
