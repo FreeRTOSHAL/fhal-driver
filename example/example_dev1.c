@@ -62,9 +62,9 @@ static struct example ex0 = {
 	EXAMPLE_INIT_DEV(exDev1)
 	HAL_NAME("Example 1 Driver 0")
 };
-EXAMPLE_ADDDEV(exDev0, ex0);
+EXAMPLE_ADDDEV(exDev1, ex0);
 static struct example ex1 = {
 	EXAMPLE_INIT_DEV(exDev1)
 	HAL_NAME("Example 1 Driver 0")
 };
-EXAMPLE_ADDDEV(exDev0, ex1);
+EXAMPLE_ADDDEV(exDev1, ex1);
