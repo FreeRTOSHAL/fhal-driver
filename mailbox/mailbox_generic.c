@@ -11,7 +11,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
- *  
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
@@ -20,45 +20,36 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef DRIVER_H_
-#ifdef LINKER_SCRIPT
-/**
- * \defgroup DRIVER Driver specific Linker Macros 
- * \ingroup LINKER
- * \code
- * #include <driver.h>
- * \endcode
- * \{
- */
-#include <linker.h>
-/**
- * Define Device Array Sections
- * \param name Driver Name like uart, timer, pwm, ...
- * \param location Location
- */
-#define DEV(name, location) \
-	SECTION_START(.rodata.dev.##name) \
-	SYMBOL(_dev_##name); \
-	KEEP(*(.rodata.dev.##name)) \
-	SYMBOL(_dev_##name##_end); \
-	SECTION_STOP(location)
-/**
- * Default Devices
- * \param location Location
- */
-#define DEV_DEFAULT(location) DEV(hal, location) \
-	DEV(gpio, location) \
-	DEV(uart, location) \
-	DEV(timer, location) \
-	DEV(pwm, location) \
-	DEV(capture, location) \
-	DEV(spi, location) \
-	DEV(accel, location) \
-	DEV(gyro, location) \
-	DEV(adc, location) \
-	DEV(example, location) \
-	DEV(sd, location) \
-	DEV(mailbox, location) 
+#include <mailbox.h>
+#define MAILBOX_PRV
+#include <mailbox_prv.h>
+
+int32_t mailbox_genericInit(struct mailbox *t) {
+	struct mailbox_generic *mailbox = (struct mailbox_generic *) t;
+	if (hal_isInit(mailbox)) {
+		return MAILBOX_ALREDY_INITED;
+	}
+#ifdef CONFIG_MAILBOX_THREAD_SAVE
+	{
+		int32_t ret = hal_init(mailbox);
+		if (ret < 0) {
+			goto mailbox_generic_init_error0;
+		}
+	}
 #endif
-/**\}*/
+	mailbox->init = true;
+	return 0;
+#ifdef CONFIG_MAILBOX_THREAD_SAVE
+mailbox_generic_init_error0:
+	return -1;
+#endif
+
+}
+#ifdef CONFIG_MAILBOX_MULTI
+struct mailbox *mailbox_init(uint32_t index);
+int32_t mailbox_deinit(struct mailbox *mailbox);
+int32_t mailbox_send(struct mailbox *mailbox, uint32_t data, TickType_t waittime);
+int32_t mailbox_recv(struct mailbox *mailbox, uint32_t *data, TickType_t waittime);
+int32_t mailbox_sendISR(struct mailbox *mailbox, uint32_t data);
+int32_t mailbox_recvISR(struct mailbox *mailbox, uint32_t *data);
 #endif

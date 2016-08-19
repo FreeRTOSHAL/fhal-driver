@@ -12,4 +12,5 @@ obj-$(CONFIG_CAPTURE) += capture/
 obj-$(CONFIG_EXAMPLE) += example/
 obj-$(CONFIG_NLIBC) += nlibc/
 obj-$(CONFIG_SD) += sd/
+obj-$(CONFIG_MAILBOX) += mailbox/
 obj-y += power/

@@ -1,0 +1,18 @@
+menuconfig MAILBOX
+	bool "Mailbox Subsystem"
+	depends on MACH_HAS_MAILBOX
+	help
+		Activate Mailbox Subsystem
+	config MAILBOX_MULTI
+		bool "Multiply Example driver"
+		depends on MAILBOX
+		help
+			Multiply Mailbox driver
+	config MAILBOX_THREAD_SAVE
+		bool "Mailbox is Thread Save"
+		depends on MAILBOX
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make Mailbox Thread save

@@ -123,7 +123,7 @@
 /**
  * Set a Bit on Value
  */
-#define BIT(x) (1 << x)
+#define BIT(x) (1 << (x))
 /**
  * Get Array Size
  * \warning Waring only posibile with const arrays!
