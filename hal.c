@@ -54,6 +54,8 @@ int32_t hal_printNames() {
 	printNameOfDriver(gyro);
 	printNameOfDriver(adc);
 	printNameOfDriver(example);
+	printNameOfDriver(sd);
+	printNameOfDriver(mailbox);
 	return 0;
 }
 #endif
