@@ -2,10 +2,13 @@
 #define REMOTEPROC_H_
 #include <stdint.h>
 #include <system.h>
+#include <mailbox.h>
 typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
-#define __packed PACKED
+#ifndef __packed
+# define __packed PACKED
+#endif
 /**
  * Remoteproc based on Linux Kernel Documention
  */
@@ -40,6 +43,7 @@ struct resource_table {
 	u32 ver;
 	u32 num;
 	u32 reserved[2];
+	uint32_t offset[0];
 } __packed;
 
 /**
@@ -129,6 +133,7 @@ enum fw_resource_type {
  * (mainly for debugging purposes).
  */
 struct fw_rsc_carveout {
+	u32 type;
 	u32 da;
 	u32 pa;
 	u32 len;
@@ -167,6 +172,7 @@ struct fw_rsc_carveout {
  * access to physical addresses that are outside those ranges.
  */
 struct fw_rsc_devmem {
+	u32 type;
 	u32 da;
 	u32 pa;
 	u32 len;
@@ -192,9 +198,104 @@ struct fw_rsc_devmem {
  * user via debugfs entries (called trace0, trace1, etc..).
  */
 struct fw_rsc_trace {
+	u32 type;
 	u32 da;
 	u32 len;
 	u32 reserved;
 	u8 name[32];
 } __packed;
+
+/**
+ * struct fw_rsc_vdev_vring - vring descriptor entry
+ * @da: device address
+ * @align: the alignment between the consumer and producer parts of the vring
+ * @num: num of buffers supported by this vring (must be power of two)
+ * @notifyid is a unique rproc-wide notify index for this vring. This notify
+ * index is used when kicking a remote processor, to let it know that this
+ * vring is triggered.
+ * @reserved: reserved (must be zero)
+ *
+ * This descriptor is not a resource entry by itself; it is part of the
+ * vdev resource type (see below).
+ *
+ * Note that @da should either contain the device address where
+ * the remote processor is expecting the vring, or indicate that
+ * dynamically allocation of the vring's device address is supported.
+ */
+struct fw_rsc_vdev_vring {
+	u32 da;
+	u32 align;
+	u32 num;
+	u32 notifyid;
+	u32 reserved;
+} __packed;
+
+/**
+ * struct fw_rsc_vdev - virtio device header
+ * @id: virtio device id (as in virtio_ids.h)
+ * @notifyid is a unique rproc-wide notify index for this vdev. This notify
+ * index is used when kicking a remote processor, to let it know that the
+ * status/features of this vdev have changes.
+ * @dfeatures specifies the virtio device features supported by the firmware
+ * @gfeatures is a place holder used by the host to write back the
+ * negotiated features that are supported by both sides.
+ * @config_len is the size of the virtio config space of this vdev. The config
+ * space lies in the resource table immediate after this vdev header.
+ * @status is a place holder where the host will indicate its virtio progress.
+ * @num_of_vrings indicates how many vrings are described in this vdev header
+ * @reserved: reserved (must be zero)
+ * @vring is an array of @num_of_vrings entries of 'struct fw_rsc_vdev_vring'.
+ *
+ * This resource is a virtio device header: it provides information about
+ * the vdev, and is then used by the host and its peer remote processors
+ * to negotiate and share certain virtio properties.
+ *
+ * By providing this resource entry, the firmware essentially asks remoteproc
+ * to statically allocate a vdev upon registration of the rproc (dynamic vdev
+ * allocation is not yet supported).
+ *
+ * Note: unlike virtualization systems, the term 'host' here means
+ * the Linux side which is running remoteproc to control the remote
+ * processors. We use the name 'gfeatures' to comply with virtio's terms,
+ * though there isn't really any virtualized guest OS here: it's the host
+ * which is responsible for negotiating the final features.
+ * Yeah, it's a bit confusing.
+ *
+ * Note: immediately following this structure is the virtio config space for
+ * this vdev (which is specific to the vdev; for more info, read the virtio
+ * spec). the size of the config space is specified by @config_len.
+ */
+struct fw_rsc_vdev {
+	u32 type;
+	u32 id;
+	u32 notifyid;
+	u32 dfeatures;
+	u32 gfeatures;
+	u32 config_len;
+	u8 status;
+	u8 num_of_vrings;
+	u8 reserved[2];
+	struct fw_rsc_vdev_vring vring[0];
+} __packed;
+
+struct rproc;
+struct rproc_ops {
+	void *(*init)(struct rproc *rpoc, void *initData, uint32_t cpuID);
+	int32_t (*deinit)(struct rproc *rproc, void *data);
+	int32_t (*notify)(struct rproc *rproc, void *data, uint32_t virtID);
+};
+/**
+ * Remoteproc Init
+ * \param mbox VirtIO ISR Mailbox
+ * \return 0 on ok -1 on error
+ */
+struct rproc *rproc_init(const struct rproc_ops *ops, void *initData, struct resource_table *rsc, uint32_t cpuID, bool master);
+/**
+ * Remoteproc deinit
+ * \return 0 on ok -1 on error
+ */
+int32_t rproc_deinit(struct rproc *rproc);
+int32_t rproc_isr(struct rproc *rproc, uint32_t virtID);
+int32_t rproc_notify(struct rproc *rproc, uint32_t virtID);
+
 #endif

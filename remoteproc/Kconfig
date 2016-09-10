@@ -1,0 +1,11 @@
+menuconfig RPROC
+	bool "Remoteproc (Linux AMP Subsystem)"
+	help
+		Linux Remoteproc Support
+if RPROC=y
+	config RPROC_MAILBOX
+		bool "Remoteproc over Mailbox"
+	config RPROC_MAILBOX_PRIO
+		int "Remoteproc Mailbox Task Prio"
+		default 4
+endif
