@@ -111,7 +111,7 @@
  * Stop Section
  * \param location location
  */
-#define SECTION_STOP(location) } > location
+#define SECTION_STOP(location) } > location AT > location
 /**
  * Stop Section located in RAM 
  * \param location Location
