@@ -13,4 +13,5 @@ obj-$(CONFIG_EXAMPLE) += example/
 obj-$(CONFIG_NLIBC) += nlibc/
 obj-$(CONFIG_SD) += sd/
 obj-$(CONFIG_MAILBOX) += mailbox/
+obj-$(CONFIG_RPROC) += remoteproc/
 obj-y += power/

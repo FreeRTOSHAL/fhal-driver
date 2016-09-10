@@ -21,6 +21,7 @@ source driver/example/Kconfig
 source driver/nlibc/Kconfig
 source driver/sd/Kconfig
 source driver/mailbox/Kconfig
+source driver/remoteproc/Kconfig
 config CACHE
 	bool
 	help
