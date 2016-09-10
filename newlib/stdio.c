@@ -32,7 +32,7 @@
 #include <uart.h>
 #define UART_PRV
 #include <uart_prv.h>
-
+#ifdef CONFIG_NEWLIB_UART
 static struct uart *in = NULL;
 static struct uart *out = NULL;
 
@@ -41,6 +41,7 @@ int32_t newlib_init(struct uart *std_in, struct uart *std_out) {
 	out = std_out;
 	return 0;
 }
+#endif
 
 /**
  * close - close a file descriptor
@@ -64,6 +65,7 @@ int _close(int file) {
  * On error, -1 is returned, and errno is set appropriately.
  */
 int _write(int file, char *data, int len) {
+#ifdef CONFIG_NEWLIB_UART
 	int i;
 	int32_t ret;
 	struct uart *uart;
@@ -112,6 +114,9 @@ _write_error_1:
 	uart_unlock(uart, -1);
 _write_error_0:
 	return -1;
+#else
+	return len;
+#endif
 }
 /**
  * fstat - get file status
@@ -193,7 +198,6 @@ int _read(int file, char *ptr, int len) {
 	(void) file;
 	(void) ptr;
 	(void) len;
-	(void) in;
 	errno = EPERM;
 	return -1;
 }
