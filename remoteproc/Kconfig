@@ -7,5 +7,6 @@ if RPROC=y
 		bool "Remoteproc over Mailbox"
 	config RPROC_MAILBOX_PRIO
 		int "Remoteproc Mailbox Task Prio"
+		depends on RPROC_MAILBOX
 		default 4
 endif

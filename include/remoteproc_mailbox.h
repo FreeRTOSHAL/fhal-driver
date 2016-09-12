@@ -10,4 +10,8 @@ enum rp_mbox_messages {
 	RP_MBOX_ABORT_REQUEST	= 0xFFFFFF05,
 };
 extern const struct rproc_ops rprocMailbox_ops;
+struct rprocMailbox_opt {
+	struct mailbox *rxmbox;
+	struct mailbox *txmbox;
+};
 #endif

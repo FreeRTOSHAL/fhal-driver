@@ -7,7 +7,8 @@
 #include <remoteproc_mailbox.h>
 struct mproc {
 	struct rproc *rproc;
-	struct mailbox *mbox;
+	struct mailbox *rxmbox;
+	struct mailbox *txmbox;
 };
 static void rprocMailbox_task(void * data) {
 	struct mproc *mproc = data;
@@ -15,13 +16,13 @@ static void rprocMailbox_task(void * data) {
 	int32_t ret;
 	for(;;) {
 		printf("wait for message\n");
-		ret = mailbox_recv(mproc->mbox, &vqid, portMAX_DELAY);
+		ret = mailbox_recv(mproc->rxmbox, &vqid, portMAX_DELAY);
 		CONFIG_ASSERT(ret >= 0);
 		switch (vqid) {
 			case RP_MBOX_ECHO_REQUEST:
 				printf("Recv Echo Request\n");
 				/* TODO Timeout config */
-				ret = mailbox_send(mproc->mbox, RP_MBOX_ECHO_REPLY, 1000 / portTICK_PERIOD_MS);
+				ret = mailbox_send(mproc->txmbox, RP_MBOX_ECHO_REPLY, 1000 / portTICK_PERIOD_MS);
 				CONFIG_ASSERT(ret >= 0);
 				break;
 			case RP_MBOX_ABORT_REQUEST:
@@ -40,28 +41,11 @@ static void rprocMailbox_task(void * data) {
 static void *rprocMailbox_init(struct rproc *rproc, void *initData, uint32_t cpuID) {
 	BaseType_t ret;
 	struct mproc *mproc = pvPortMalloc(sizeof(struct mproc));
-	mproc->mbox = initData;
+	struct rprocMailbox_opt *opt = initData;
+	mproc->rxmbox = opt->rxmbox;
+	mproc->txmbox = opt->txmbox;
 	mproc->rproc = rproc;
-/* Send message at Scheduler Startup */
-#if 0
-	uint32_t data;
-	printf("recv...\n");
-	ret = mailbox_recvISR(mporc->mbox, &data);
-	if (ret < 0) {
-		return NULL;
-	}
-	printf("recved Message 0x%08lx\n", data);
-	if (data != RP_MBOX_ECHO_REQUEST) {
-		/* message is not RP_MBOX_ECHO_REQUEST ? */
-		return NULL;
-	}
-	printf("send answerer\n");
-	ret = mailbox_sendISR(mporc->mbox, RP_MBOX_ECHO_REPLY);
-	if (ret < 0) {
-		return NULL;
-	}
-#endif
-
+	/* TODO Stack Size */
 	ret = xTaskCreate(rprocMailbox_task, "Mainbox task", 250, mproc, CONFIG_RPROC_MAILBOX_PRIO, NULL);
 	if (ret != pdPASS) {
 		return NULL;
@@ -70,7 +54,7 @@ static void *rprocMailbox_init(struct rproc *rproc, void *initData, uint32_t cpu
 }
 static int32_t rprocMailbox_deinit(struct rproc *rproc, void *data) {
 	struct mproc *mproc = data;;
-	int32_t ret = mailbox_sendISR(mproc->mbox, RP_MBOX_CRASH);
+	int32_t ret = mailbox_sendISR(mproc->txmbox, RP_MBOX_CRASH);
 	if (ret < 0) {
 		return ret;
 	}
@@ -79,7 +63,7 @@ static int32_t rprocMailbox_deinit(struct rproc *rproc, void *data) {
 static int32_t rprocMailbox_notify(struct rproc *rproc, void *data, uint32_t virtID) {
 	struct mproc *mproc = data;
 	/* TODO Timeout config */
-	int32_t ret = mailbox_send(mproc->mbox, virtID, 100 / portTICK_PERIOD_MS);
+	int32_t ret = mailbox_send(mproc->txmbox, virtID, 100 / portTICK_PERIOD_MS);
 	return ret;
 }
 
