@@ -1,0 +1,12 @@
+menuconfig PHYLIB
+	bool "Phylib"
+	select MAC
+	help
+		Phy Lib based on Linux Kernel Phy Lib
+		Generic Phy included
+	config PHY_TASK_PRIO
+		int "Task Prio"
+		default 4
+	config PHY_AT803X
+		bool "Atheros 803X ethernet phys"
+		depends on PHYLIB

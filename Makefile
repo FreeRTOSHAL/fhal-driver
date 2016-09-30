@@ -14,4 +14,5 @@ obj-$(CONFIG_NLIBC) += nlibc/
 obj-$(CONFIG_SD) += sd/
 obj-$(CONFIG_MAILBOX) += mailbox/
 obj-$(CONFIG_RPROC) += remoteproc/
+obj-$(CONFIG_NET) += net/
 obj-y += power/

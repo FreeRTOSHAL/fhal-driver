@@ -11,7 +11,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
- *  
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
@@ -20,48 +20,31 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef DRIVER_H_
-#ifdef LINKER_SCRIPT
-/**
- * \defgroup DRIVER Driver specific Linker Macros 
- * \ingroup LINKER
- * \code
- * #include <driver.h>
- * \endcode
- * \{
- */
-#include <linker.h>
-/**
- * Define Device Array Sections
- * \param name Driver Name like uart, timer, pwm, ...
- * \param location Location
- */
-#define DEV(name, location) \
-	SECTION_START(.rodata.dev.##name) \
-	SYMBOL(_dev_##name); \
-	KEEP(*(.rodata.dev.##name)) \
-	SYMBOL(_dev_##name##_end); \
-	SECTION_STOP(location)
-/**
- * Default Devices
- * \param location Location
- */
-#define DEV_DEFAULT(location) DEV(hal, location) \
-	DEV(gpio, location) \
-	DEV(uart, location) \
-	DEV(timer, location) \
-	DEV(pwm, location) \
-	DEV(capture, location) \
-	DEV(spi, location) \
-	DEV(accel, location) \
-	DEV(gyro, location) \
-	DEV(adc, location) \
-	DEV(example, location) \
-	DEV(sd, location) \
-	DEV(mailbox, location) \
-	DEV(phydev, location) \
-	DEV(mac, location) \
-	DEV(net, location) 
-#endif
-/**\}*/
-#endif
+#include <net/mac.h>
+#define MAC_PRV
+#include <net/mac_prv.h>
+int32_t mac_genericInit(struct mac *m) {
+	struct mac_generic *mac = (struct mac_generic *) m;
+	if (hal_isInit(mac)) {
+		return MAC_ALREDY_INITED;
+	}
+	{
+		int32_t ret = hal_init(mac);
+		if (ret < 0) {
+			goto mac_genericInit_error0;
+		}
+	}
+	mac->init = true;
+	return 0;
+mac_genericInit_error0:
+	return -1;
+}
+
+enum mac_type mac_getType(struct mac *mac);
+enum mac_type mac_getStatus(struct mac *mac);
+int32_t mac_setNet(struct mac *mac, struct net *net);
+struct net *mac_getNet(struct mac *mac);
+int32_t mac_setPhy(struct mac *mac, struct phy *phy);
+struct phy *mac_getPhy(struct mac *mac);
+int32_t mac_setPhys(struct mac *mac, struct phy **phys, uint8_t len);
+struct phy **mac_getPhys(struct mac *mac, uint8_t *len);

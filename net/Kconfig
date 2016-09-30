@@ -1,0 +1,32 @@
+menuconfig NET
+	bool "Net Subsystem"
+	depends on MACH_HAS_NET
+	help
+		Net Subsystem
+	config Net_MULTI
+		bool "Multiply Net driver"
+		depends on NET
+		help
+			Multiply Net driver
+	config NET_THREAD_SAVE
+		bool "Net is Thread Save"
+		depends on NET
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make Net Thread save
+	config NET_DUMMY
+		bool "Net Dummy Driver"
+		depends on NET
+		default n
+		help
+			Net Dummy Driver
+if NET=y
+	config MAC
+		bool "Mac Subsystem"
+		depends on MACH_HAS_MAC
+		help
+			Mac Subsystem
+	source driver/net/phy/Kconfig
+endif

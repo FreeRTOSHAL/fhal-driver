@@ -56,6 +56,9 @@ int32_t hal_printNames() {
 	printNameOfDriver(example);
 	printNameOfDriver(sd);
 	printNameOfDriver(mailbox);
+	printNameOfDriver(phydev);
+	printNameOfDriver(mac);
+	printNameOfDriver(net);
 	return 0;
 }
 #endif

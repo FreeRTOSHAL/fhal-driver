@@ -131,5 +131,43 @@
  * \return return Size
  */
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+/**
+ * Div Integer and round up
+ * \param n Dividend
+ * \param d Divisor
+ */
+#define DIV_ROUND_UP(n,d) (((n) + (d) - 1) / (d))
+#define swap32(d) ({ \
+	union {uint32_t ret; uint8_t ret8[4];} tmp;\
+	tmp.ret = d; \
+	/* swap 0 -> 3 and 1 -> 2 -> 0123 -> 3210 */ \
+	/* use XOR Swap */ \
+	tmp.ret8[0] ^= tmp.ret8[3]; \
+	tmp.ret8[3] ^= tmp.ret8[0]; \
+	tmp.ret8[0] ^= tmp.ret8[3]; \
+	tmp.ret8[1] ^= tmp.ret8[2]; \
+	tmp.ret8[2] ^= tmp.ret8[1]; \
+	tmp.ret8[1] ^= tmp.ret8[2]; \
+	tmp.ret; \
+})
+#define swap16(d) ({ \
+	union {uint16_t ret; uint8_t ret8[2];} tmp;\
+	tmp.ret = d; \
+	/* swap 0 -> 3 and 1 -> 2 -> 0123 -> 3210 */ \
+	/* use XOR Swap */ \
+	tmp.ret8[0] ^= tmp.ret8[1]; \
+	tmp.ret8[1] ^= tmp.ret8[0]; \
+	tmp.ret8[0] ^= tmp.ret8[1]; \
+	tmp.ret; \
+})
+#define cpu_to_be32(d) swap32(d)
+#define be32_to_cpu(d) swap32(d)
+#define cpu_to_be16(d) swap16(d)
+#define be16_to_cpu(d) swap16(d)
+#define cpu_to_le32(d) d
+#define le32_to_cpu(d) d
+#define cpu_to_le16(d) d
+#define le16_to_cpu(d) d
+
 /**\}*/
 #endif
