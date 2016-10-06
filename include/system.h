@@ -137,6 +137,25 @@
  * \param d Divisor
  */
 #define DIV_ROUND_UP(n,d) (((n) + (d) - 1) / (d))
+/**
+ * Maximum of two values
+ * \param a first Parameter
+ * \param b second Parameter
+ * \return a or b
+ */
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+/**
+ * Minimum of two values
+ * \param a first Parameter
+ * \param b second Parameter
+ * \return a or b
+ */
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+/**
+ * Swap 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define swap32(d) ({ \
 	union {uint32_t ret; uint8_t ret8[4];} tmp;\
 	tmp.ret = d; \
@@ -150,6 +169,11 @@
 	tmp.ret8[1] ^= tmp.ret8[2]; \
 	tmp.ret; \
 })
+/**
+ * Swap 16 Bit
+ * \param d 16 Bit data
+ * \return swaped 16 Bit data
+ */
 #define swap16(d) ({ \
 	union {uint16_t ret; uint8_t ret8[2];} tmp;\
 	tmp.ret = d; \
@@ -160,13 +184,53 @@
 	tmp.ret8[0] ^= tmp.ret8[1]; \
 	tmp.ret; \
 })
+/**
+ * CPU to Big Endian in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define cpu_to_be32(d) swap32(d)
+/**
+ * Big Endian to CPU in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define be32_to_cpu(d) swap32(d)
+/**
+ * CPU to Big Endian in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define cpu_to_be16(d) swap16(d)
+/**
+ * Big Endian to CPU in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define be16_to_cpu(d) swap16(d)
+/**
+ * CPU to Big Endian in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define cpu_to_le32(d) d
+/**
+ * Liddel Endian to CPU in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define le32_to_cpu(d) d
+/**
+ * Little Endian to CPU in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define cpu_to_le16(d) d
+/**
+ * Little Endian to CPU in 32 Bit
+ * \param d 32 Bit data
+ * \return swaped 32 Bit data
+ */
 #define le16_to_cpu(d) d
 
 /**\}*/

@@ -1,6 +1,6 @@
 menuconfig UART
 	bool "UART Subsystem"
-	depends on MACH_HAS_UART
+	depends on MACH_HAS_UART || RPROC
 	help
 		Activate UART Subsystem
 	config UART_GENERIC_STRING

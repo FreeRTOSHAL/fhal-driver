@@ -9,4 +9,8 @@ if RPROC=y
 		int "Remoteproc Mailbox Task Prio"
 		depends on RPROC_MAILBOX
 		default 4
+	config RPROC_TRACE
+		bool "Remoteproc Trace Support"
+		depends on UART
+		default n
 endif
