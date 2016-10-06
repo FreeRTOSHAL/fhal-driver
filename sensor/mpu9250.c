@@ -31,7 +31,11 @@
 #include <spi.h>
 #include <hal.h>
 
-
+#ifdef CONFIG_MPU9250_DEBUG
+# define PRINTF(fmt, ...) printf("MPU: " fmt, ##__VA_ARGS__)
+#else
+# define PRINTF(fmt, ...)
+#endif
 
 #define mpu9250_lock(u, w, e) HAL_LOCK(u, w, e)
 #define mpu9250_unlock(u, e) HAL_UNLOCK(u, e)
@@ -215,6 +219,21 @@ mpu9250_calibrate_error0:
 	return -1;
 }
 
+static int32_t mpu9250_isAlive(struct mpu9250 *mpu, TickType_t waittime) {
+	int32_t ret;
+	uint8_t val;
+	PRINTF("Check MPU is alive\n");
+	ret = mpu9250_recv(mpu, MPU_WHO_AM_I, &val, 1, waittime);
+	if (ret < 0) {
+		return -1;
+	}
+	if (val != MPU_WHO_AM_I_VAL) {
+		return -1;
+	}
+	PRINTF("MPU is alive\n");
+	return 0;
+}
+
 struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	int32_t ret;
 	struct mpu9250 *mpu = (struct mpu9250 *) HAL_GET_GLOBAL_DEV(index);
@@ -227,6 +246,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	}
 	mpu->index = index;
 	mpu->gen.init = true;
+	PRINTF("SPI Init\n");
 	{
 		struct spi *spi = spi_init(mpu->spi, SPI_3WIRE_CS, NULL);
 		if (spi == NULL) {
@@ -234,34 +254,38 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 		}
 		mpu->slave = spiSlave_init(spi, (struct spi_opt *) &mpu->opt);
 	}
+	/* 
+	 * Check MPU is alive
+	 */
+	ret = mpu9250_isAlive(mpu, waittime);;
+	if (ret < 0) {
+		goto mpu9250_init_error1;
+	}
+	PRINTF("MPU9250 Reset\n");
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
 		goto mpu9250_init_error1;
 	}
 	/* 
-	 * Check MPU is alive
+	 * Check MPU is alive after Reset
 	 */
-	{
-		uint8_t val;
-		ret = mpu9250_recv(mpu, MPU_WHO_AM_I, &val, 1, waittime);
-		if (ret < 0) {
-			goto mpu9250_init_error1;
-		}
-		if (val != MPU_WHO_AM_I_VAL) {
-			goto mpu9250_init_error1;
-		}
+	ret = mpu9250_isAlive(mpu, waittime);;
+	if (ret < 0) {
+		goto mpu9250_init_error1;
 	}
-
+	PRINTF("MPU Calibrate");
 	ret = mpu9250_calibrate(mpu, waittime);
 	if (ret < 0) {
 		goto mpu9250_init_error1;
 	}
 
+	PRINTF("MPU9250 Reset\n");
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
 		goto mpu9250_init_error1;
 	}
 
+	PRINTF("MPU Config");
 	{
 		ret = mpu9250_clearSetBit(
 			mpu, 

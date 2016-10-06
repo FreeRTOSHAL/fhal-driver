@@ -56,3 +56,7 @@ config MPU9250
 	default n
 	help
 		MPU-9250 Driver
+	config MPU9250_DEBUG
+		bool "MPU Debug"
+		depends on MPU9250
+		default n
