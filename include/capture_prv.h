@@ -34,7 +34,7 @@
 int32_t capture_generic_init(struct capture *capture);
 #define CAPTURE_ADDDEV(ns, p) HAL_ADDDEV(capture, ns, p)
 HAL_DEFINE_GLOBAL_ARRAY(capture);
-#define CAPUTRE_GET_DEV(index) HAL_GET_DEV(capture, index)
+#define CAPTURE_GET_DEV(index) HAL_GET_DEV(capture, index)
 #ifndef CONFIG_CAPTURE_MULTI
 # define CAPTURE_OPS(ns)
 # define CAPTURE_INIT_DEV(ns) 
