@@ -1,10 +1,19 @@
 menuconfig PWM
 	bool "PWM Subsystem"
-	depends on MACH_HAS_PWM
+	depends on MACH_HAS_PWM || MACH_HAS_TIMER
 	help
-		Activate Timer Subsystem
+		Activate PWM Subsystem
 	config PWM_MULTI
 		bool "Multiply PWMs"
 		depends on PWM
 		help
 			Multiply PWMs
+	config PWM_SOFTWARE
+		bool "Software PWM"
+		depends on PWM
+		depends on TIMER
+		help
+			Software PWM based on GPIO and a HW Timter
+		config PWM_SOFTWARE_DEBUG
+			bool "Debug Mode"
+			depends on PWM_SOFTWARE

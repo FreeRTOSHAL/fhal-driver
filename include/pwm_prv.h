@@ -45,7 +45,7 @@ HAL_DEFINE_GLOBAL_ARRAY(pwm);
 # define PWM_SET_PERIOD(ns, p, us) int32_t pwm_setPeriod(struct pwm *p, uint64_t us)
 # define PWM_SET_DUTY_CYCLE(ns, p, us) int32_t pwm_setDutyCycle(struct pwm *p, uint64_t us)
 #else
-# define PWM_OPS(ns) static const struct pwm_ops ns##_pwm_ops = { \
+# define PWM_OPS(ns) const struct pwm_ops ns##_pwm_ops = { \
 	.pwm_init = &ns##_pwm_init,\
 	.pwm_deinit = &ns##_pwm_deinit,\
 	.pwm_setPeriod = &ns##_pwm_setPeriod, \
