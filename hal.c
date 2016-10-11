@@ -59,6 +59,7 @@ int32_t hal_printNames() {
 	printNameOfDriver(phydev);
 	printNameOfDriver(mac);
 	printNameOfDriver(net);
+	printNameOfDriver(counter);
 	return 0;
 }
 #endif

@@ -1,0 +1,13 @@
+menuconfig COUNTER
+	bool "Counter Subsystem"
+	help
+		Activate Hartware Counter Subsystem
+	config COUNTER_MULTI
+		bool "Multiply Counter driver"
+		depends on COUNTER
+		help
+			Multiply Counter driver
+	config COUNTER_SOFTWARE
+		bool "GPIO Based Counter"
+		depends on COUNTER
+		depends on GPIO

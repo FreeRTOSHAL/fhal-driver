@@ -15,4 +15,5 @@ obj-$(CONFIG_SD) += sd/
 obj-$(CONFIG_MAILBOX) += mailbox/
 obj-$(CONFIG_RPROC) += remoteproc/
 obj-$(CONFIG_NET) += net/
+obj-$(CONFIG_COUNTER) += counter/
 obj-y += power/

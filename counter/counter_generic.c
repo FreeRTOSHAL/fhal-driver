@@ -11,7 +11,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
- *  
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
@@ -20,49 +20,21 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef DRIVER_H_
-#ifdef LINKER_SCRIPT
-/**
- * \defgroup DRIVER Driver specific Linker Macros 
- * \ingroup LINKER
- * \code
- * #include <driver.h>
- * \endcode
- * \{
- */
-#include <linker.h>
-/**
- * Define Device Array Sections
- * \param name Driver Name like uart, timer, pwm, ...
- * \param location Location
- */
-#define DEV(name, location) \
-	SECTION_START(.rodata.dev.##name) \
-	SYMBOL(_dev_##name); \
-	KEEP(*(.rodata.dev.##name)) \
-	SYMBOL(_dev_##name##_end); \
-	SECTION_STOP(location)
-/**
- * Default Devices
- * \param location Location
- */
-#define DEV_DEFAULT(location) DEV(hal, location) \
-	DEV(gpio, location) \
-	DEV(uart, location) \
-	DEV(timer, location) \
-	DEV(pwm, location) \
-	DEV(capture, location) \
-	DEV(spi, location) \
-	DEV(accel, location) \
-	DEV(gyro, location) \
-	DEV(adc, location) \
-	DEV(example, location) \
-	DEV(sd, location) \
-	DEV(mailbox, location) \
-	DEV(phydev, location) \
-	DEV(mac, location) \
-	DEV(net, location) \
-	DEV(counter, location) 
-#endif
-/**\}*/
+#include <counter.h>
+#define COUNTER_PRV
+#include <counter_prv.h>
+
+int32_t counter_genericInit(struct counter *t) {
+	struct counter_generic *counter = (struct counter_generic *) t;
+	if (hal_isInit(counter)) {
+		return COUNTER_ALREDY_INITED;
+	}
+	counter->init = true;
+	return 0;
+}
+#ifdef CONFIG_COUNTER_MULTI
+struct counter *counter_init(uint32_t index, enum counter_mode mode);
+int32_t counter_deinit(struct counter *counter);
+int64_t counter_getValue(struct counter *counter);
+int32_t counter_reset(struct counter *counter);
 #endif
