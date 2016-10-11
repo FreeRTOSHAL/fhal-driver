@@ -1,6 +1,6 @@
 menuconfig ADC
 	bool "ADC Subsystem"
-	depends on MACH_HAS_ADC
+	depends on MACH_HAS_ADC || SPI
 	help
 		Activate ADC Subsystem
 	config ADC_THREAD_SAVE
@@ -15,3 +15,16 @@ menuconfig ADC
 		depends on ADC
 		help
 			Multiply ADCs
+	config ADCS747X
+		bool "TI ACSS747x Driver"
+		depends on SPI
+		depends on ADC
+		help 
+			TI ACSS747x Driver connected with spi
+		config ADCS747X_PRIO
+			int "ADCS747x Thread Prio"
+			depends on ADCS747X
+			default 4
+			help
+				ADCS747X Support Callback by FreeRTOS Thread
+				On HW this is ISR Callback

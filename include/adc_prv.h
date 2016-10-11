@@ -51,11 +51,11 @@ HAL_DEFINE_GLOBAL_ARRAY(adc);
 #define ADC_DEINIT(ns, a) int32_t adc_deinit(struct adc *a)
 #define ADC_GET(ns, a, waittime) int32_t adc_get(struct adc *a, TickType_t waittime)
 #define ADC_GET_ISR(ns, a) int32_t adc_getISR(struct adc *a)
-#define ADC_SET_CALLBACK(ns, a, callback, data) int32_t adc_setCallback(struct adc *adc, bool (*callback)(struct adc *adc, uint32_t channel, int32_t value, void *data), void *data)
+#define ADC_SET_CALLBACK(ns, a, callback, data) int32_t adc_setCallback(struct adc *a, bool (*callback)(struct adc *adc, uint32_t channel, int32_t value, void *data), void *data)
 #define ADC_START(ns, a) int32_t adc_start(struct adc *a)
 #define ADC_STOP(ns, a) int32_t adc_stop(struct adc *a)
 #else
-# define ADC_OPS(ns) static const struct adc_ops ns##_ops = { \
+# define ADC_OPS(ns) const struct adc_ops ns##_ops = { \
 	.adc_init = &ns##_adc_init, \
 	.adc_deinit = &ns##_adc_deinit, \
 	.adc_get = &ns##_adc_get, \
@@ -70,7 +70,7 @@ HAL_DEFINE_GLOBAL_ARRAY(adc);
 #define ADC_DEINIT(ns, a) static int32_t ns##_adc_deinit(struct adc *a)
 #define ADC_GET(ns, a, waittime) static int32_t ns##_adc_get(struct adc *a, TickType_t waittime)
 #define ADC_GET_ISR(ns, a) static int32_t ns##_adc_getISR(struct adc *a)
-#define ADC_SET_CALLBACK(ns, a, callback, data) static int32_t ns##_adc_setCallback(struct adc *adc, bool (*callback)(struct adc *adc, uint32_t channel, int32_t value, void *data), void *data)
+#define ADC_SET_CALLBACK(ns, a, callback, data) static int32_t ns##_adc_setCallback(struct adc *a, bool (*callback)(struct adc *adc, uint32_t channel, int32_t value, void *data), void *data)
 #define ADC_START(ns, a) static int32_t ns##_adc_start(struct adc *a)
 #define ADC_STOP(ns, a) static int32_t ns##_adc_stop(struct adc *a)
 #endif
