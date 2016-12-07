@@ -3,10 +3,16 @@
 #include <counter_prv.h>
 #include <counter_software.h>
 #include <gpio.h>
+#ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
+#define PRINTF(fmt, ...) printf("SOFT COUNTER: " fmt, ##__VA_ARGS__)
+#else
+#define PRINTF(fmt, ...)
+#endif
 
 static bool counter_gpioIRQ(struct gpio_pin *pin, uint32_t pinID, void *data) {
 	struct counter_software *counter = data;
 	counter->counter++;
+	PRINTF("COUNTER IRQ for: %lu\n", pinID);
 	return false;
 }
 
@@ -40,6 +46,24 @@ software_counter_init_exit:
 software_counter_init_error0:
 	return NULL;
 }
+#ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
+#include <FreeRTOS.h>
+#include <task.h>
+void counter_software_task(void *data) {
+	struct counter_software *counter = data;
+	bool oldvalue = false;
+	bool value;
+	vTaskDelay(100 / portTICK_PERIOD_MS);
+	for (;;) {
+		value = gpioPin_getValue(counter->pin);
+		if (value != oldvalue) {
+			PRINTF("Value of pin: %p changed\n", counter->pin);
+		}
+		oldvalue = value;
+		vTaskDelay(10 / portTICK_PERIOD_MS);
+	}
+}
+#endif
 int32_t counter_software_connect(struct counter *c, struct gpio_pin *pin) {
 	struct counter_software *counter = (struct counter_software *) c;
 	int32_t ret;
@@ -53,6 +77,9 @@ int32_t counter_software_connect(struct counter *c, struct gpio_pin *pin) {
 	if (ret < 0) {
 		return -1;
 	}
+#ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
+	xTaskCreate(counter_software_task, "Counter Software Task", 512, c, 1, NULL);
+#endif
 	return 0;
 }
 COUNTER_DEINIT(software, c) {

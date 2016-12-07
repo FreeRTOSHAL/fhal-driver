@@ -11,3 +11,6 @@ menuconfig COUNTER
 		bool "GPIO Based Counter"
 		depends on COUNTER
 		depends on GPIO
+		config COUNTER_SOFTWARE_DEBUG
+			bool "Debug GPIO Based Counter"
+			depends on COUNTER_SOFTWARE
