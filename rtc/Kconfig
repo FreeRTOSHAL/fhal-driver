@@ -1,0 +1,18 @@
+menuconfig RTC
+	bool "RTC Subsystem"
+	depends on MACH_HAS_RTC
+	help
+		Activate RTC Subsystem
+	config RTC_MULTI
+		bool "Multiply RTC driver"
+		depends on RTC
+		help
+			Multiply RTC driver
+	config RTC_THREAD_SAVE
+		bool "RTC is Thread Save"
+		depends on RTC
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make RTC Thread save
