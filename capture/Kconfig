@@ -1,6 +1,6 @@
 menuconfig CAPTURE
 	bool "Capture Subsystem"
-	depends on MACH_HAS_CAPTURE
+	depends on MACH_HAS_CAPTURE || RTC
 	help
 		Activate Capture Subsystem
 	config CAPTURE_MULTI
@@ -8,3 +8,10 @@ menuconfig CAPTURE
 		depends on CAPTURE
 		help
 			Multiply Captures
+	config CAPTURE_SOFTWARE
+		bool "Softawre Capture use RTC"
+		depends on CAPTURE
+		depends on RTC
+		default n
+		help
+			Software Capture use RTC
