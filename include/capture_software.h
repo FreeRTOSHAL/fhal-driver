@@ -19,7 +19,7 @@ extern const struct capture_ops software_capture_ops;
 /**\endcond*/
 int32_t capture_software_connect(struct capture *c, struct gpio_pin *pin, struct rtc *rtc);
 
-#define ADD_CAPUTRE_SOFTWARE(id) \
+#define ADD_CAPTURE_SOFTWARE(id) \
 	struct capture_software capture_software_##id = { \
 		CAPTURE_INIT_DEV(software) \
 		HAL_NAME("Software Capture " #id) \
