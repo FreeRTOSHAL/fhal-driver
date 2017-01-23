@@ -98,38 +98,25 @@ HAL_DEFINE_GLOBAL_ARRAY(rtc);
 # define RTC_GET_TIME_ISR(ns, p, time) int32_t rtc_getTimeISR(struct rtc *p, struct timespec *time)
 # define RTC_SET_TIME_ISR(ns, p, time) int32_t rtc_setTimeISR(struct rtc *p, struct timespec *time)
 #else
-/**
- * Define Operation
- * \param ns Driver Namespace
- */
 # define RTC_OPS(ns) static const struct rtc_ops ns##_rtc_ops = { \
-	.rtc_init = &ns##_rtc_init,\
-	.rtc_deinit = &ns##_rtc_deinit,\
+	.rtc_init = &ns##_rtc_init, \
+	.rtc_deinit = &ns##_rtc_deinit, \
+	.rtc_adjust = &ns##_rtc_adjust, \
+	.rtc_getTime = &ns##_rtc_getTime, \
+	.rtc_setTime = &ns##_rtc_setTime, \
+	.rtc_adjustISR = &ns##_rtc_adjustISR, \
+	.rtc_getTimeISR = &ns##_rtc_getTimeISR, \
+	.rtc_setTimeISR = &ns##_rtc_setTimeISR, \
 }
-/**
- * Init Driver Struct 
- * \param ns Driver Namespace
- */
 # define RTC_INIT_DEV(ns) .gen.ops = &ns##_rtc_ops,
-
-/**
- * Define rtc_init() Implementation 
- * \param ns Driver namespace Variablenname
- * \param index Index Variablenname
- */
 # define RTC_INIT(ns, index) static struct rtc *ns##_rtc_init(uint32_t index)
-/**
- * Define rtc_deinit() Implementation
- * \param ns Driver namespace Variablenname
- * \param p Instance Variablenname
- */
 # define RTC_DEINIT(ns, p) static int32_t ns##_rtc_deinit(struct rtc *p)
-/**
- * Define rtc_funcname() Implementation
- * \param ns Driver namespace Variablenname
- * \param p Instance Variablenname
- * \param param Param Variablenname
- */
+# define RTC_ADJUST(ns, p, offset, waitime) static int32_t ns##_rtc_adjust(struct rtc *p, struct timespec *offset, TickType_t waittime)
+# define RTC_GET_TIME(ns, p, time, waittime) static int32_t ns##_rtc_getTime(struct rtc *p, struct timespec *time, TickType_t waittime)
+# define RTC_SET_TIME(ns, p, time, waittime) static int32_t ns##_rtc_setTime(struct rtc *p, struct timespec *time, TickType_t waittime)
+# define RTC_ADJUST_ISR(ns, p, offset) static int32_t ns##_rtc_adjustISR(struct rtc *p, struct timespec *offset)
+# define RTC_GET_TIME_ISR(ns, p, time) static int32_t ns##_rtc_getTimeISR(struct rtc *p, struct timespec *time)
+# define RTC_SET_TIME_ISR(ns, p, time) static int32_t ns##_rtc_setTimeISR(struct rtc *p, struct timespec *time)
 #endif
 /**\}*/
 #endif

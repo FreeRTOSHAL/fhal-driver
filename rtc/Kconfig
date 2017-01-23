@@ -1,6 +1,6 @@
 menuconfig RTC
 	bool "RTC Subsystem"
-	depends on MACH_HAS_RTC
+	depends on MACH_HAS_RTC || TIMER
 	help
 		Activate RTC Subsystem
 	config RTC_MULTI
@@ -16,3 +16,10 @@ menuconfig RTC
 		default n
 		help
 			Make RTC Thread save
+	config RTC_SOFTWARE
+		bool "Software RTC base on HW Timer"
+		depends on RTC
+		depends on TIMER
+		default n
+		help
+			Software RTC build with HW Timer

@@ -47,6 +47,14 @@ struct rtc;
  * Function of a driver in Multi Driver implementation mode 
  */
 struct rtc_ops {
+	struct rtc *(*rtc_init)(uint32_t index);
+	int32_t (*rtc_deinit)(struct rtc *rtc);
+	int32_t (*rtc_adjust)(struct rtc *rtc, struct timespec *offset, TickType_t waittime);
+	int32_t (*rtc_getTime)(struct rtc *rtc, struct timespec *time, TickType_t waittime);
+	int32_t (*rtc_setTime)(struct rtc *rtc, struct timespec *time, TickType_t waittime);
+	int32_t (*rtc_adjustISR)(struct rtc *rtc, struct timespec *offset);
+	int32_t (*rtc_getTimeISR)(struct rtc *rtc, struct timespec *time);
+	int32_t (*rtc_setTimeISR)(struct rtc *rtc, struct timespec *time);
 };
 #endif
 /**
@@ -135,6 +143,30 @@ inline struct rtc *rtc_init(uint32_t index) {
 inline int32_t rtc_deinit(struct rtc *rtc) {
 	struct rtc_generic *p = (struct rtc_generic *) rtc;
 	return p->ops->rtc_deinit(rtc);
+}
+inline int32_t rtc_adjust(struct rtc *rtc, struct timespec *offset, TickType_t waittime) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_adjust(rtc, offset, waittime);
+}
+inline int32_t rtc_getTime(struct rtc *rtc, struct timespec *time, TickType_t waittime) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_getTime(rtc, time, waittime);
+}
+inline int32_t rtc_setTime(struct rtc *rtc, struct timespec *time, TickType_t waittime) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_setTime(rtc, time, waittime);
+}
+inline int32_t rtc_adjustISR(struct rtc *rtc, struct timespec *offset) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_adjustISR(rtc, offset);
+}
+inline int32_t rtc_getTimeISR(struct rtc *rtc, struct timespec *time) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_getTimeISR(rtc, time);
+}
+inline int32_t rtc_setTimeISR(struct rtc *rtc, struct timespec *time) {
+	struct rtc_generic *p = (struct rtc_generic *) rtc;
+	return p->ops->rtc_setTimeISR(rtc, time);
 }
 #endif
 /**\}*/

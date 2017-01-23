@@ -48,11 +48,11 @@ rtc_generic_init_error0:
 #ifdef CONFIG_RTC_MULTI
 struct rtc *rtc_init(uint32_t index);
 int32_t rtc_deinit(struct rtc *rtc);
-int32_t rtc_adjust(struct rtc *rtc, struct timespec *offset, Ticktype_t waittime);
-int32_t rtc_getTime(struct rtc *rtc, struct timespec *time, Ticktype_t waittime);
-int32_t rtc_setTime(struct rtc *rtc, struct timespec *time, Ticktype_t waittime);
+int32_t rtc_adjust(struct rtc *rtc, struct timespec *offset, TickType_t waittime);
+int32_t rtc_getTime(struct rtc *rtc, struct timespec *time, TickType_t waittime);
+int32_t rtc_setTime(struct rtc *rtc, struct timespec *time, TickType_t waittime);
 int32_t rtc_adjustISR(struct rtc *rtc, struct timespec *offset);
-int32_t rtc_getTimeISR(struct rtc *rtc, struct timespec *time, Ticktype_t waittime);
-int32_t rtc_setTimeISR(struct rtc *rtc, struct timespec *time, Ticktype_t waittime);
+int32_t rtc_getTimeISR(struct rtc *rtc, struct timespec *time);
+int32_t rtc_setTimeISR(struct rtc *rtc, struct timespec *time);
 #endif
 

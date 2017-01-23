@@ -62,7 +62,8 @@
 	DEV(phydev, location) \
 	DEV(mac, location) \
 	DEV(net, location) \
-	DEV(counter, location) 
+	DEV(counter, location) \
+	DEV(rtc, location) 
 #endif
 /**\}*/
 #endif
