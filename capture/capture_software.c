@@ -9,7 +9,7 @@ static bool capture_software_callback(struct gpio_pin *pin, uint32_t pinID, void
 	struct timespec time; 
 	int32_t ret;
 	ret = rtc_getTimeISR(capture->rtc, &time);
-	CONFIG_ASSERT(ret < 0);
+	CONFIG_ASSERT(ret >= 0);
 	capture->time = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec)) * 1000000ULL;
 	if (time.tv_nsec > capture->oldtime.tv_nsec) {
 		capture->time += (time.tv_nsec - capture->oldtime.tv_nsec) / 1000ULL;
@@ -27,18 +27,18 @@ CAPTURE_INIT(software, index) {
 	int32_t ret;
 	struct capture_software *capture = CAPTURE_GET_DEV(index);
 	if (capture == NULL) {
-		goto capture_software_init_ereror0;
+		goto capture_software_init_error0;
 	}
 	ret = capture_generic_init((struct capture *) capture);
 	if (ret < 0) {
-		goto capture_software_init_ereror0;
+		goto capture_software_init_error0;
 	}
 	if (ret == CAPTURE_ALREDY_INITED) {
 		goto capture_software_init_exit;
 	}
 capture_software_init_exit:
-	return 0;
-capture_software_init_ereror0:
+	return (struct capture *) capture;
+capture_software_init_error0:
 	return NULL;
 }
 

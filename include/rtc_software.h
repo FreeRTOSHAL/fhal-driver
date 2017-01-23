@@ -10,6 +10,7 @@ struct rtc_software {
 	struct timer *timer;
 	time_t sec;
 };
+extern const struct rtc_ops software_rtc_ops;
 /**\endcond*/
 int32_t rtc_software_connect(struct rtc *r, struct timer *timer);
 #define ADD_RTC_SOFTWARE(id) \

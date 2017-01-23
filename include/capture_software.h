@@ -15,6 +15,7 @@ struct capture_software {
 	struct timespec oldtime;
 	uint64_t time;
 };
+extern const struct capture_ops software_capture_ops;
 /**\endcond*/
 int32_t capture_software_connect(struct capture *c, struct gpio_pin *pin, struct rtc *rtc);
 

@@ -48,7 +48,7 @@ HAL_DEFINE_GLOBAL_ARRAY(capture);
 # define CAPTURE_GET_TIME(ns, c) uint64_t capture_getTime(struct capture *c)
 # define CAPTURE_GET_CHANNEL_TIME(ns, c) uint64_t capture_getChannelTime(struct capture *c)
 #else
-# define CAPTURE_OPS(ns) static const struct capture_ops ns##_capture_ops = { \
+# define CAPTURE_OPS(ns) const struct capture_ops ns##_capture_ops = { \
 	.capture_init = &ns##_capture_init,\
 	.capture_deinit = &ns##_capture_deinit,\
 	.capture_setCallback = &ns##_capture_setCallback, \
