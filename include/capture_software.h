@@ -14,6 +14,7 @@ struct capture_software {
 	void *data;
 	struct timespec oldtime;
 	uint64_t time;
+	uint32_t index;
 };
 extern const struct capture_ops software_capture_ops;
 /**\endcond*/
