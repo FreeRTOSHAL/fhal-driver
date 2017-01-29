@@ -10,15 +10,18 @@ static bool capture_software_callback(struct gpio_pin *pin, uint32_t pinID, void
 	int32_t ret;
 	ret = rtc_getTimeISR(capture->rtc, &time);
 	CONFIG_ASSERT(ret >= 0);
-	capture->time = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec)) * 1000000ULL;
-	if (time.tv_nsec > capture->oldtime.tv_nsec) {
-		capture->time += (time.tv_nsec - capture->oldtime.tv_nsec) / 1000ULL;
-	} else {
-		capture->time += ((1000000000ULL - capture->oldtime.tv_nsec) + time.tv_nsec) / 1000ULL;
+	CONFIG_ASSERT(time.tv_sec >= capture->oldtime.tv_sec);
+	uint64_t sec = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec));
+	int64_t usec = (((int64_t) time.tv_nsec) - ((int64_t) capture->oldtime.tv_nsec)) / 1000LL;
+	if (usec < 0) {
+		sec--;
+		usec += 1000000LL;
 	}
+	capture->time = (sec * 1000000ULL) + usec;
+
 	capture->oldtime = time;
 	if (capture->callback) {
-		higherTaskHasWoken = capture->callback((struct capture *) capture, 0, capture->time, capture->data);
+		higherTaskHasWoken = capture->callback((struct capture *) capture, capture->index, capture->time, capture->data);
 	}
 	return higherTaskHasWoken;
 }
@@ -36,6 +39,7 @@ CAPTURE_INIT(software, index) {
 	if (ret == CAPTURE_ALREDY_INITED) {
 		goto capture_software_init_exit;
 	}
+	capture->index = index;
 capture_software_init_exit:
 	return (struct capture *) capture;
 capture_software_init_error0:
