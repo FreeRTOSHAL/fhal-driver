@@ -14,6 +14,7 @@ static bool capture_software_callback(struct gpio_pin *pin, uint32_t pinID, void
 	uint64_t sec = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec));
 	int64_t usec = (((int64_t) time.tv_nsec) - ((int64_t) capture->oldtime.tv_nsec)) / 1000LL;
 	if (usec < 0) {
+		CONFIG_ASSERT(sec > 0);
 		sec--;
 		usec += 1000000LL;
 	}
