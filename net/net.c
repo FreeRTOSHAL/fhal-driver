@@ -50,3 +50,21 @@ int32_t net_setMac(struct net *net, struct mac *mac);
 struct net *net_getParent(struct net *net);
 struct net *net_getChild(struct net *net);
 struct mac *net_getMac(struct net *net);
+#ifdef CONFIG_NET_MULTI
+struct net *net_init(uint32_t index);
+int32_t net_deinit(struct net *net);
+struct netbuff *net_allocNetbuff(struct net *net, size_t size);
+int32_t net_reserve(struct net *net, struct netbuff *buff, size_t size);
+int32_t net_setAlignment(struct net *net, size_t size);
+void * net_getPayload(struct net *net, struct netbuff *buff);
+int32_t net_setSize(struct net *net, struct netbuff *buff, size_t size);
+size_t net_getSize(struct net *net, struct netbuff *buff);
+int32_t net_freeNetbuff(struct net *net, struct netbuff *buff);
+int32_t net_setTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp);
+int32_t net_getTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp);
+int32_t net_recv(struct net *net, struct netbuff *buff);
+int32_t net_send(struct net *net, struct netbuff *buff);
+int32_t net_getMTU(struct net *net);
+int32_t net_setUp(struct net *net);
+int32_t net_setDown(struct net *net);
+#endif

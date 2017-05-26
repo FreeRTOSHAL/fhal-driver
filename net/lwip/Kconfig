@@ -1,0 +1,26 @@
+menuconfig LWIP
+	bool "LWIP Net Layer"
+	select USE_MUTEXES
+	select USE_COUNTING_SEMAPHORES
+if LWIP = y
+	source driver/net/lwip/Kconfig.opt
+	config LWIP_MEM
+		bool
+		depends on (MEM_DEFAULT || MEM_LIBC_MALLOC || MEM_USE_POOLS)
+		default y
+	config LWIP_PPP
+		bool "PPP Support"
+		default n
+	config LWIP_HTTP
+		bool "HTTP Support"
+		default n
+	config LWIP_IPERF
+		bool "IPERF Support"
+		default n
+	config LWIP_SNTP
+		bool "SNTP Support"
+		default n
+	config LWIP_NETBIOS
+		bool "Netbios Support"
+		default n
+endif

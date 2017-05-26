@@ -1,0 +1,1094 @@
+menu "LWIP Options"
+	menu "Debugging"
+		menuconfig LWIP_STATS
+			bool "Statistics"
+			default y
+			help
+				 Enable statistics collection in lwip_stats.
+		if LWIP_STATS = y
+			config ETHARP_STATS
+				bool "ETHARP_STATS"
+				depends on LWIP_ARP
+				default y
+				help
+					 Enable etharp stats.
+			config ICMP6_STATS
+				bool "ICMP6_STATS"
+				depends on LWIP_ICMP6
+				default y
+				help
+					Enable ICMP for IPv6 stats
+			config ICMP_STATS
+				bool "ICMP_STATS"
+				default y
+				help
+					Enable ICMP stats.
+			config IGMP_STATS
+				bool "IGMP_STATS"
+				default y
+				depends on LWIP_IGMP
+				help
+					Enable IGMP stats.
+			config IP6_FRAG_STATS
+				bool "IP6_FRAG_STATS"
+				default y
+				depends on LWIP_IPV6_FRAG || LWIP_IPV6_REASS
+				help
+					Enable IPv6 fragmentation stats.
+			config IP6_STATS
+				bool "IP6_STATS"
+				default y
+				depends on LWIP_IPV6
+				help
+					Enable IPv6 stats.
+			config IP_STATS
+				bool "IP_STATS"
+				default y
+				help
+					Enable IP stats.
+			config IPFRAG_STATS
+				bool "IPFRAG_STATS"
+				default y
+				depends on IP_REASSEMBLY || IP_FRAG
+				help
+					 Enable IP fragmentation stats. Default is on if using either frag or reass.
+			config LINK_STATS
+				bool "LINK_STATS"
+				default y
+				help
+					Enable link stats.
+			config LWIP_STATS_DISPLAY
+				bool LWIP_STATS_DISPLAY
+				default n
+				help
+					Compile in the statistics output functions.
+			config MEM_STATS
+				bool "MEM_STATS"
+				default y
+				depends on !MEM_LIBC_MALLOC && !MEM_USE_POOLS
+				help
+					Enable mem.c stats.
+			config MEMP_STATS
+				bool "MEMP_STATS"
+				default y
+				depends on !MEMP_MEM_MALLOC
+				help
+					Enable memp.c pool stats.
+			config MIB2_STATS
+				bool "MIB2_STATS"
+				default n
+				help
+					Stats for SNMP MIB2.
+			config MLD6_STATS
+				bool "MLD6_STATS"
+				default y
+				depends on LWIP_IPV6_MLD
+				help
+					Enable MLD for IPv6 stats.
+			config ND6_STATS
+				bool "ND6_STATS"
+				default y
+				depends on LWIP_IPV6
+				help
+					Enable Neighbor discovery for IPv6 stats.
+			config SYS_STATS
+				bool "SYS_STATS"
+				default y
+				help
+					Enable system stats (sem and mbox counts, etc).
+			config TCP_STATS
+				bool "TCP_STATS"
+				default y
+				depends on LWIP_TCP
+				help
+					Enable TCP stats. Default is on if TCP enabled, otherwise off.
+			config UDP_STATS
+				bool "UDP_STATS"
+				default y
+				depends on LWIP_UDP
+				help
+					Enable UDP stats. Default is on if UDP enabled, otherwise off.
+		endif
+		menu "Debugging"
+			comment "TODO"
+		endmenu
+		config LWIP_PERF 
+			bool "LWIP_PERF"
+			default n
+			help
+				Enable performance testing for lwIP (if enabled, arch/perf.h is included)
+	endmenu
+	menu "Infrastructure"
+		menu "Timers"
+			config LWIP_TIMERS
+				bool "LWIP_TIMERS"
+				default y
+				help
+					Drop support for sys_timeout and lwip-internal cyclic timers. (the array of lwip-internal cyclic timers is still provided) (check NO_SYS_NO_TIMERS for compatibility to old versions)
+			config LWIP_TIMERS_CUSTOM
+				bool "LWIP_TIMERS_CUSTOM"
+				default n
+				help
+					Provide your own timer implementation. Function prototypes in timeouts.h and the array of lwip-internal cyclic timers are still included, but the implementation is not. The following functions will be required: sys_timeouts_init(), sys_timeout(), sys_untimeout(), sys_timeouts_mbox_fetch()
+		endmenu
+		menu "Core locking and MPU"
+			config LWIP_MPU_COMPATIBLE
+				bool "LWIP_MPU_COMPATIBLE"
+				default n
+				help
+					enables special memory management mechanism which makes lwip able to work on MPU (Memory Protection Unit) system by not passing stack-pointers to other threads (this decreases performance as memory is allocated from pools instead of keeping it on the stack)
+			config LWIP_TCPIP_CORE_LOCKING
+				bool "LWIP_TCPIP_CORE_LOCKING"
+				default y
+				help 
+					Creates a global mutex that is held during TCPIP thread operations. Can be locked by client code to perform lwIP operations without changing into TCPIP thread using callbacks. See LOCK_TCPIP_CORE() and UNLOCK_TCPIP_CORE(). Your system should provide mutexes supporting priority inversion to use this.
+			config LWIP_TCPIP_CORE_LOCKING_INPUT
+				bool "LWIP_TCPIP_CORE_LOCKING_INPUT"
+				default n
+				help
+					 when LWIP_TCPIP_CORE_LOCKING is enabled, this lets tcpip_input() grab the mutex for input packets as well, instead of allocating a message and passing it to tcpip_thread.
+
+					 ATTENTION: this does not work when tcpip_input() is called from interrupt context!
+			config SYS_LIGHTWEIGHT_PROT
+				bool "SYS_LIGHTWEIGHT_PROT"
+				default y
+				help
+					enable inter-task protection (and task-vs-interrupt protection) for certain critical regions during buffer allocation, deallocation and memory allocation and deallocation. ATTENTION: This is required when using lwIP from more than one context! If you disable this, you must be sure what you are doing!
+		endmenu
+		menu "Heap and memory pools"
+			config LWIP_ALLOW_MEM_FREE_FROM_OTHER_CONTEXT
+				bool "LWIP_ALLOW_MEM_FREE_FROM_OTHER_CONTEXT"
+				default n
+				help
+					Set this to 1 if you want to free PBUF_RAM pbufs (or call mem_free()) from interrupt context (or another context that doesn't allow waiting for a semaphore). If set to 1, mem_malloc will be protected by a semaphore and SYS_ARCH_PROTECT, while mem_free will only use SYS_ARCH_PROTECT. mem_malloc SYS_ARCH_UNPROTECTs with each loop so that mem_free can run.
+
+					ATTENTION: As you can see from the above description, this leads to dis-/ enabling interrupts often, which can be slow! Also, on low memory, mem_malloc can need longer.
+
+					If you don't want that, at least for NO_SYS=0, you can still use the following functions to enqueue a deallocation call which then runs in the tcpip_thread context:
+
+					* pbuf_free_callback(p);
+					* mem_free_callback(m);
+			config MEM_ALIGNMENT
+				int "MEM_ALIGNMENT"
+				default 1
+				help
+					should be set to the alignment of the CPU 4 byte alignment -> #define MEM_ALIGNMENT 4 2 byte alignment -> #define MEM_ALIGNMENT 2
+			choice
+				prompt "Heap and memory pool Mangement"
+				config MEM_DEFAULT
+					bool "MEM_DEFAULT"
+					help
+						Default mem Allocator
+				config MEM_LIBC_MALLOC
+					bool "MEM_LIBC_MALLOC"
+					depends on NEWLIB_MALLOC
+					help
+						Use malloc/free/realloc provided by your C-library instead of the lwip internal allocator. Can save code size if you already use it.
+				config MEM_USE_POOLS
+					bool MEM_USE_POOLS
+					help
+					Use an alternative to malloc() by allocating from a set of memory pools of various sizes. When mem_malloc is called, an element of the smallest pool that can provide the length needed is returned. To use this, MEMP_USE_CUSTOM_POOLS also has to be enabled.
+				config MEM_LIBC_MALLOC_ALGIN
+					bool "MEM_LIBC_MALLOC_ALGIN"
+					help
+						Use malloc with alignement
+			endchoice
+			config MEM_SIZE
+				int MEM_SIZE
+				depends on MEM_DEFAULT
+				default 1600
+				help
+					the size of the heap memory. If the application will send a lot of data that needs to be copied, this should be set high.
+			config MEM_USE_POOLS_TRY_BIGGER_POOL
+				bool "MEM_USE_POOLS_TRY_BIGGER_POOL"
+				depends on MEM_USE_POOLS
+				default n
+				help
+					if one malloc-pool is empty, try the next bigger pool - WARNING: THIS MIGHT WASTE MEMORY but it can make a system more reliable.
+			config MEMP_MEM_MALLOC 
+				bool "MEMP_MEM_MALLOC "
+				default n
+				help
+					Use mem_malloc/mem_free instead of the lwip pool allocator. Especially useful with MEM_LIBC_MALLOC but handle with care regarding execution speed (heap alloc can be much slower than pool alloc) and usage from interrupts (especially if your netif driver allocates PBUF_POOL pbufs for received frames from interrupt)! ATTENTION: Currently, this uses the heap for ALL pools (also for private pools, not only for internal pools defined in memp_std.h)!
+			config MEMP_OVERFLOW_CHECK
+				bool "MEMP_OVERFLOW_CHECK"
+				default n
+				help
+					memp overflow protection reserves a configurable amount of bytes before and after each memp element in every pool and fills it with a prominent default value. MEMP_OVERFLOW_CHECK == 0 no checking MEMP_OVERFLOW_CHECK == 1 checks each element when it is freed MEMP_OVERFLOW_CHECK >= 2 checks each element in every pool every time memp_malloc() or memp_free() is called (useful but slow!)
+			config MEMP_SANITY_CHECK
+				bool "MEMP_SANITY_CHECK"
+				default n
+				help
+					run a sanity check after each memp_free() to make sure that there are no cycles in the linked lists.
+			config MEMP_USE_CUSTOM_POOLS
+				bool "MEMP_USE_CUSTOM_POOLS"
+				default n
+				help
+					whether to include a user file lwippools.h that defines additional pools beyond the "standard" ones required by lwIP. If you set this to 1, you must have lwippools.h in your include path somewhere.
+		endmenu
+		menu "Internal memory pools"
+			config MEMP_NUM_ARP_QUEUE
+				int "MEMP_NUM_ARP_QUEUE"
+				default 30
+				help
+					the number of simultaneously queued outgoing packets (pbufs) that are waiting for an ARP request (to resolve their destination address) to finish. (requires the ARP_QUEUEING option)
+			config MEMP_NUM_FRAG_PBUF
+				int "MEMP_NUM_FRAG_PBUF"
+				default 15
+				help
+					the number of IP fragments simultaneously sent (fragments, not whole packets!). This is only used with IP_FRAG_USES_STATIC_BUF==0 and LWIP_NETIF_TX_SINGLE_PBUF==0 and only has to be > 1 with DMA-enabled MACs where the packet is not yet sent when netif->output returns.
+			config MEMP_NUM_IGMP_GROUP
+				int "MEMP_NUM_IGMP_GROUP"
+				default 8
+				help
+					The number of multicast groups whose network interfaces can be members at the same time (one per netif - allsystems group -, plus one per netif membership). (requires the LWIP_IGMP option)
+			config MEMP_NUM_LOCALHOSTLIST
+				int "MEMP_NUM_LOCALHOSTLIST"
+				default 1
+				depends on DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+				help
+					the number of host entries in the local host list if DNS_LOCAL_HOSTLIST_IS_DYNAMIC==1.
+			config MEMP_NUM_NETBUF
+				int "MEMP_NUM_NETBUF"
+				default 2
+				help
+					the number of struct netbufs. (only needed if you use the sequential API, like api_lib.c)
+			config MEMP_NUM_NETCONN
+				int "MEMP_NUM_NETCONN"
+				default 4
+				help
+					the number of struct netconns. (only needed if you use the sequential API, like api_lib.c)
+			config MEMP_NUM_NETDB
+				int "MEMP_NUM_NETDB"
+				default 1
+				help
+					he number of concurrently running lwip_addrinfo() calls (before freeing the corresponding memory using lwip_freeaddrinfo()).
+			config MEMP_NUM_PBUF
+				int "MEMP_NUM_PBUF"
+				default 16
+				help
+					the number of memp struct pbufs (used for PBUF_ROM and PBUF_REF). If the application sends a lot of data out of ROM (or other static memory), this should be set high.
+			config MEMP_NUM_RAW_PCB
+				int "MEMP_NUM_RAW_PCB"
+				default 4
+				help
+					Number of raw connection PCBs (requires the LWIP_RAW option)
+			config MEMP_NUM_REASSDATA
+				int "MEMP_NUM_REASSDATA"
+				default 5
+				help
+					the number of IP packets simultaneously queued for reassembly (whole packets, not fragments!)
+			config MEMP_NUM_TCP_PCB
+				int "MEMP_NUM_TCP_PCB"
+				default 5
+				help
+					the number of simultaneously active TCP connections. (requires the LWIP_TCP option)
+			config MEMP_NUM_TCP_PCB_LISTEN
+				int "MEMP_NUM_TCP_PCB_LISTEN"
+				default 8
+				help
+					the number of listening TCP connections. (requires the LWIP_TCP option)
+			config MEMP_NUM_TCP_SEG
+				int "MEMP_NUM_TCP_SEG"
+				default 16
+				help
+					the number of simultaneously queued TCP segments. (requires the LWIP_TCP option)
+			config MEMP_NUM_TCPIP_MSG_API
+				int "MEMP_NUM_TCPIP_MSG_API"
+				default 8
+				help
+					the number of struct tcpip_msg, which are used for callback/timeout API communication. (only needed if you use tcpip.c)
+			config MEMP_NUM_TCPIP_MSG_INPKT
+				int "MEMP_NUM_TCPIP_MSG_INPKT"
+				default 8
+				help
+					the number of struct tcpip_msg, which are used for incoming packets. (only needed if you use tcpip.c)
+			config MEMP_NUM_UDP_PCB
+				int "MEMP_NUM_UDP_PCB"
+				default 4
+				help
+					the number of UDP protocol control blocks. One per active UDP "connection". (requires the LWIP_UDP option)
+			config PBUF_POOL_SIZE
+				int "PBUF_POOL_SIZE"
+				default 16
+				help
+					the number of buffers in the pbuf pool.
+		endmenu
+		menu "SNMP MIB2 callbacks"
+			config LWIP_MIB2_CALLBACKS
+				bool "LWIP_MIB2_CALLBACKS"
+				depends on MIB2_STATS
+				help
+					Turn on SNMP MIB2 callbacks. Turn this on to get callbacks needed to implement MIB2. Usually MIB2_STATS should be enabled, too
+		endmenu
+		menu Threading
+			config DEFAULT_ACCEPTMBOX_SIZE
+				int "DEFAULT_ACCEPTMBOX_SIZE"
+				default 2
+				help
+					The mailbox size for the incoming connections. The queue size value itself is platform-dependent, but is passed to sys_mbox_new() when the acceptmbox is created.
+			config DEFAULT_RAW_RECVMBOX_SIZE
+				int "DEFAULT_RAW_RECVMBOX_SIZE"
+				default 2
+				help
+					The mailbox size for the incoming packets on a NETCONN_RAW. The queue size value itself is platform-dependent, but is passed to sys_mbox_new() when the recvmbox is created.
+			config DEFAULT_TCP_RECVMBOX_SIZE
+				int "DEFAULT_TCP_RECVMBOX_SIZE"
+				default 2
+				help
+					The mailbox size for the incoming packets on a NETCONN_TCP. The queue size value itself is platform-dependent, but is passed to sys_mbox_new() when the recvmbox is created.
+			config DEFAULT_THREAD_NAME
+				string "DEFAULT_THREAD_NAME"
+				default "LwIP"
+				help
+					The name assigned to any other lwIP thread.
+			config DEFAULT_THREAD_PRIO
+				int "DEFAULT_THREAD_PRIO"
+				default 1
+				help
+					The priority assigned to any other lwIP thread. The priority value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+			config DEFAULT_THREAD_STACKSIZE
+				int "DEFAULT_THREAD_STACKSIZE"
+				default 512
+				help
+					The stack size used by any other lwIP thread. The stack size value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+			config DEFAULT_UDP_RECVMBOX_SIZE
+				int "DEFAULT_UDP_RECVMBOX_SIZE"
+				default 2
+				help
+					The mailbox size for the incoming packets on a NETCONN_UDP. The queue size value itself is platform-dependent, but is passed to sys_mbox_new() when the recvmbox is created.
+			config SLIPIF_THREAD_NAME
+				string "SLIPIF_THREAD_NAME"
+				default "slipif_loop"
+				help
+					The name assigned to the slipif_loop thread.
+			config SLIPIF_THREAD_PRIO
+				int "SLIPIF_THREAD_PRIO"
+				default 1
+				help
+					The priority assigned to the slipif_loop thread. The priority value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+			config SLIPIF_THREAD_STACKSIZE
+				int "SLIPIF_THREAD_STACKSIZE"
+				default 512
+				help
+					The stack size used by the slipif_loop thread. The stack size value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+			config TCPIP_MBOX_SIZE
+				int "TCPIP_MBOX_SIZE"
+				default 2
+				help
+					The mailbox size for the tcpip thread messages The queue size value itself is platform-dependent, but is passed to sys_mbox_new() when tcpip_init is called.
+			config TCPIP_THREAD_NAME
+				string "TCPIP_THREAD_NAME"
+				default "tcpip_thread"
+				help
+					The name assigned to the main tcpip thread.
+			config TCPIP_THREAD_PRIO
+				int "TCPIP_THREAD_PRIO"
+				default 1
+				help
+					The priority assigned to the main tcpip thread. The priority value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.The priority assigned to the main tcpip thread. The priority value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+			config TCPIP_THREAD_STACKSIZE
+				int "TCPIP_THREAD_STACKSIZE"
+				default 512
+				help
+					The stack size used by the main tcpip thread. The stack size value itself is platform-dependent, but is passed to sys_thread_new() when the thread is created.
+		endmenu
+		menu "Checksum"
+			config CHECKSUM_CHECK_ICMP
+				bool "CHECKSUM_CHECK_ICMP"
+				default y
+				help
+					Check checksums in software for incoming ICMP packets.Check checksums in software for incoming ICMP packets.
+			config CHECKSUM_CHECK_ICMP6
+				bool "CHECKSUM_CHECK_ICMP6"
+				default y
+				help
+					Check checksums in software for incoming ICMPv6 packets
+			config CHECKSUM_CHECK_IP
+				bool "CHECKSUM_CHECK_IP"
+				default y
+				help
+					Check checksums in software for incoming IP packets.
+			config CHECKSUM_CHECK_TCP
+				bool "CHECKSUM_CHECK_TCP"
+				default y
+				help
+					Check checksums in software for incoming TCP packets.
+			config CHECKSUM_CHECK_UDP
+				bool "CHECKSUM_CHECK_UDP"
+				default y
+				help
+					Check checksums in software for incoming UDP packets.
+			config CHECKSUM_GEN_ICMP
+				bool "CHECKSUM_GEN_ICMP"
+				default y
+				help
+					Generate checksums in software for outgoing ICMP packets.
+			config CHECKSUM_GEN_ICMP6
+				bool "CHECKSUM_GEN_ICMP6"
+				default y
+				help
+					Generate checksums in software for outgoing ICMP6 packets.
+			config CHECKSUM_GEN_IP
+				bool "CHECKSUM_GEN_IP"
+				default y
+				help
+					Generate checksums in software for outgoing IP packets.
+			config CHECKSUM_GEN_TCP
+				bool "CHECKSUM_GEN_TCP"
+				default y
+				help
+					Generate checksums in software for outgoing TCP packets.
+			config CHECKSUM_GEN_UDP
+				bool "CHECKSUM_GEN_UDP"
+				default y
+				help
+					Generate checksums in software for outgoing UDP packets.
+			config LWIP_CHECKSUM_CTRL_PER_NETIF
+				bool "LWIP_CHECKSUM_CTRL_PER_NETIF"
+				select CHECKSUM_CHECK_ICMP
+				select CHECKSUM_CHECK_ICMP6
+				select CHECKSUM_CHECK_IP
+				select CHECKSUM_CHECK_TCP
+				select CHECKSUM_CHECK_UDP
+				select CHECKSUM_GEN_ICMP
+				select CHECKSUM_GEN_ICMP6
+				select CHECKSUM_GEN_IP
+				select CHECKSUM_GEN_TCP
+				select CHECKSUM_GEN_UDP
+				default y
+				help
+					Checksum generation/check can be enabled/disabled per netif. ATTENTION: if enabled, the CHECKSUM_GEN_* and CHECKSUM_CHECK_* defines must be enabled!
+			config LWIP_CHECKSUM_ON_COPY
+				bool "LWIP_CHECKSUM_ON_COPY"
+				default n
+				help
+					Calculate checksum when copying data from application buffers to pbufs.
+		endmenu
+	endmenu
+	menu "Callback-style APIs"
+		config LWIP_RAW
+			bool "RAW"
+			help
+				Enable application layer to hook into the IP layer itself.
+		menuconfig LWIP_DNS
+			bool "DNS"
+			default n
+			help
+				Turn on DNS module. UDP must be available for DNS transport.
+		if LWIP_DNS = y
+			config DNS_DOES_NAME_CHECK
+				bool "DNS_DOES_NAME_CHECK"
+				default y
+				help
+					DNS do a name checking between the query and the response.
+			config DNS_LOCAL_HOSTLIST
+				bool "DNS_LOCAL_HOSTLIST"
+				default n
+				help
+					DNS_LOCAL_HOSTLIST: Implements a local host-to-address list. If enabled, you have to define #define DNS_LOCAL_HOSTLIST_INIT {{"host1", 0x123}, {"host2", 0x234}} (an array of structs name/address, where address is an u32_t in network byte order).
+
+					Instead, you can also use an external function: #define DNS_LOOKUP_LOCAL_EXTERN(x) extern err_t my_lookup_function(const char *name, ip_addr_t *addr, u8_t dns_addrtype) that looks up the IP address and returns ERR_OK if found (LWIP_DNS_ADDRTYPE_xxx is passed in dns_addrtype).
+			config DNS_LOCAL_HOSTLIST_IS_DYNAMIC
+				bool "DNS_LOCAL_HOSTLIST_IS_DYNAMIC"
+				default n
+				help
+					If this is turned on, the local host-list can be dynamically changed at runtime.
+			config DNS_MAX_NAME_LENGTH
+				int "DNS_MAX_NAME_LENGTH"
+				default 256
+				help
+					DNS maximum host name length supported in the name table.
+			config DNS_MAX_SERVERS
+				int "DNS_MAX_SERVERS"
+				default 2
+				help
+					The maximum of DNS servers The first server can be initialized automatically by defining DNS_SERVER_ADDRESS(ipaddr), where 'ipaddr' is an 'ip_addr_t*'
+			config DNS_TABLE_SIZE
+				int "DNS_TABLE_SIZE"
+				default 4
+				help
+					DNS maximum number of entries to maintain locally.
+		endif
+		menuconfig LWIP_UDP
+			bool "UDP"
+			default y
+			help
+				Turn on UDP.
+		if LWIP_UDP = y
+			config LWIP_NETBUF_RECVINFO
+				bool "LWIP_NETBUF_RECVINFO"
+				default n
+				help
+					append destination addr and port to every netbuf.
+			config LWIP_UDPLITE
+				bool "LWIP_UDPLITE"
+				default n
+				help
+					Turn on UDP-Lite. (Requires LWIP_UDP)
+		endif
+		menuconfig LWIP_TCP
+			bool "TCP"
+			default y
+			help
+				Turn on TCP.
+		if LWIP_TCP = y
+			choice 
+				prompt "API"
+				help
+					LWIP_EVENT_API and LWIP_CALLBACK_API: Only one of these should be set to 1. LWIP_EVENT_API==1: The user defines lwip_tcp_event() to receive all events (accept, sent, etc) that happen in the system. LWIP_CALLBACK_API==1: The PCB callback function is called directly for the event. This is the default.
+				config LWIP_EVENT_API
+					bool "LWIP_EVENT_API"
+				config LWIP_CALLBACK_API
+					bool "LWIP_CALLBACK_API"
+			endchoice
+			config LWIP_TCP_TIMESTAMPS
+				bool "LWIP_TCP_TIMESTAMPS"
+				default n
+				help
+					support the TCP timestamp option. The timestamp option is currently only used to help remote hosts, it is not really used locally. Therefore, it is only enabled when a TS option is received in the initial SYN packet from a remote host.
+			config LWIP_WND_SCALE
+				int "LWIP_WND_SCALE"
+				default 0
+				help
+					LWIP_WND_SCALE and TCP_RCV_SCALE: Set LWIP_WND_SCALE to 1 to enable window scaling. Set TCP_RCV_SCALE to the desired scaling factor (shift count in the range of [0..14]). When LWIP_WND_SCALE is enabled but TCP_RCV_SCALE is 0, we can use a large send window while having a small receive window only.
+			config TCP_CALCULATE_EFF_SEND_MSS
+				int "TCP_CALCULATE_EFF_SEND_MSS"
+				default 1
+				help
+					"The maximum size of a segment that TCP really sends, the 'effective send MSS,' MUST be the smaller of the send MSS (which reflects the available reassembly buffer size at the remote host) and the largest size permitted by the IP layer" (RFC 1122) Setting this to 1 enables code that checks TCP_MSS against the MTU of the netif used for a connection and limits the MSS if it would be too big otherwise.
+			config TCP_DEFAULT_LISTEN_BACKLOGTCP_DEFAULT_LISTEN_BACKLOG
+				hex "TCP_DEFAULT_LISTEN_BACKLOG"
+				default 0xff
+				help
+					The maximum allowed backlog for TCP listen netconns. This backlog is used unless another is explicitly specified. 0xff is the maximum (u8_t).
+			config TCP_LISTEN_BACKLOG
+				bool "TCP_LISTEN_BACKLOG"
+				default y
+				help
+					Enable the backlog option for tcp listen pcb.
+			config TCP_MAXRTX
+				int "TCP_MAXRTX"
+				default 12
+				help
+					Maximum number of retransmissions of data segments.
+			config TCP_MSS
+				int "TCP_MSS"
+				default 1460
+				help
+					TCP Maximum segment size. (default is 536, a conservative default, you might want to increase this.) For the receive side, this MSS is advertised to the remote side when opening a connection. For the transmit size, this MSS sets an upper limit on the MSS advertised by the remote host.
+			config TCP_OOSEQ_MAX_BYTES
+				int "TCP_OOSEQ_MAX_BYTES"
+				default 0
+				help
+					The maximum number of bytes queued on ooseq per pcb. Default is 0 (no limit). Only valid for TCP_QUEUE_OOSEQ==0.
+			config TCP_OOSEQ_MAX_PBUFS
+				int "TCP_OOSEQ_MAX_PBUFS"
+				default 0
+				help
+					The maximum number of pbufs queued on ooseq per pcb. Default is 0 (no limit). Only valid for TCP_QUEUE_OOSEQ==0.
+			config TCP_SYNMAXRTX
+				int "TCP_SYNMAXRTX"
+				default 6
+				help
+					Maximum number of retransmissions of SYN segments.
+		endif
+	endmenu
+	menu "Thread-safe APIs"
+		menuconfig LWIP_NETCONN
+			bool "NETCONN"
+			default 1
+			help
+				Enable Netconn API (require to use api_lib.c)
+		if LWIP_NETCONN = y
+			config LWIP_NETCONN_FULLDUPLEX
+				bool "LWIP_NETCONN_FULLDUPLEX"
+				default n
+				help
+					LWIP_NETCONN_FULLDUPLEX==1: Enable code that allows reading from one thread, writing from a 2nd thread and closing from a 3rd thread at the same time. ATTENTION: This is currently really alpha! Some requirements:
+
+					* LWIP_NETCONN_SEM_PER_THREAD==1 is required to use one socket/netconn from multiple threads at once
+					* sys_mbox_free() has to unblock receive tasks waiting on recvmbox/acceptmbox and prevent a task pending on this during/after deletion
+			config LWIP_NETCONN_SEM_PER_THREAD
+				bool "LWIP_NETCONN_SEM_PER_THREAD"
+				default n
+				help
+					Use one (thread-local) semaphore per thread calling socket/netconn functions instead of allocating one semaphore per netconn (and per select etc.) ATTENTION: a thread-local semaphore for API calls is needed:
+
+					* LWIP_NETCONN_THREAD_SEM_GET() returning a sys_sem_t*
+					* LWIP_NETCONN_THREAD_SEM_ALLOC() creating the semaphore
+					* LWIP_NETCONN_THREAD_SEM_FREE() freeing the semaphore The latter 2 can be invoked up by calling netconn_thread_init()/netconn_thread_cleanup(). Ports may call these for threads created with sys_thread_new().
+			config LWIP_TCPIP_TIMEOUT
+				bool "LWIP_TCPIP_TIMEOUT"
+				default n
+				help
+					Enable tcpip_timeout/tcpip_untimeout to create timers running in tcpip_thread from another thread.
+		endif
+		menuconfig LWIP_SOCKET
+			bool "SOCKET"
+			default y
+			help
+				Enable Socket API (require to use sockets.c)
+		if LWIP_SOCKET = y
+			config LWIP_COMPAT_SOCKETS
+				bool "LWIP_COMPAT_SOCKETS"
+				default y
+				help
+					 Enable BSD-style sockets functions names through defines. LWIP_COMPAT_SOCKETS==2: Same as ==1 but correctly named functions are created. While this helps code completion, it might conflict with existing libraries. (only used if you use sockets.c)
+			config LWIP_FIONREAD_LINUXMODE
+				bool "LWIP_FIONREAD_LINUXMODE"
+				default n
+				help
+					 ioctl/FIONREAD returns the amount of pending data in the network buffer. This is the way windows does it. It's the default for lwIP since it is smaller. LWIP_FIONREAD_LINUXMODE==1: ioctl/FIONREAD returns the size of the next pending datagram in bytes. This is the way linux does it. This code is only here for compatibility.
+			config LWIP_POSIX_SOCKETS_IO_NAMES
+				bool "LWIP_POSIX_SOCKETS_IO_NAMES"
+				default y
+				help
+					 Enable POSIX-style sockets functions names. Disable this option if you use a POSIX operating system that uses the same names (read, write & close). (only used if you use sockets.c)
+			config LWIP_SO_LINGER
+				bool "LWIP_SO_LINGER"
+				default n
+				help	
+					Enable SO_LINGER processing.
+			config LWIP_SO_RCVBUF
+				bool "LWIP_SO_RCVBUF"
+				default n
+				help
+					Enable SO_RCVBUF processing.
+			config LWIP_SO_RCVTIMEO
+				bool "LWIP_SO_RCVTIMEO"
+				default n
+				help
+					Enable receive timeout for sockets/netconns and SO_RCVTIMEO processing.
+			config LWIP_SO_SNDRCVTIMEO_NONSTANDARD
+				bool "LWIP_SO_SNDRCVTIMEO_NONSTANDARD"
+				default n
+				help
+					SO_RCVTIMEO/SO_SNDTIMEO take an int (milliseconds, much like winsock does) instead of a struct timeval (default).
+			config LWIP_SO_SNDTIMEO
+				bool "LWIP_SO_SNDTIMEO"
+				default n
+				help
+					Enable send timeout for sockets/netconns and SO_SNDTIMEO processing.
+			config LWIP_SOCKET_OFFSET
+				int "LWIP_SOCKET_OFFSET"
+				default 0
+				help
+					Increases the file descriptor number created by LwIP with n. This can be useful when there are multiple APIs which create file descriptors. When they all start with a different offset and you won't make them overlap you can re implement read/write/close/ioctl/fnctl to send the requested action to the right library (sharing select will need more work though).
+			config LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT
+				int "LWIP_TCP_CLOSE_TIMEOUT_MS_DEFAULT"
+				default 20000
+				help
+					By default, TCP socket/netconn close waits 20 seconds max to send the FIN
+			config LWIP_TCP_KEEPALIVE
+				bool "LWIP_TCP_KEEPALIVE"
+				default n
+				help
+					Enable TCP_KEEPIDLE, TCP_KEEPINTVL and TCP_KEEPCNT options processing. Note that TCP_KEEPIDLE and TCP_KEEPINTVL have to be set in seconds. (does not require sockets.c, and will affect tcp.c)
+			config SO_REUSE
+				bool "SO_REUSE"
+				default n
+				help
+					Enable SO_REUSEADDR option.
+			config SO_REUSE_RXTOALL
+				bool "SO_REUSE_RXTOALL"
+				default n
+				help
+					Pass a copy of incoming broadcast/multicast packets to all local matches if SO_REUSEADDR is turned on. WARNING: Adds a memcpy for every packet if passing to more than one pcb!
+			config LWIP_TIMEVAL_PRIVATE
+				bool "LWIP_TIMEVAL_PRIVATE"
+				default y
+				depends on !NEWLIB
+				help
+					if you want to use the struct timeval provided by your system, set this to 0 and include <sys/time.h> in cc.h
+		endif
+	endmenu
+	menuconfig LWIP_IPV4
+		bool "IPv4"
+		default y
+		help
+			Enable IPv4
+	if LWIP_IPV4 = y
+		config IP_DEFAULT_TTL
+			int "IP_DEFAULT_TTL"
+			default 255
+			help
+				Default value for Time-To-Live used by transport layers.
+		config IP_FORWARD
+			bool "IP_FORWARD"
+			default n
+			help
+				Enables the ability to forward IP packets across network interfaces. If you are going to run lwIP on a device with only one network interface, define this to 0.
+		config IP_FORWARD_ALLOW_TX_ON_RX_NETIF
+			bool "IP_FORWARD_ALLOW_TX_ON_RX_NETIF"
+			default n
+			help
+				allow ip_forward() to send packets back out on the netif where it was received. This should only be used for wireless networks. ATTENTION: When this is 1, make sure your netif driver correctly marks incoming link-layer-broadcast/multicast packets as such using the corresponding pbuf flags!
+		config IP_FRAG
+			bool "IP_FRAG"
+			default y
+			help
+				Fragment outgoing IP packets if their size exceeds MTU. Note that this option does not affect incoming packet sizes, which can be controlled via IP_REASSEMBLY.
+		config IP_FRAG_MAX_MTU
+			int "IP_FRAG_MAX_MTU"
+			default 1500
+			help
+				Assumed max MTU on any interface for IP frag buffer (requires IP_FRAG_USES_STATIC_BUF==1)
+		config IP_FRAG_USES_STATIC_BUF
+			bool "IP_FRAG_USES_STATIC_BUF"
+			default n
+			help
+				Use a static MTU-sized buffer for IP fragmentation. Otherwise pbufs are allocated and reference the original packet data to be fragmented (or with LWIP_NETIF_TX_SINGLE_PBUF==1, new PBUF_RAM pbufs are used for fragments). ATTENTION: IP_FRAG_USES_STATIC_BUF==1 may not be used for DMA-enabled MACs!
+		config IP_OPTIONS_ALLOWED
+			bool "IP_OPTIONS_ALLOWED"
+			default y
+			help
+				Defines the behavior for IP options. IP_OPTIONS_ALLOWED==0: All packets with IP options are dropped. IP_OPTIONS_ALLOWED==1: IP options are allowed (but not parsed).
+		config IP_REASS_MAX_PBUFS
+			int "IP_REASS_MAX_PBUFS"
+			default 10
+			help
+				Total maximum amount of pbufs waiting to be reassembled. Since the received pbufs are enqueued, be sure to configure PBUF_POOL_SIZE > IP_REASS_MAX_PBUFS so that the stack is still able to receive packets even if the maximum amount of fragments is enqueued for reassembly!
+		config IP_REASS_MAXAGE
+			int "IP_REASS_MAXAGE"
+			default 3
+			help
+				Maximum time (in multiples of IP_TMR_INTERVAL - so seconds, normally) a fragmented IP packet waits for all fragments to arrive. If not all fragments arrived in this time, the whole packet is discarded.
+		config IP_REASSEMBLY
+			bool "IP_REASSEMBLY"
+			default y
+			help
+				eassemble incoming fragmented IP packets. Note that this option does not affect outgoing packet sizes, which can be controlled via IP_FRAG.
+		config IP_SOF_BROADCAST
+			bool "IP_SOF_BROADCAST"
+			default n
+			help
+				Use the SOF_BROADCAST field to enable broadcast filter per pcb on udp and raw send operations. To enable broadcast filter on recv operations, you also have to set IP_SOF_BROADCAST_RECV=1.
+		config IP_SOF_BROADCAST_RECV
+			bool "IP_SOF_BROADCAST_RECV"
+			default n
+			depends on IP_SOF_BROADCAST
+			help
+				IP_SOF_BROADCAST_RECV (requires IP_SOF_BROADCAST=1) enable the broadcast filter on recv operations.
+		config LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS
+			bool "LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS"
+			default n
+			help
+				LWIP_RANDOMIZE_INITIAL_LOCAL_PORTS==1: randomize the local port for the first local TCP/UDP pcb (default==0). This can prevent creating predictable port numbers after booting a device.
+		menuconfig LWIP_ARP
+			bool "ARP"
+			default y
+			select LWIP_ETHERNET
+			help
+				Enable ARP functionality.
+		if LWIP_ARP = y
+			config ARP_MAXAGE
+				int "ARP_MAXAGE"
+				default 300
+				help
+					the time an ARP entry stays valid after its last update, for ARP_TMR_INTERVAL = 1000, this is (60 * 5) seconds = 5 minutes.
+			config ARP_QUEUE_LEN
+				int "ARP_QUEUE_LEN"
+				default 3
+				help
+					The maximum number of packets which may be queued for each unresolved address by other network layers. Defaults to 3, 0 means disabled. Old packets are dropped, new packets are queued.
+			config ARP_QUEUEING
+				bool "ARP_QUEUEING"
+				default n
+				help
+					Multiple outgoing packets are queued during hardware address resolution. By default, only the most recent packet is queued per IP address. This is sufficient for most protocols and mainly reduces TCP connection startup time. Set this to 1 if you know your application sends more than one packet in a row to an IP address that is not in the ARP cache.
+			config ARP_TABLE_SIZE
+				int "ARP_TABLE_SIZE"
+				default 10
+				help
+					Number of active MAC-IP address pairs cached.
+			config ETH_PAD_SIZE
+				int "ETH_PAD_SIZE"
+				default 0
+				help
+					number of bytes added before the ethernet header to ensure alignment of payload after that header. Since the header is 14 bytes long, without this padding e.g. addresses in the IP header will not be aligned on a 32-bit boundary, so setting this to 2 can speed up 32-bit-platforms.
+			config ETHARP_SUPPORT_STATIC_ENTRIES
+				bool "ETHARP_SUPPORT_STATIC_ENTRIES"
+				default n
+				help
+					 enable code to support static ARP table entries (using etharp_add_static_entry/etharp_remove_static_entry).
+			config ETHARP_SUPPORT_VLAN
+				bool "ETHARP_SUPPORT_VLAN"
+				default n
+				help
+					support receiving and sending ethernet packets with VLAN header. See the description of LWIP_HOOK_VLAN_CHECK and LWIP_HOOK_VLAN_SET hooks to check/set VLAN headers. Additionally, you can define ETHARP_VLAN_CHECK to an u16_t VLAN ID to check. If ETHARP_VLAN_CHECK is defined, only VLAN-traffic for this VLAN is accepted. If ETHARP_VLAN_CHECK is not defined, all traffic is accepted. Alternatively, define a function/define ETHARP_VLAN_CHECK_FN(eth_hdr, vlan) that returns 1 to accept a packet or 0 to drop a packet.
+			config ETHARP_TABLE_MATCH_NETIF
+				bool "ETHARP_TABLE_MATCH_NETIF"
+				default n
+				help
+					Match netif for ARP table entries. If disabled, duplicate IP address on multiple netifs are not supported (but this should only occur for AutoIP).
+			config ETHARP_TRUST_IP_MAC
+				bool "ETHARP_TRUST_IP_MAC"
+				default n
+				help
+					Incoming IP packets cause the ARP table to be updated with the source MAC and IP addresses supplied in the packet. You may want to disable this if you do not trust LAN peers to have the correct addresses, or as a limited approach to attempt to handle spoofing. If disabled, lwIP will need to make a new ARP request if the peer is not already in the ARP table, adding a little latency. The peer is in the ARP table if it requested our address before. Also notice that this slows down input processing of every IP packet!
+		endif
+		config LWIP_ETHERNET
+			bool "ETHERNET"
+			help
+				enable ethernet support even though ARP might be disabled
+		menuconfig LWIP_ICMP
+			bool "ICMP"
+			default y
+			help
+				Enable ICMP module inside the IP stack. Be careful, disable that make your product non-compliant to RFC1122
+		if LWIP_ICMP = y
+			config LWIP_BROADCAST_PING
+				bool "LWIP_BROADCAST_PING"
+				default n
+				help
+					respond to broadcast pings (default is unicast only)
+			config LWIP_MULTICAST_PING
+				bool "LWIP_MULTICAST_PING"
+				default n
+				help
+					respond to multicast pings (default is unicast only)
+		endif
+		menuconfig LWIP_DHCP
+			bool "DHCP"
+			default n
+			select LWIP_DNS
+			help
+				Enable DHCP module.
+		if LWIP_DHCP = y
+			config LWIP_DHCP_BOOTP_FILE
+				bool "LWIP_DHCP_BOOTP_FILE"
+				default n
+				help
+					dhcp_start() only really starts if the netif has NETIF_FLAG_LINK_UP set in its flags. As this is only an optimization and netif drivers might not set this flag, the default is off. If enabled, netif_set_link_up() must be called to continue dhcp starting. LWIP_DHCP_BOOTP_FILE==1: Store offered_si_addr and boot_file_name.
+			config LWIP_DHCP_GET_NTP_SRV
+				bool "LWIP_DHCP_GET_NTP_SRV"
+				default n
+				help
+					Request NTP servers with discover/select. For each response packet, an callback is called, which has to be provided by the port: void dhcp_set_ntp_servers(u8_t num_ntp_servers, ip_addr_t* ntp_server_addrs)
+			config LWIP_DHCP_MAX_NTP_SERVERS
+				bool "LWIP_DHCP_MAX_NTP_SERVERS"
+				default y
+				help
+					The maximum of NTP servers requested
+		endif
+		menuconfig LWIP_AUTOIP
+			bool "AUTOIP"
+			default n
+			help
+				Enable AUTOIP module
+		if LWIP_AUTOIP = y
+			config LWIP_DHCP_AUTOIP_COOP
+				bool "LWIP_DHCP_AUTOIP_COOP"
+				default n
+				help
+					Allow DHCP and AUTOIP to be both enabled on the same interface at the same time.
+			config LWIP_DHCP_AUTOIP_COOP_TRIES
+				int "LWIP_DHCP_AUTOIP_COOP_TRIES"
+				default 9
+				help
+					 Set to the number of DHCP DISCOVER probes that should be sent before falling back on AUTOIP (the DHCP client keeps running in this case). This can be set as low as 1 to get an AutoIP address very quickly, but you should be prepared to handle a changing IP address when DHCP overrides AutoIP.
+		endif
+		menuconfig LWIP_IGMP
+			bool "IGMP"
+			default n
+			help
+				Turn on IGMP module
+		if LWIP_IGMP = y
+			config LWIP_MULTICAST_TX_OPTIONS
+				bool "LWIP_MULTICAST_TX_OPTIONS"
+				default y
+				help
+					Enable multicast TX support like the socket options IP_MULTICAST_TTL/IP_MULTICAST_IF/IP_MULTICAST_LOOP
+		endif
+	endif
+	menu "PBUF"
+		config PBUF_LINK_ENCAPSULATION_HLEN
+			int "PBUF_LINK_ENCAPSULATION_HLEN"
+			default 0 
+			help
+				the number of bytes that should be allocated for an additional encapsulation header before ethernet headers (e.g. 802.11)
+
+	endmenu
+	menuconfig LWIP_NETIF_API
+		bool "NETIF"
+		default n
+		help
+			Support netif api (in netifapi.c)
+	if LWIP_NETIF_API = y
+		config LWIP_NETIF_HOSTNAME
+			bool LWIP_NETIF_HOSTNAME
+			default n
+			help
+				use DHCP_OPTION_HOSTNAME with netif's hostname field.
+		config LWIP_NETIF_HWADDRHINT
+			bool "LWIP_NETIF_HWADDRHINT"
+			default n
+			help
+				Cache link-layer-address hints (e.g. table indices) in struct netif. TCP and UDP can make use of this to prevent scanning the ARP table for every sent packet. While this is faster for big ARP tables or many concurrent connections, it might be counterproductive if you have a tiny ARP table or if there never are concurrent connections.
+		config LWIP_NETIF_LINK_CALLBACK
+			bool "LWIP_NETIF_LINK_CALLBACK"
+			default n
+			help
+				Support a callback function from an interface whenever the link changes (i.e., link down)
+		config LWIP_NETIF_REMOVE_CALLBACK
+			bool "LWIP_NETIF_REMOVE_CALLBACK"
+			default n
+			help
+				Support a callback function that is called when a netif has been removed
+		config LWIP_NETIF_STATUS_CALLBACK
+			bool "LWIP_NETIF_STATUS_CALLBACK"
+			default n
+			help
+				 Support a callback function whenever an interface changes its up/down status (i.e., due to DHCP IP acquisition)
+		config LWIP_NETIF_TX_SINGLE_PBUF
+			bool "LWIP_NETIF_TX_SINGLE_PBUF"
+			depends on !IP_FRAG_USES_STATIC_BUF
+			default n
+			help
+				if this is set to 1, lwIP tries to put all data to be sent into one single pbuf. This is for compatibility with DMA-enabled MACs that do not support scatter-gather. Beware that this might involve CPU-memcpy before transmitting that would not be needed without this flag! Use this only if you need to!
+	endif
+	menuconfig LWIP_IPV6 
+		bool "IPv6"
+		default y
+		help
+			Enable IPv6
+	if LWIP_IPV6 = y
+		config LWIP_IPV6_AUTOCONFIG
+			bool "LWIP_IPV6_AUTOCONFIG"
+			default y
+			help
+				Enable stateless address autoconfiguration as per RFC 4862.
+		config LWIP_IPV6_DUP_DETECT_ATTEMPTS
+			bool "LWIP_IPV6_DUP_DETECT_ATTEMPTS"
+			default y
+			help
+				Number of duplicate address detection attempts.
+		config LWIP_IPV6_FORWARD
+			bool "LWIP_IPV6_FORWARD"
+			default n
+			help
+				Forward IPv6 packets across netifs
+		config LWIP_IPV6_FRAG
+			bool "LWIP_IPV6_FRAG"
+			default n
+			help
+				Fragment outgoing IPv6 packets that are too big.
+		config LWIP_IPV6_NUM_ADDRESSES
+			int "LWIP_IPV6_NUM_ADDRESSES"
+			default 3
+			help
+				Number of IPv6 addresses per netif.Number of IPv6 addresses per netif.
+		config LWIP_IPV6_REASS
+			bool "LWIP_IPV6_REASS"
+			default y
+			help
+				reassemble incoming IPv6 packets that fragmented
+		config LWIP_IPV6_SEND_ROUTER_SOLICIT
+			bool "LWIP_IPV6_SEND_ROUTER_SOLICIT"
+			default n
+			help
+				Send router solicitation messages during network startup.
+		menuconfig LWIP_ICMP6
+			bool "ICMP6"
+			default y
+			help
+				Enable ICMPv6 (mandatory per RFC)
+		if LWIP_ICMP6 = y
+			config LWIP_ICMP6_DATASIZE
+				int "LWIP_ICMP6_DATASIZE"
+				default 8
+				help
+					bytes from original packet to send back in ICMPv6 error messages.
+			config LWIP_ICMP6_HL
+				int "LWIP_ICMP6_HL"
+				default 255
+				help
+					 default hop limit for ICMPv6 messages
+		endif
+		menuconfig LWIP_IPV6_MLD
+			bool "Multicast listener discovery"
+			default y
+			help
+				Enable multicast listener discovery protocol.
+		if LWIP_IPV6_MLD = y
+			config MEMP_NUM_MLD6_GROUP
+				int "MEMP_NUM_MLD6_GROUP"
+				default 4
+				help
+					Max number of IPv6 multicast that can be joined.
+		endif
+		menuconfig LWIP_ND6_QUEUEING 
+			bool "Neighbor discovery"
+			default y
+			help
+				queue outgoing IPv6 packets while MAC address is being resolved.
+		if LWIP_ND6_QUEUEING = y
+			config LWIP_ND6_ALLOW_RA_UPDATES
+				int "LWIP_ND6_ALLOW_RA_UPDATES"
+				default 1
+				help
+					Delay before first unicast neighbor solicitation message is sent, during neighbor reachability detection. LWIP_ND6_ALLOW_RA_UPDATES==1: Allow Router Advertisement messages to update Reachable time and retransmission timers, and netif MTU.
+			config LWIP_ND6_MAX_ANYCAST_DELAY_TIME
+				int "LWIP_ND6_MAX_ANYCAST_DELAY_TIME"
+				default 1000
+				help
+					See ND RFC (time in milliseconds).
+			config LWIP_ND6_MAX_MULTICAST_SOLICIT
+				int "LWIP_ND6_MAX_MULTICAST_SOLICIT"
+				default 3
+				help	
+					max number of multicast solicit messages to send (neighbor solicit and router solicit)
+			config LWIP_ND6_MAX_NEIGHBOR_ADVERTISEMENT
+				int "LWIP_ND6_MAX_NEIGHBOR_ADVERTISEMENT"
+				default 3
+				help
+					See ND RFC
+			config LWIP_ND6_MAX_UNICAST_SOLICIT
+				int "LWIP_ND6_MAX_UNICAST_SOLICIT"
+				default 3
+				help
+					 max number of unicast neighbor solicitation messages to send during neighbor reachability detection.
+			config LWIP_ND6_NUM_DESTINATIONS
+				int "LWIP_ND6_NUM_DESTINATIONS"
+				default 10
+				help
+					number of entries in IPv6 destination cache
+			config LWIP_ND6_NUM_NEIGHBORS
+				int "LWIP_ND6_NUM_NEIGHBORS"
+				default 10
+				help
+					Number of entries in IPv6 neighbor cache
+			config LWIP_ND6_NUM_PREFIXES
+				int "LWIP_ND6_NUM_PREFIXES"
+				default 5
+				help
+					number of entries in IPv6 on-link prefixes cache
+			config LWIP_ND6_NUM_ROUTERS
+				int "LWIP_ND6_NUM_ROUTERS"
+				default 3
+				help
+					number of entries in IPv6 default router cache
+			config LWIP_ND6_REACHABLE_TIME
+				int "LWIP_ND6_REACHABLE_TIME"
+				default 30000
+				help
+					default neighbor reachable time (in milliseconds). May be updated by router advertisement messages.
+			config LWIP_ND6_RETRANS_TIMER
+				int "LWIP_ND6_RETRANS_TIMER"
+				default 1000
+				help
+					default retransmission timer for solicitation messages
+			config LWIP_ND6_TCP_REACHABILITY_HINTS
+				int "LWIP_ND6_TCP_REACHABILITY_HINTS"
+				default 1
+				help
+					Allow TCP to provide Neighbor Discovery with reachability hints for connected destinations. This helps avoid sending unicast neighbor solicitation messages.
+			config MEMP_NUM_ND6_QUEUE
+				int "MEMP_NUM_ND6_QUEUE"
+				default 20
+				help	
+					Max number of IPv6 packets to queue during MAC resolution.
+		endif
+	endif
+endmenu

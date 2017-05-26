@@ -117,6 +117,10 @@
 #define NO_REORDER
 #endif
 /**
+ * This attribute specifies a minimum alignment for the variable or structure field, measured in bytes.
+ */
+#define ALGIN(x) __attribute__((aligned(x)))
+/**
  * Nanosecond per Second 
  */
 #define NSEC_PER_SEC 1000000000ULL
@@ -158,7 +162,7 @@
  */
 #define swap32(d) ({ \
 	union {uint32_t ret; uint8_t ret8[4];} tmp;\
-	tmp.ret = d; \
+	tmp.ret = (d); \
 	/* swap 0 -> 3 and 1 -> 2 -> 0123 -> 3210 */ \
 	/* use XOR Swap */ \
 	tmp.ret8[0] ^= tmp.ret8[3]; \
@@ -176,8 +180,7 @@
  */
 #define swap16(d) ({ \
 	union {uint16_t ret; uint8_t ret8[2];} tmp;\
-	tmp.ret = d; \
-	/* swap 0 -> 3 and 1 -> 2 -> 0123 -> 3210 */ \
+	tmp.ret = (d); \
 	/* use XOR Swap */ \
 	tmp.ret8[0] ^= tmp.ret8[1]; \
 	tmp.ret8[1] ^= tmp.ret8[0]; \

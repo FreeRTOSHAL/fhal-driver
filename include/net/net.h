@@ -6,6 +6,7 @@
 #include <system.h>
 #include <semphr.h>
 #include <hal.h>
+#include <rtc.h>
 
 #define NET_NO_TIMESTAMP UINT64_MAX
 
@@ -13,6 +14,22 @@ struct net;
 struct netbuff;
 #ifdef CONFIG_NET_MULTI
 struct net_ops {
+	struct net *(*net_init)(uint32_t index);
+	int32_t (*net_deinit)(struct net *net);
+	struct netbuff *(*net_allocNetbuff)(struct net *net, size_t size);
+	int32_t (*net_reserve)(struct net *net, struct netbuff *buff, size_t size);
+	int32_t (*net_setAlignment)(struct net *net, size_t size);
+	void *(*net_getPayload)(struct net *net, struct netbuff *buff);
+	int32_t (*net_setSize)(struct net *net, struct netbuff *buff, size_t size);
+	size_t (*net_getSize)(struct net *net, struct netbuff *buff);
+	int32_t (*net_freeNetbuff)(struct net *net, struct netbuff *buff);
+	int32_t (*net_setTimestamp)(struct net *net, struct netbuff *buff, struct timespec *timestamp);
+	int32_t (*net_getTimestamp)(struct net *net, struct netbuff *buff, struct timespec *timestamp);
+	int32_t (*net_recv)(struct net *net, struct netbuff *buff);
+	int32_t (*net_send)(struct net *net, struct netbuff *buff);
+	int32_t (*net_getMTU)(struct net *net);
+	int32_t (*net_setUp)(struct net *net);
+	int32_t (*net_setDown)(struct net *net);
 };
 #endif
 struct net_generic {
@@ -77,14 +94,84 @@ struct netbuff *net_allocNetbuff(struct net *net, size_t size);
 int32_t net_reserve(struct net *net, struct netbuff *buff, size_t size);
 int32_t net_setAlignment(struct net *net, size_t size);
 void * net_getPayload(struct net *net, struct netbuff *buff);
+int32_t net_setSize(struct net *net, struct netbuff *buff, size_t size);
 size_t net_getSize(struct net *net, struct netbuff *buff);
 int32_t net_freeNetbuff(struct net *net, struct netbuff *buff);
-int32_t net_setTimestamp(struct net *net, struct netbuff *buff, uint64_t timestamp);
-uint64_t net_getTimestamp(struct net *net, struct netbuff *buff);
+int32_t net_setTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp);
+int32_t net_getTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp);
 int32_t net_recv(struct net *net, struct netbuff *buff);
 int32_t net_send(struct net *net, struct netbuff *buff);
 int32_t net_getMTU(struct net *net);
+int32_t net_setUp(struct net *net);
+int32_t net_setDown(struct net *net);
 #else
-# error TODO not defined
+inline struct net *net_init(uint32_t index) {
+	HAL_DEFINE_GLOBAL_ARRAY(net);
+	struct net_generic *a = (struct net_generic *) HAL_GET_DEV(net, index);
+	if (a == NULL) {
+		return NULL;
+	}
+	return a->ops->net_init(index);
+}
+inline int32_t net_deinit(struct net *net) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_deinit(net);
+}
+inline struct netbuff *net_allocNetbuff(struct net *net, size_t size) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_allocNetbuff(net, size);
+}
+inline int32_t net_reserve(struct net *net, struct netbuff *buff, size_t size) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_reserve(net, buff, size);
+}
+inline int32_t net_setAlignment(struct net *net, size_t size) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_setAlignment(net, size);
+}
+inline void *net_getPayload(struct net *net, struct netbuff *buff) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_getPayload(net, buff);
+}
+inline int32_t net_setSize(struct net *net, struct netbuff *buff, size_t size) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_setSize(net, buff, size);
+}
+inline size_t net_getSize(struct net *net, struct netbuff *buff) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_getSize(net, buff);
+}
+inline int32_t net_freeNetbuff(struct net *net, struct netbuff *buff) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_freeNetbuff(net, buff);
+}
+inline int32_t net_setTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_setTimestamp(net, buff, timestamp);
+}
+inline int32_t net_getTimestamp(struct net *net, struct netbuff *buff, struct timespec *timestamp) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_getTimestamp(net, buff, timestamp);
+}
+inline int32_t net_recv(struct net *net, struct netbuff *buff) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_recv(net, buff);
+}
+inline int32_t net_send(struct net *net, struct netbuff *buff) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_send(net, buff);
+}
+inline int32_t net_getMTU(struct net *net) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_getMTU(net);
+}
+inline int32_t net_setUp(struct net *net) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_setUp(net);
+}
+inline int32_t net_setDown(struct net *net) {
+	struct net_generic *n = (struct net_generic *) net;
+	return n->ops->net_setDown(net);
+}
 #endif
 #endif

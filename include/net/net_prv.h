@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <hal.h>
+#include <net/net.h>
 /**
  * Error Code Returned if Already inited
  */
@@ -60,27 +61,57 @@ HAL_DEFINE_GLOBAL_ARRAY(net);
 # define NET_DEINIT(ns, p) int32_t net_deinit(struct net *p)
 # define NET_ALLOC_NETBUFF(ns, p, size) struct netbuff *net_allocNetbuff(struct net *p, size_t size)
 # define NET_RESERVE(ns, p, buff, size) int32_t net_reserve(struct net *p, struct netbuff *buff, size_t size)
-# define NET_SET_ALIGNMENT(ns, p, size) int32_t net_setAlignment(struct net *p, size_t align)
+# define NET_SET_ALIGNMENT(ns, p, align) int32_t net_setAlignment(struct net *p, size_t align)
 # define NET_GET_PAYLOAD(ns, p, buff) void * net_getPayload(struct net *p, struct netbuff *buff)
+# define NET_SET_SIZE(ns, p, buff, size) int32_t net_setSize(struct net *p, struct netbuff *buff, size_t size)
 # define NET_GET_SIZE(ns, p, buff) size_t net_getSize(struct net *p, struct netbuff *buff)
 # define NET_FREE_BUFF(ns, p, buff) int32_t net_freeNetbuff(struct net *p, struct netbuff *buff)
-# define NET_SET_TIMESTAMP(ns, p, buff, timestamp) int32_t net_setTimestamp(struct net *p, struct netbuff *buff, uint64_t timestamp)
-# define NET_GET_TIMESTAMP(ns, p, buff) uint64_t net_getTimestamp(struct net *p, struct netbuff *buff)
+# define NET_SET_TIMESTAMP(ns, p, buff, timestamp) int32_t net_setTimestamp(struct net *p, struct netbuff *buff, struct timespec *timestamp)
+# define NET_GET_TIMESTAMP(ns, p, buff, timestamp) int32_t net_getTimestamp(struct net *p, struct netbuff *buff, struct timespec *timestamp)
 # define NET_RECV(ns, p, buff) int32_t net_recv(struct net *p, struct netbuff *buff)
-# define NET_SEND(ns, p, buff) int32_t net_send(struct net *net, struct netbuff *buff)
+# define NET_SEND(ns, p, buff) int32_t net_send(struct net *p, struct netbuff *buff)
 # define NET_GET_MTU(ns, p) int32_t net_getMTU(struct net *p)
+# define NET_SET_UP(ns, p) int32_t net_setUp(struct net *p)
+# define NET_SET_DOWN(ns, p) int32_t net_setDown(struct net *p)
 #else
-# error TODO not defined
-# define NET_OPS(ns) static const struct net_ops ns##_net_ops = { \
+# define NET_OPS(ns) const struct net_ops ns##_net_ops = { \
 	.net_init = &ns##_net_init,\
 	.net_deinit = &ns##_net_deinit,\
-	.net_funcname = &ns##_net_funcname, \
+	.net_init = &ns##_net_init, \
+	.net_deinit = &ns##_net_deinit, \
+	.net_allocNetbuff = &ns##_net_allocNetbuff, \
+	.net_reserve = &ns##_net_reserve, \
+	.net_setAlignment = &ns##_net_setAlignment, \
+	.net_getPayload = &ns##_net_getPayload, \
+	.net_setSize = &ns##_net_setSize, \
+	.net_getSize = &ns##_net_getSize, \
+	.net_freeNetbuff = &ns##_net_freeNetbuff, \
+	.net_setTimestamp = &ns##_net_setTimestamp, \
+	.net_getTimestamp = &ns##_net_getTimestamp, \
+	.net_recv = &ns##_net_recv, \
+	.net_send = &ns##_net_send, \
+	.net_getMTU = &ns##_net_getMTU, \
+	.net_setUp = &ns##_net_setUp, \
+	.net_setDown = &ns##_net_setDown, \
 }
 # define NET_INIT_DEV(ns) .gen.ops = &ns##_net_ops,
 
 # define NET_INIT(ns, index) static struct net *ns##_net_init(uint32_t index)
 # define NET_DEINIT(ns, p) static int32_t ns##_net_deinit(struct net *p)
-# define NET_FUNCNAME(ns, p, param) static int32_t ns##_net_funcname(struct net *p, uint32_t param)
+# define NET_ALLOC_NETBUFF(ns, p, size) static struct netbuff *ns##_net_allocNetbuff(struct net *p, size_t size)
+# define NET_RESERVE(ns, p, buff, size) static int32_t ns##_net_reserve(struct net *p, struct netbuff *buff, size_t size)
+# define NET_SET_ALIGNMENT(ns, p, align) static int32_t ns##_net_setAlignment(struct net *p, size_t align)
+# define NET_GET_PAYLOAD(ns, p, buff) static void * ns##_net_getPayload(struct net *p, struct netbuff *buff)
+# define NET_SET_SIZE(ns, p, buff, size) static int32_t ns##_net_setSize(struct net *p, struct netbuff *buff, size_t size)
+# define NET_GET_SIZE(ns, p, buff) static size_t ns##_net_getSize(struct net *p, struct netbuff *buff)
+# define NET_FREE_BUFF(ns, p, buff) static int32_t ns##_net_freeNetbuff(struct net *p, struct netbuff *buff)
+# define NET_SET_TIMESTAMP(ns, p, buff, timestamp) static int32_t ns##_net_setTimestamp(struct net *p, struct netbuff *buff, struct timespec *timestamp)
+# define NET_GET_TIMESTAMP(ns, p, buff, timestamp) static int32_t ns##_net_getTimestamp(struct net *p, struct netbuff *buff, struct timespec *timestamp)
+# define NET_RECV(ns, p, buff) static int32_t ns##_net_recv(struct net *p, struct netbuff *buff)
+# define NET_SEND(ns, p, buff) static int32_t ns##_net_send(struct net *p, struct netbuff *buff)
+# define NET_GET_MTU(ns, p) static int32_t ns##_net_getMTU(struct net *p)
+# define NET_SET_UP(ns, p) static int32_t ns##_net_setUp(struct net *p)
+# define NET_SET_DOWN(ns, p) static int32_t ns##_net_setDown(struct net *p)
 #endif
 /**\}*/
 #endif

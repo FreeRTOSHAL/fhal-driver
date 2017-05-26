@@ -3,7 +3,7 @@ menuconfig NET
 	depends on MACH_HAS_NET
 	help
 		Net Subsystem
-	config Net_MULTI
+	config NET_MULTI
 		bool "Multiply Net driver"
 		depends on NET
 		help
@@ -22,6 +22,24 @@ menuconfig NET
 		default n
 		help
 			Net Dummy Driver
+	config NET_VLAN
+		bool "Net VLAN Driver"
+		depends on NET
+		default n
+		help
+			Net VLAN Driver
+		config VLAN_MAX
+			int "MAX VLANs"
+			depends on NET_VLAN
+			default 2
+			help
+				Max VLAN pre Instance
+	config NET_PTP
+		bool "PTP Net Driver"
+		depends on NET
+		default n
+		help
+			PTP Net Driver
 if NET=y
 	config MAC
 		bool "Mac Subsystem"
@@ -29,4 +47,5 @@ if NET=y
 		help
 			Mac Subsystem
 	source driver/net/phy/Kconfig
+	source driver/net/lwip/Kconfig
 endif
