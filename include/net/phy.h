@@ -182,7 +182,7 @@ struct phy {
 	phy_interface_t interface;
 	struct mac *mdio;
 	struct mac *mac;
-	TaskHandle_t task;
+	OS_DEFINE_TASK(task, 512);
 };
 int32_t phy_scan(struct mac *mac, struct phy **phys[], uint8_t *len);
 struct phy *phy_init(

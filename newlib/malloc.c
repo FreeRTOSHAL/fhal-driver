@@ -26,10 +26,11 @@
 #include "FreeRTOS.h"
 #include <task.h>
 #include <semphr.h>
+#include <os.h>
 /**
  * FreeRTOS Mutex for malloc
  */
-static SemaphoreHandle_t mallockLock = NULL;
+OS_DEFINE_MUTEX_RECURSIVE(mallockLock) = NULL;
 
 /**
  * Override __malloc_lock Method to enable Multi Thread Support
@@ -53,7 +54,7 @@ void __wrap___malloc_lock (struct _reent *ptr) {
 		/* 
 		 * Create Mutex 
 		 */
-		mallockLock = xSemaphoreCreateRecursiveMutex();
+		mallockLock = OS_CREATE_MUTEX_RECURSIVE(mallockLock);
 	}
 	/**
 	 * Wait for get Semaphore

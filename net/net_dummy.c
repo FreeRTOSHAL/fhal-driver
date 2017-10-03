@@ -9,7 +9,7 @@
 struct netbuff {
 	size_t size;
 	void *payload;
-	uint64_t timestamp;
+	struct timespec timestamp;
 	ssize_t reserved;
 };
 NET_INIT(dummy, index) {
@@ -48,7 +48,7 @@ NET_ALLOC_NETBUFF(dummy, net, size) {
 		buff->reserved = 0;
 	}
 	buff->size = size;
-	buff->timestamp = NET_NO_TIMESTAMP;
+	/*buff->timestamp = NET_NO_TIMESTAMP;*/
 	return buff;
 dummy_net_allocNetbuff_error1:
 	vPortFree(buff);
@@ -76,11 +76,12 @@ NET_FREE_BUFF(dummy, net, buff) {
 	return 0;
 }
 NET_SET_TIMESTAMP(dummy, net, buff, timestamp) {
-	buff->timestamp = timestamp;
+	buff->timestamp = *timestamp;
 	return 0;
 }
-NET_GET_TIMESTAMP(dummy, net, buff) {
-	return buff->timestamp;
+NET_GET_TIMESTAMP(dummy, net, buff, timestamp) {
+	*timestamp = buff->timestamp;
+	return 0;
 }
 NET_RECV(dummy, net, buff) {
 	return -1;
@@ -90,5 +91,14 @@ NET_SEND(dummy, net, buff) {
 }
 NET_GET_MTU(dummy, net) {
 	return 1500;
+}
+NET_SET_SIZE(dummy, net, buff, size) {
+	return 0;	
+}
+NET_SET_UP(dummy, net) {
+	return 0;	
+}
+NET_SET_DOWN(dummy, net) {
+	return 0;	
 }
 NET_OPS(dummy);

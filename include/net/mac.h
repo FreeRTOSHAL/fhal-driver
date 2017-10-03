@@ -62,7 +62,7 @@ struct mac_generic {
 	/**
 	 * Mutex
 	 */
-	SemaphoreHandle_t lock;	
+	OS_DEFINE_MUTEX_RECURSIVE(lock);
 #ifdef CONFIG_MAC_MULTI
 	/**
 	 * Ops of driver in Multi mode

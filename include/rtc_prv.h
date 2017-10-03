@@ -98,7 +98,7 @@ HAL_DEFINE_GLOBAL_ARRAY(rtc);
 # define RTC_GET_TIME_ISR(ns, p, time) int32_t rtc_getTimeISR(struct rtc *p, struct timespec *time)
 # define RTC_SET_TIME_ISR(ns, p, time) int32_t rtc_setTimeISR(struct rtc *p, struct timespec *time)
 #else
-# define RTC_OPS(ns) static const struct rtc_ops ns##_rtc_ops = { \
+# define RTC_OPS(ns) const struct rtc_ops ns##_rtc_ops = { \
 	.rtc_init = &ns##_rtc_init, \
 	.rtc_deinit = &ns##_rtc_deinit, \
 	.rtc_adjust = &ns##_rtc_adjust, \

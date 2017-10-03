@@ -107,11 +107,15 @@
  * \param name Sectionname
  */
 #define SECTION_START(name) name : {
+#ifdef CONFIG_MACH_HAS_NO_LOCATION
+# define SECTION_STOP(location) }
+#else
 /**
  * Stop Section
  * \param location location
  */
-#define SECTION_STOP(location) } > location AT > location
+# define SECTION_STOP(location) } > location AT > location
+#endif
 /**
  * Stop Section located in RAM 
  * \param location Location

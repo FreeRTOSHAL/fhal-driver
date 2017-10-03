@@ -439,7 +439,7 @@ static void phy_state_machine(void *data) {
 	}
 }
 static int32_t phy_start_machine(struct phy *phy) {
-	BaseType_t ret = xTaskCreate(phy_state_machine, "Phy Task", 512, phy, CONFIG_PHY_TASK_PRIO, &phy->task);
+	BaseType_t ret = OS_CREATE_TASK(phy_state_machine, "Phy Task", 512, phy, CONFIG_PHY_TASK_PRIO, phy->task);
 	if (ret != pdPASS) {
 		return -1;
 	}

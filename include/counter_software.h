@@ -5,12 +5,16 @@
 #define COUNTER_PRV
 #include <counter_prv.h>
 #include <gpio.h>
+#include <os.h>
 extern const struct counter_ops software_counter_ops;
 struct counter_software {
 	struct counter_generic gen;
 	struct gpio_pin *pin;
 	uint32_t counter;
 	enum gpio_interrupt inter;
+#ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
+	OS_DEFINE_TASK(task, 512);
+#endif
 };
 /**\endcond*/
 int32_t counter_software_connect(struct counter *c, struct gpio_pin *pin);

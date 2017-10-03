@@ -6,9 +6,11 @@
 #include <remoteproc.h>
 #include <remoteproc_mailbox.h>
 struct mproc {
+	bool init;
 	struct rproc *rproc;
 	struct mailbox *rxmbox;
 	struct mailbox *txmbox;
+	OS_DEFINE_TASK(task, 300);
 };
 static void rprocMailbox_task(void * data) {
 	struct mproc *mproc = data;
@@ -38,15 +40,19 @@ static void rprocMailbox_task(void * data) {
 		}
 	}
 }
+static struct mproc mprocDev = {.init = false };
 static void *rprocMailbox_init(struct rproc *rproc, void *initData, uint32_t cpuID) {
 	BaseType_t ret;
-	struct mproc *mproc = pvPortMalloc(sizeof(struct mproc));
+	struct mproc *mproc = &mprocDev; 
 	struct rprocMailbox_opt *opt = initData;
+	if (mproc->init) {
+		return NULL;
+	}
+	mproc->init = false;
 	mproc->rxmbox = opt->rxmbox;
 	mproc->txmbox = opt->txmbox;
 	mproc->rproc = rproc;
-	/* TODO Stack Size */
-	ret = xTaskCreate(rprocMailbox_task, "Mainbox task", 250, mproc, CONFIG_RPROC_MAILBOX_PRIO, NULL);
+	ret = OS_CREATE_TASK(rprocMailbox_task, "Mainbox task", 300, mproc, CONFIG_RPROC_MAILBOX_PRIO, mproc->task);
 	if (ret != pdPASS) {
 		return NULL;
 	}
@@ -58,6 +64,7 @@ static int32_t rprocMailbox_deinit(struct rproc *rproc, void *data) {
 	if (ret < 0) {
 		return ret;
 	}
+	mproc->init = false;
 	return 0;
 }
 static int32_t rprocMailbox_notify(struct rproc *rproc, void *data, uint32_t virtID) {

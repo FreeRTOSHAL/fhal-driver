@@ -5,6 +5,10 @@ menu "Generic Driver Settings"
 		default n
 		help
 			Support Print Instance Name. Each Driver Add a Uniqe Instance Name. 
+	config USE_STATIC
+		bool "Use FreeRTOS Static Function"
+		depends on SUPPORT_STATIC_ALLOCATION
+		default y
 endmenu
 source driver/gpio/Kconfig
 source driver/uart/Kconfig

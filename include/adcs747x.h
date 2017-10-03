@@ -14,7 +14,7 @@ struct adc_adcs747x {
 	uint32_t ticks;
 	uint32_t bits;
 	uint32_t channelID;
-	TaskHandle_t task;
+	OS_DEFINE_TASK(task, 500);
 	struct spi_slave *slave;
 	bool (*callback)(struct adc *adc, uint32_t channel, int32_t value, void *data);
 	void *data;

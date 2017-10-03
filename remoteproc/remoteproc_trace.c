@@ -59,3 +59,4 @@ UART_PUTC_ISR(remoteproc, uart, c) {
 	uart->pos = newpos + 1;
 	return 0;
 }
+UART_OPS(remoteproc);

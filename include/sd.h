@@ -168,7 +168,7 @@ struct sd_generic {
 	/**
 	 * Mutex
 	 */
-	SemaphoreHandle_t lock;	
+	OS_DEFINE_MUTEX_RECURSIVE(lock);
 #endif
 #ifdef CONFIG_SD_MULTI
 	/**

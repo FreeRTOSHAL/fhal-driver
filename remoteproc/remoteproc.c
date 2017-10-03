@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <mailbox.h>
 #include <remoteproc.h>
 #ifdef CONFIG_RPROC_DEBUG
@@ -7,6 +8,7 @@
 # define PRINTF(...) 
 #endif
 struct rproc {
+	bool init;
 	const struct rproc_ops *ops;
 	struct resource_table *rsc;
 	bool master;
@@ -72,12 +74,15 @@ static int32_t parseRSC(struct rproc *rproc) {
 	}
 	return 0;
 }
+static struct rproc rprocDev = {.init = false};
 struct rproc *rproc_init(const struct rproc_ops *ops, void *initData, struct resource_table *rsc, uint32_t cpuID, bool master) {
 	int32_t ret;
-	struct rproc *rproc = pvPortMalloc(sizeof(struct rproc));
-	if (rproc == NULL) {
+	struct rproc *rproc = &rprocDev;
+	if (rproc->init) {
+		/* only one version of rproc is allowed */
 		goto rproc_init_error0;
 	}
+	rproc->init = true;
 	rproc->ops = ops;
 	rproc->rsc = rsc;
 	rproc->master = master;
@@ -87,23 +92,21 @@ struct rproc *rproc_init(const struct rproc_ops *ops, void *initData, struct res
 	 */
 	rproc->priv = ops->init(rproc, initData, cpuID);
 	if (rproc->priv == NULL) {
-		goto rproc_init_error1;
+		goto rproc_init_error0;
 	}
 	ret = parseRSC(rproc);
 	if (ret < 0) {
-		goto rproc_init_error2;
+		goto rproc_init_error1;
 	}
 	return rproc;
-rproc_init_error2:
-	rproc->ops->deinit(rproc, rproc->priv);
 rproc_init_error1:
-	vPortFree(rproc);
+	rproc->ops->deinit(rproc, rproc->priv);
 rproc_init_error0:
 	return NULL;
 }
 int32_t rproc_deinit(struct rproc *rproc) {
 	rproc->ops->deinit(rproc, rproc->priv);
-	vPortFree(rproc);
+	rproc->init = false;
 	return 0;
 }
 int32_t rproc_isr(struct rproc *rproc, uint32_t virtID) {

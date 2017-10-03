@@ -48,7 +48,7 @@ struct net_generic {
 	/**
 	 * Mutex
 	 */
-	SemaphoreHandle_t lock;	
+	OS_DEFINE_MUTEX_RECURSIVE(lock);
 #endif
 #ifdef CONFIG_NET_MULTI
 	/**

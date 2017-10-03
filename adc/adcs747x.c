@@ -50,7 +50,10 @@ ADC_INIT(adcs747x, index, bits, hz) {
 	adc->ticks = (1000 * portTICK_PERIOD_MS) / hz;
 	adc->bits = bits;
 	adc->slave = NULL;
-	xTaskCreate(adcs747x_task, "ADC747x Task", 500, adc, CONFIG_ADCS747X_PRIO, &adc->task);
+	ret = OS_CREATE_TASK(adcs747x_task, "ADC747x Task", 500, adc, CONFIG_ADCS747X_PRIO, adc->task);
+	if (ret != pdPASS) {
+		goto adcs747x_adc_init_error0;
+	}
 adcs747x_adc_init_exit:
 	return (struct adc *) adc;
 adcs747x_adc_init_error0:

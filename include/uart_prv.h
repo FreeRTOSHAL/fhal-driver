@@ -77,7 +77,7 @@ HAL_DEFINE_GLOBAL_ARRAY(uart);
 #endif
 
 
-# define UART_OPS(ns) static const struct uart_ops ns##ops = { \
+# define UART_OPS(ns) const struct uart_ops ns##_uart_ops = { \
 	.uart_init = &ns##_uart_init, \
 	.uart_deinit = &ns##_uart_deinit, \
 	.uart_getc = &ns##_uart_getc, \
@@ -88,7 +88,7 @@ HAL_DEFINE_GLOBAL_ARRAY(uart);
 	UART_STRING_OPS(ns) \
 }
 
-# define UART_INIT_DEV(ns) .gen.ops = &ns##ops,
+# define UART_INIT_DEV(ns) .gen.ops = &ns##_uart_ops,
 
 # define UART_INIT(ns, port, bautrate) static struct uart *ns##_uart_init(uint8_t port, uint32_t bautrate) 
 # define UART_DEINIT(ns, u) static int32_t ns##_uart_deinit(struct uart *u)

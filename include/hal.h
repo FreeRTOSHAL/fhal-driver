@@ -26,6 +26,7 @@
 #include <semphr.h>
 #include <system.h>
 #include <stdbool.h>
+#include <os.h>
 
 /**
  * \defgroup HAL Hardware Abstraction Layer for FreeRTOS
@@ -72,7 +73,7 @@ struct hal {
 	/**
 	 * Driver Access Lock
 	 */
-	SemaphoreHandle_t lock;	
+	OS_DEFINE_MUTEX_RECURSIVE(lock);
 #endif
 };
 /**
@@ -83,7 +84,7 @@ struct hal {
 inline int32_t hal_init(void *data) {
 #ifdef CONFIG_USE_RECURSIVE_MUTEXES
 	struct hal *hal = data;
-	hal->lock = xSemaphoreCreateRecursiveMutex();
+	hal->lock = OS_CREATE_MUTEX_RECURSIVE(hal->lock);
 	if (hal->lock == NULL) {
 		return -1;
 	}
@@ -246,5 +247,6 @@ HAL_DEFINE_GLOBAL_ARRAY(hal);
 		ret = (uint32_t) ((((uintptr_t) (&ns##_##p)) - ((uintptr_t) (&_dev_##gns))) / sizeof(uintptr_t)); \
 		ret; \
 	})
+
 /**\}*/
 #endif

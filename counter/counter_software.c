@@ -49,6 +49,7 @@ software_counter_init_error0:
 #ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
 #include <FreeRTOS.h>
 #include <task.h>
+#include <os.h>
 void counter_software_task(void *data) {
 	struct counter_software *counter = data;
 	bool oldvalue = false;
@@ -78,7 +79,7 @@ int32_t counter_software_connect(struct counter *c, struct gpio_pin *pin) {
 		return -1;
 	}
 #ifdef CONFIG_COUNTER_SOFTWARE_DEBUG
-	xTaskCreate(counter_software_task, "Counter Software Task", 512, c, 1, NULL);
+	counter->task = OS_CREATE_TASK(counter_software_task, "Counter Software Task", 512, c, 1, counter_software->task)
 #endif
 	return 0;
 }

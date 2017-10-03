@@ -2,6 +2,7 @@ menuconfig LWIP
 	bool "LWIP Net Layer"
 	select USE_MUTEXES
 	select USE_COUNTING_SEMAPHORES
+	depends on SUPPORT_DYNAMIC_ALLOCATION
 if LWIP = y
 	source driver/net/lwip/Kconfig.opt
 	config LWIP_MEM

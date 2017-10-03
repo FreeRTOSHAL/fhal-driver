@@ -22,6 +22,7 @@
  */
 #include <hal.h>
 #include <stdio.h>
+#include <inttypes.h>
 int32_t hal_init(void *data);
 int32_t hal_deinit(void *data);
 bool hal_isInit(void *data);
@@ -38,7 +39,7 @@ uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index);
 		printf("%s:\n", #gns); \
 		for(instances = &_dev_##gns; instances < &_dev_##gns##_end;instances++, i++) { \
 			hal = (struct hal *) *instances; \
-			printf("%ld: %s\n", i, hal->name); \
+			printf("%" PRId32 ": %s\n", i, hal->name); \
 		} \
 	} \
 }
