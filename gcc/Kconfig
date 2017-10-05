@@ -1,0 +1,9 @@
+menuconfig GCC
+	bool "GCC Tools"
+if GCC
+	config GCC_BACKTRACE
+		bool "Unwind Backtrace"
+		depends on DEBUG
+		depends on ARCH_SUPPORT_UNWIND_TABLES
+		select GENERATE_UNWIND_TABLES
+endif

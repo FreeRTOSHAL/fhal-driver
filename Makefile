@@ -18,3 +18,4 @@ obj-$(CONFIG_NET) += net/
 obj-$(CONFIG_COUNTER) += counter/
 obj-$(CONFIG_RTC) += rtc/
 obj-y += power/
+obj-$(CONFIG_GCC) += gcc/

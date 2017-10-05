@@ -10,6 +10,7 @@ menu "Generic Driver Settings"
 		depends on SUPPORT_STATIC_ALLOCATION
 		default y
 endmenu
+source driver/gcc/Kconfig
 source driver/gpio/Kconfig
 source driver/uart/Kconfig
 source driver/newlib/Kconfig

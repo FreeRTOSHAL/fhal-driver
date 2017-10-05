@@ -158,6 +158,12 @@
  */
 #define TEXT_STOP(location) SYMBOL(_end_text); SECTION_STOP(location)
 
+#ifdef CONFIG_GENERATE_UNWIND_TABLES
+# define UNWIND_TABLES SYMBOL(__exidx_start); *(.ARM.exidx* .gnu.linkonce.armexidx.*) SYMBOL(__exidx_end);
+#else
+# define UNWIND_TABLES
+#endif
+
 /**
  * Start rodata Section
  */
@@ -165,11 +171,12 @@
 /**
  * Default Entry in rodata
  */
-#define RODATA_DEFAULT *(.rodata) *(.rodata*) 
+#define RODATA_DEFAULT *(.rodata) *(.rodata*)
 /**
  * Stop rodata Section
+ * And add Unwind Tables after rodata Section
  */
-#define RODATA_STOP(location) SECTION_STOP(location)
+#define RODATA_STOP(location) SECTION_STOP(location) SECTION_START(.unwind) UNWIND_TABLES SECTION_STOP(location)
 
 /**
  * start Data Table Section
