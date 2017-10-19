@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <FreeRTOS.h>
 #include <task.h>
@@ -85,8 +86,35 @@ int _write(int file, char *data, int len) {
 		errno = EIO;
 		goto _write_error_0;
 	}*/ /* TODO */
+#ifdef CONFIG_NEWLIB_USE_PUTS
+	{
+		int j;
+		int k;
+		char dataWithNull[51]; 
+		i = len;
+		do {
+			for (j = 0, k = 0; j < len && k < 50; j++, k++) {
+# ifdef CONFIG_NEWLIB_UART_NEWLINE
+				if (data[j] == '\n') {
+					dataWithNull[k] = '\r';
+					k++;
+				}
+# endif
+				dataWithNull[k] = data[j];
+			}
+			data+=j;
+			len-=j;
+			dataWithNull[k] = '\0';
+			ret = uart_puts(uart, dataWithNull, portMAX_DELAY);
+			if (ret < 0 ) {
+				errno = EIO;
+				goto _write_error_1;
+			}
+		} while (len > 0);
+	}
+#else
 	for (i = 0; i < len; i++, data++) {
-#ifdef CONFIG_NEWLIB_UART_NEWLINE
+# ifdef CONFIG_NEWLIB_UART_NEWLINE
 		/* replace \n with \r\n only if file == stdout */
 		if (file == 1 && *data == '\n') {
 			ret = uart_putc(uart, '\r', portMAX_DELAY);
@@ -95,13 +123,14 @@ int _write(int file, char *data, int len) {
 				goto _write_error_1;
 			}
 		}
-#endif
+# endif
 		ret = uart_putc(uart, *data, portMAX_DELAY);
 		if (ret < 0 ) {
 			errno = EIO;
 			goto _write_error_1;
 		}
 	}
+#endif
 	uart_unlock(uart, -1);
 	/*
 	if (ret != 1) {

@@ -6,19 +6,25 @@ menuconfig NEWLIB
 config NEWLIB_UART
 	bool "Use stdio, stdin and stdout"
 	depends on NEWLIB
+	depends on UART
 	select NEWLIB_MALLOC
 	default n
 	help
 		Activate Use of printf and scanf..
-config NEWLIB_UART_NEWLINE
-	bool "Replace \n to \r\n. Needed for minicom, putty,..."
-	depends on NEWLIB
-	depends on NEWLIB_UART
-	default y
-	help
-		The most UART Programms use \r\n as new line. 
-		The Api Replace the \n aganst \r\n
-
+	config NEWLIB_UART_NEWLINE
+	       bool "Replace \n to \r\n. Needed for minicom, putty,..."
+	       depends on NEWLIB
+	       depends on NEWLIB_UART
+	       default y
+	       help
+		       The most UART Programms use \r\n as new line. 
+		       The Api Replace the \n aganst \r\n
+	config NEWLIB_USE_PUTS
+		bool "Use puts in _write"
+		depends on NEWLIB_UART
+		default n
+		help
+			Use uart_puts instat of uart_putc
 config NEWLIB_MALLOC
 	bool "Use Malloc"
 	depends on NEWLIB
