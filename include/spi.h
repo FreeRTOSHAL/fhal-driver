@@ -65,7 +65,7 @@ struct spi_opt {
 	bool cpol;
 	/**
 	 * CPHA = false Data on rising 
-	 * CPHA = false Data on falling
+	 * CPHA = true Data on falling
 	 */
 	bool cpha;
 	/**
