@@ -61,7 +61,7 @@
 
 #else
 
-# define OS_DEFINE_TASK(name, stackSize) TaskHandle_t *name
+# define OS_DEFINE_TASK(name, stackSize) TaskHandle_t name
 # define OS_DEFINE_QUEUE(name, length, size) QueueHandle_t *name
 # define OS_DEFINE_TIMER(name) TimerHandle_t *name
 # define OS_DEFINE_EVENT_GROUP(name) EventGroupHandle_t *name
@@ -70,7 +70,7 @@
 # define OS_DEFINE_MUTEX(name) OS_DEFINE_SEMARPHORE(name)
 # define OS_DEFINE_MUTEX_RECURSIVE(name) OS_DEFINE_SEMARPHORE(name)
 
-# define OS_CREATE_TASK(function, name, stackSize, parameter, prio, handleName) xTaskCreate(function, name, stackSize, parameter, prio, handleName)
+# define OS_CREATE_TASK(function, name, stackSize, parameter, prio, handleName) xTaskCreate(function, name, stackSize, parameter, prio, &handleName)
 # define OS_CREATE_QUEUE(length, size, handleName) xQueueCreate(length, size)
 # define OS_CREATE_TIMER(name, period, autoReload, timerID, function, handleName) xTimerCreate(name,period, autoReload, timerID, function)
 # define OS_CREATE_EVENT_GROUP(handleName) xEventGroupCreate()
