@@ -45,7 +45,6 @@ ADC_INIT(test, index, bits, hz) {
 	/* waittime per ticks */
 	adc->ticks = (1000 * portTICK_PERIOD_MS) / hz;
 	adc->bits = bits;
-	adc->slave = NULL;
 	ret = OS_CREATE_TASK(adc_test_task, "ADC Test Task", 500, adc, CONFIG_ADC_TEST_PRIO, adc->task);
 	if (ret != pdPASS) {
 		goto test_adc_init_error0;
@@ -55,7 +54,7 @@ test_adc_init_exit:
 test_adc_init_error0:
 	return NULL;
 }
-int32_t adc_test_connect(struct adc *a, int32_t callback(struct adc *adc, void *data), void *data) {
+int32_t adc_test_connect(struct adc *a, int32_t callback(struct adc *adc, uint32_t channel, void *data), void *data) {
 	struct adc_test *adc = (struct adc_test *) a;
 	if (!callback) {
 		return -1;
@@ -78,7 +77,7 @@ ADC_GET_ISR(test, a) {
 	struct adc_test *adc = (struct adc_test *) a;
 	int32_t value;
 	if (adc->test_callback) {
-		value = adc->test_callback(a, adc->test_data);
+		value = adc->test_callback(a, adc->channelID, adc->test_data);
 	} else {
 		return -1;
 	}
