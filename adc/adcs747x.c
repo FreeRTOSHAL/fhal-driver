@@ -26,7 +26,11 @@ static void adcs747x_task(void *data) {
 		ret = adc_get((struct adc *) adc, adc->ticks);
 		CONFIG_ASSERT(ret >= 0);
 		/* return not needed Scheduler is running and scheduled higher prio Task */
-		(void) adc->callback((struct adc *) adc, adc->channelID, ret, adc->data);
+		if (adc->callback) {
+			(void) adc->callback((struct adc *) adc, adc->channelID, ret, adc->data);
+		} else {
+			adc_stop((struct adc * ) adc);
+		}
 		vTaskDelayUntil(&oldtime, adc->ticks);
 	}
 }
