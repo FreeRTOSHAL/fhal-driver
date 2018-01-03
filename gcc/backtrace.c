@@ -1,22 +1,20 @@
+#include <FreeRTOS.h>
 #include <stdio.h>
 #include <unwind.h>
 _Unwind_Reason_Code trace_fcn(_Unwind_Context *ctx, void *d)
 {
-	static uintptr_t lastpc = 0x0;
-	static uint32_t counter = 0x0;
 	int *depth = (int*)d;
 	uintptr_t pc = _Unwind_GetIP(ctx);
-	if (pc == lastpc) {
-		if (counter++ >= 1) {
-			printf("\t#%d: Endless Loop\n", *depth);
-			return _URC_END_OF_STACK;
-		}
-	} else {
-		counter = 0;
+#ifdef CONFIG_ARCH_JUMP_ADDR_ODD
+	if (pc == (((uintptr_t) &taskReturnFunction) - 1)) {
+#else
+	if (pc == ((uintptr_t) &taskReturnFunction)) {
+#endif
+		printf("\t#%d: End of Stack\n", *depth);
+		return _URC_END_OF_STACK;
 	}
 	printf("\t#%d: program counter at 0x%x\n", *depth, pc);
 	(*depth)++;
-	lastpc = pc;
 	return _URC_NO_REASON;
 }
 void backtrace() {

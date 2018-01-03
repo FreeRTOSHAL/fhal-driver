@@ -5,5 +5,6 @@ if GCC
 		bool "Unwind Backtrace"
 		depends on DEBUG
 		depends on ARCH_SUPPORT_UNWIND_TABLES
+		depends on ARCH_SUPPORT_CUSTOM_TASK_RETURN_ADDRESS
 		select GENERATE_UNWIND_TABLES
 endif
