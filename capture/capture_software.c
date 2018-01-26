@@ -8,16 +8,34 @@ static bool capture_software_callback(struct gpio_pin *pin, uint32_t pinID, void
 	bool higherTaskHasWoken = false;
 	struct timespec time; 
 	int32_t ret;
-	ret = rtc_getTimeISR(capture->rtc, &time);
-	CONFIG_ASSERT(ret >= 0);
-	CONFIG_ASSERT(time.tv_sec >= capture->oldtime.tv_sec);
-	uint64_t sec = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec));
-	int64_t usec = (((int64_t) time.tv_nsec) - ((int64_t) capture->oldtime.tv_nsec)) / 1000LL;
-	if (usec < 0) {
-		CONFIG_ASSERT(sec > 0);
-		sec--;
-		usec += 1000000LL;
-	}
+	uint64_t sec;
+	uint64_t usec;
+	bool retry = false;
+	int counter = 0;
+	do {
+		ret = rtc_getTimeISR(capture->rtc, &time);
+		CONFIG_ASSERT(ret >= 0);
+		CONFIG_ASSERT(time.tv_sec >= capture->oldtime.tv_sec);
+		sec = (((uint64_t) time.tv_sec) - ((uint64_t) capture->oldtime.tv_sec));
+		usec = (((int64_t) time.tv_nsec) - ((int64_t) capture->oldtime.tv_nsec)) / 1000LL;
+		if (usec < 0) {
+			if (sec == 0) {
+				retry = true;
+				counter++;
+				/* retry or error */
+				continue;
+			} else {
+				retry = false;
+			}
+			sec--;
+			usec += 1000000LL;
+		} else {
+			retry = false;
+		}
+		counter++;
+	} while (retry && counter < 2);
+	/* Check to many trys */
+	CONFIG_ASSERT(!(retry && counter >= 2));
 	capture->time = (sec * 1000000ULL) + usec;
 
 	capture->oldtime = time;

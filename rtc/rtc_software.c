@@ -103,12 +103,12 @@ RTC_SET_TIME_ISR(software, r, time) {
 	if (ret < 0) {
 		return -1;
 	}
-	rtc->sec = time->tv_sec;
 	/* TODO: Set nsec not supported */
 	ret = timer_periodic(rtc->timer, 1000000UL);
 	if (ret < 0) {
 		return -1;
 	}
+	rtc->sec = time->tv_sec;
 	return 0;
 }
 RTC_OPS(software);
