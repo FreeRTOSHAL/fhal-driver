@@ -48,7 +48,7 @@ HAL_DEFINE_GLOBAL_ARRAY(timer);
 #define TIMER_PERIODIC(ns, t, us) int32_t timer_periodic(struct timer *t, uint64_t us)
 #define TIMER_GET_TIME(ns, t) uint64_t timer_getTime(struct timer *t)
 #else
-#define TIMER_OPS(ns) static const struct timer_ops ns##ops = { \
+#define TIMER_OPS(ns) const struct timer_ops ns##_timer_ops = { \
 	.timer_init = &ns##_timer_init, \
 	.timer_deinit = &ns##_timer_deinit, \
 	.timer_setOverflowCallback = &ns##_timer_setOverflowCallback, \
@@ -58,7 +58,7 @@ HAL_DEFINE_GLOBAL_ARRAY(timer);
 	.timer_periodic = &ns##_timer_periodic, \
 	.timer_getTime = &ns##_timer_getTime, \
 }
-# define TIMER_INIT_DEV(ns) .gen.ops = &ns##ops,
+# define TIMER_INIT_DEV(ns) .gen.ops = &ns##_timer_ops,
 #define TIMER_INIT(ns, index, prescaler, basetime, adjust) static struct timer *ns##_timer_init(uint32_t index, uint32_t prescaler, uint64_t basetime, int64_t adjust)
 #define TIMER_DEINIT(ns, t) static int32_t ns##_timer_deinit(struct timer *t)
 
