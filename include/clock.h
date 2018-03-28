@@ -56,9 +56,10 @@ int64_t clock_getCPUSpeed(struct clock *clk);
 /**
  * Get Periphery Clock Speed
  * \param clk CLock Instance
+ * \param id Periphery Clock ID
  * \return -1 on error >= 0 Periphery Speed in Hz
  */
-int64_t clock_getPeripherySpeed(struct clock *clk);
+int64_t clock_getPeripherySpeed(struct clock *clk, uint32_t id);
 /**
  * Deinit Clock
  * \param clk CLock Instance
