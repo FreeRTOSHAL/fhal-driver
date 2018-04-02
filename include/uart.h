@@ -61,7 +61,7 @@ struct uart_ops {
 
 	char (*uart_getcISR)(struct uart *uart);
 	int32_t (*uart_putcISR)(struct uart *uart, char c);
-# ifdef CONFIG_UART_GENERIC_BYTE
+# ifndef CONFIG_UART_GENERIC_BYTE
 	int32_t (*uart_readISR)(struct uart *uart, uint8_t *data, size_t length);
 	int32_t (*uart_writeISR)(struct uart *uart, uint8_t *data, size_t length);
 # endif
@@ -219,7 +219,7 @@ inline int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickTy
 }
 inline int32_t uart_write(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime) {
 	struct uart_generic *u = (struct uart_generic *) uart;
-	return u->ops->uart_write(uart, data, length);
+	return u->ops->uart_write(uart, data, length, waittime);
 }
 # else 
 int32_t uart_read(struct uart *uart, uint8_t *data, size_t length, TickType_t waittime);
