@@ -28,6 +28,7 @@
 #include <stdbool.h>
 /**
  * \defgroup Operation System Layer for FreeRTOS
+ * \ingroup HAL
  * 
  * \code
  * #include <os.h>
