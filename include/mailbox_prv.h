@@ -30,60 +30,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <hal.h>
-/**
- * \defgroup mailbox_driver_prv Driver View form Example driver 
- * \ingroup mailbox_driver
- * 
- * This is the Driver View form Example Driver. 
- * 
- * This is a implementation of a driver 
- * \include driver/mailbox/mailbox_dev0.c
- * 
- * Driver with board specific like the MPU9247 has special macros to create new Instances. (for mailbox: MPU9250_ADDDEV())
- * \{
- */
-/**
- * Error Code Returned if Already inited
- */
 #define MAILBOX_ALREDY_INITED 1
-/**
- * Generic Init Function
- * 
- * Check Driver Already inited and init mutex if active
- * \param mailbox Instants of Driver
- * \return MAILBOX_ALREDY_INITED on alredy init 0 on not init < 0 error
- */
 int32_t mailbox_genericInit(struct mailbox *mailbox);
 #ifdef CONFIG_MAILBOX_THREAD_SAVE
-/**
- * Lock Driver
- * if THREAD_SAVE is not defined this instruction has no function
- */
 # define mailbox_lock(u, w, e) HAL_LOCK(u, w, e)
-/**
- * Unlock Driver
- * if THREAD_SAVE is not defined this instruction has no function
- */
 # define mailbox_unlock(u, e) HAL_UNLOCK(u, e)
 #else
 # define mailbox_lock(u, w, e)
 # define mailbox_unlock(u, e)
 #endif
-/**
- * Add Driver Instance
- * \param ns Driver namespace
- * \param p Pointer to driver instance
- */
 #define MAILBOX_ADDDEV(ns, p) HAL_ADDDEV(mailbox, ns, p)
-/*
- * Define Global Array for Driver Access
- */
 HAL_DEFINE_GLOBAL_ARRAY(mailbox);
-/**
- * Simple function for access a dev from driver
- * \param index index
- * \return see HAL_GET_DEV
- */
 #define MAILBOX_GET_DEV(index) HAL_GET_DEV(mailbox, index)
 #ifndef CONFIG_MAILBOX_MULTI
 # define MAILBOX_OPS(ns)
@@ -97,10 +54,6 @@ HAL_DEFINE_GLOBAL_ARRAY(mailbox);
 # define MAILBOX_SEND_ISR(ns, p, data) int32_t mailbox_sendISR(struct mailbox *p, uint32_t data)
 # define MAILBOX_RECV_ISR(ns, p, data) int32_t mailbox_recvISR(struct mailbox *p, uint32_t *data)
 #else
-/**
- * Define Operation
- * \param ns Driver Namespace
- */
 # define MAILBOX_OPS(ns) static const struct mailbox_ops ns##_mailbox_ops = { \
 	.mailbox_init = &ns##_mailbox_init,\
 	.mailbox_deinit = &ns##_mailbox_deinit,\
@@ -109,30 +62,9 @@ HAL_DEFINE_GLOBAL_ARRAY(mailbox);
 	.mailbox_sendISR = &ns##_mailbox_sendISR,\
 	.mailbox_recvISR = &ns##_mailbox_recvISR,\
 }
-/**
- * Init Driver Struct 
- * \param ns Driver Namespace
- */
 # define MAILBOX_INIT_DEV(ns) .gen.ops = &ns##_mailbox_ops,
-
-/**
- * Define mailbox_init() Implementation 
- * \param ns Driver namespace Variablenname
- * \param index Index Variablenname
- */
 # define MAILBOX_INIT(ns, index) static struct mailbox *ns##_mailbox_init(uint32_t index)
-/**
- * Define mailbox_deinit() Implementation
- * \param ns Driver namespace Variablenname
- * \param p Instance Variablenname
- */
 # define MAILBOX_DEINIT(ns, p) static int32_t ns##_mailbox_deinit(struct mailbox *p)
-/**
- * Define mailbox_funcname() Implementation
- * \param ns Driver namespace Variablenname
- * \param p Instance Variablenname
- * \param param Param Variablenname
- */
 # define MAILBOX_SEND(ns, p, data, w) int32_t ns##_mailbox_send(struct mailbox *p, uint32_t data, TickType_t w)
 # define MAILBOX_RECV(ns, p, data, w) int32_t ns##_mailbox_recv(struct mailbox *p, uint32_t *data, TickType_t w)
 # define MAILBOX_SEND_ISR(ns, p, data) int32_t ns##_mailbox_sendISR(struct mailbox *p, uint32_t data)
