@@ -30,60 +30,17 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <hal.h>
-/**
- * \defgroup rtc_driver_prv Driver View form RTC driver 
- * \ingroup rtc_driver
- * 
- * This is the Driver View form RTC Driver. 
- * 
- * This is a implementation of a driver 
- * \include driver/rtc/rtc_dev0.c
- * 
- * Driver with board specific like the MPU9247 has special macros to create new Instances. (for rtc: MPU9250_ADDDEV())
- * \{
- */
-/**
- * Error Code Returned if Already inited
- */
 #define RTC_ALREDY_INITED 1
-/**
- * Generic Init Function
- * 
- * Check Driver Already inited and init mutex if active
- * \param rtc Instants of Driver
- * \return RTC_ALREDY_INITED on alredy init 0 on not init < 0 error
- */
 int32_t rtc_genericInit(struct rtc *rtc);
 #ifdef CONFIG_RTC_THREAD_SAVE
-/**
- * Lock Driver
- * if THREAD_SAVE is not defined this instruction has no function
- */
 # define rtc_lock(u, w, e) HAL_LOCK(u, w, e)
-/**
- * Unlock Driver
- * if THREAD_SAVE is not defined this instruction has no function
- */
 # define rtc_unlock(u, e) HAL_UNLOCK(u, e)
 #else
 # define rtc_lock(u, w, e)
 # define rtc_unlock(u, e)
 #endif
-/**
- * Add Driver Instance
- * \param ns Driver namespace
- * \param p Pointer to driver instance
- */
 #define RTC_ADDDEV(ns, p) HAL_ADDDEV(rtc, ns, p)
-/*
- * Define Global Array for Driver Access
- */
 HAL_DEFINE_GLOBAL_ARRAY(rtc);
-/**
- * Simple function for access a dev from driver
- * \param index index
- * \return see HAL_GET_DEV
- */
 #define RTC_GET_DEV(index) HAL_GET_DEV(rtc, index)
 #ifndef CONFIG_RTC_MULTI
 # define RTC_OPS(ns)
@@ -118,6 +75,5 @@ HAL_DEFINE_GLOBAL_ARRAY(rtc);
 # define RTC_GET_TIME_ISR(ns, p, time) static int32_t ns##_rtc_getTimeISR(struct rtc *p, struct timespec *time)
 # define RTC_SET_TIME_ISR(ns, p, time) static int32_t ns##_rtc_setTimeISR(struct rtc *p, struct timespec *time)
 #endif
-/**\}*/
 #endif
 

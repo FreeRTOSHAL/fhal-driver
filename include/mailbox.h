@@ -164,4 +164,5 @@ inline int32_t mailbox_recvISR(struct mailbox *mailbox, uint32_t *data) {
 	return p->ops->mailbox_recvISR(mailbox, data);
 }
 #endif
+/**\}*/
 #endif

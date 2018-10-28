@@ -157,6 +157,7 @@ int32_t can_deinit(struct can *can);
 /**
  * Set CAN Interrupt Callback for a filter
  * \param can CAN instance
+ * \param filterID filterID
  * \param callback Callback
  * \param data Data parsed to Callback
  * \return -1 on error 0 on ok
@@ -172,7 +173,7 @@ int32_t can_registerFilter(struct can *can, struct can_filter *filter);
 /**
  * Deregister CAN Filter
  * \param can CAN instance
- * \param filter Filter
+ * \param filterID FilterID
  * \return -1 on error 0 on ok
  */
 int32_t can_deregisterFilter(struct can *can, uint32_t filterID);
@@ -188,6 +189,7 @@ int32_t can_send(struct can *can, struct can_msg *msg, TickType_t waittime);
 /**
  * Receive CAN Message
  * \param can CAN instance
+ * \param filterID filterID
  * \param msg CAN Message
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error 0 on ok
@@ -203,6 +205,7 @@ int32_t can_sendISR(struct can *can, struct can_msg *msg);
 /**
  * Receive CAN Message
  * \param can CAN instance
+ * \param filterID filterID
  * \param msg CAN Message
  * \return -1 on error 0 on ok
  */

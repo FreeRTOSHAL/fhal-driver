@@ -83,6 +83,7 @@ struct counter_generic {
 /**
  * Init Function
  * \param index in counters Array
+ * \param mode @see{counter_mode}
  * \return Counter Instants or NULL
  */
 struct counter *counter_init(uint32_t index, enum counter_mode mode);
