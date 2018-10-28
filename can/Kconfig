@@ -1,0 +1,10 @@
+menuconfig CAN
+	bool "CAN Subsystem"
+	depends on MACH_HAS_CAN 
+	help
+		Activate CAN Subsystem
+	config CAN_MULTI
+		bool "Multiply CAN"
+		depends on CAN
+		help
+			Multiply CAN Driver

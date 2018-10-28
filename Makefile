@@ -19,3 +19,4 @@ obj-$(CONFIG_COUNTER) += counter/
 obj-$(CONFIG_RTC) += rtc/
 obj-y += power/
 obj-$(CONFIG_GCC) += gcc/
+obj-$(CONFIG_CAN) += can/

@@ -30,6 +30,7 @@ source driver/remoteproc/Kconfig
 source driver/net/Kconfig
 source driver/counter/Kconfig
 source driver/rtc/Kconfig
+source driver/can/Kconfig
 config CACHE
 	bool
 	help
