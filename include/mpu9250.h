@@ -200,6 +200,7 @@
 #define MPU_FIFO_R_W 0x74
 #define MPU_WHO_AM_I 0x75
 #define MPU_WHO_AM_I_VAL 0x71
+#define MPU_WHO_AM_I_VAL_ICM20938 0x71
 #define MPU_XA_OFFSET_H 0x77
 #define MPU_XA_OFFSET_L 0x78
 #define MPU_YA_OFFSET_H 0x7A

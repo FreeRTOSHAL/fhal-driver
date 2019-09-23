@@ -227,7 +227,8 @@ static int32_t mpu9250_isAlive(struct mpu9250 *mpu, TickType_t waittime) {
 	if (ret < 0) {
 		return -1;
 	}
-	if (val != MPU_WHO_AM_I_VAL) {
+	if (!(val == MPU_WHO_AM_I_VAL || val == MPU_WHO_AM_I_VAL_ICM20938)) {
+		PRINTF("MPU is not alive who am i register: 0x%x", val);
 		return -1;
 	}
 	PRINTF("MPU is alive\n");
