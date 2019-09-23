@@ -15,7 +15,7 @@ menuconfig ADC
 		help
 			Multiply ADCs
 	config ADCS747X
-		bool "TI ACSS747x Driver"
+		bool "TI ADCS747x Driver"
 		depends on SPI
 		depends on ADC
 		help 
@@ -26,6 +26,19 @@ menuconfig ADC
 			default 4
 			help
 				ADCS747X Support Callback by FreeRTOS Thread
+				On HW this is ISR Callback
+	config MCP320X
+		bool "TI MCP320X Driver"
+		depends on SPI
+		depends on ADC
+		help 
+			TI ACSS747x Driver connected with spi
+		config MCP320X_PRIO
+			int "MCP320X Thread Prio"
+			depends on MCP320X
+			default 4
+			help
+				MCP320X Support Callback by FreeRTOS Thread
 				On HW this is ISR Callback
 	config ADC_TEST
 		bool "ADC Test Driver"
