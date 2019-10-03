@@ -4,7 +4,7 @@ menuconfig GPIO
 	help
 		Activate GPIO Subsystem
 	config GPIO_MULTI
-		bool "Multiply GPIOs"
+		bool "Multiple GPIO Drivers"
 		depends on GPIO
 		help
-			Multiply GPIOs
+			Multiple GPIOs Driver Mode
