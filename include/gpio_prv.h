@@ -52,7 +52,7 @@ HAL_DEFINE_GLOBAL_ARRAY(gpio);
 # define GPIO_PIN_TOGGLE_PIN(ns, p) int32_t gpioPin_togglePin(struct gpio_pin *p)
 # define GPIO_PIN_GET_VALUE(ns, p) bool gpioPin_getValue(struct gpio_pin *p)
 #else
-# define GPIO_OPS(ns) static const struct gpio_ops ns##_ops = { \
+# define GPIO_OPS(ns) const struct gpio_ops ns##_gpio_ops = { \
 	.gpio_init = ns##_gpio_init, \
 	.gpio_deinit = ns##_gpio_deinit, \
 	.gpioPin_init = ns##_gpioPin_init, \
@@ -69,7 +69,7 @@ HAL_DEFINE_GLOBAL_ARRAY(gpio);
 	.gpioPin_togglePin = ns##_gpioPin_togglePin, \
 	.gpioPin_getValue = ns##_gpioPin_getValue \
 }
-# define GPIO_INIT_DEV(ns) .gen.ops = &ns##_ops,
+# define GPIO_INIT_DEV(ns) .gen.ops = &ns##_gpio_ops,
 # define GPIO_INIT(ns, index) static struct gpio *ns##_gpio_init(uint32_t index)
 # define GPIO_DEINIT(ns, g) static int32_t ns##_gpio_deinit(struct gpio *g)
 # define GPIO_PIN_INIT(ns, g, p, dir, setting) static struct gpio_pin *ns##_gpioPin_init(struct gpio *g, uint32_t p, enum gpio_direction dir, enum gpio_setting setting)
