@@ -99,7 +99,7 @@ PWM_INIT(tlc5947, index) {
 	}
 	pwm->gen.init = true;
 	pwm->val = 0;
-	return 0;
+	return pwm;
 }
 PWM_DEINIT(tlc5947, p) {
 	struct tlc5947_pwm *pwm = (struct tlc5947_pwm *) p;
