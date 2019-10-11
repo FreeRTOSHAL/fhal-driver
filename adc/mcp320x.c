@@ -5,6 +5,11 @@
 #include <mcp320x.h>
 #include <FreeRTOS.h>
 #include <task.h>
+#ifdef CONFIG_MCP320X_DEBUG
+# define PRINTF(fmt, ...) printf("MCP320X: " fmt, ##__VA_ARGS__)
+#else
+# define PRINTF(fmt, ...)
+#endif
 /* ISR Emulation Thread */
 static void mcp320x_task(void *data) {
 	TickType_t oldtime;
@@ -115,53 +120,54 @@ ADC_GET(mcp320x, a, waittime) {
 	uint16_t send[3] = {
 		/* start bit */
 		BIT(2) | 
-		/* channel 4 - 7 are diff channel */
-		(((adc->channelID >> 2) & 0x1) << 1),
-		/* channel 0 - 3 are adc */
-		((adc->channelID & 0x3) << 7),
-		0,
+		/* channel 8 - 15 are diff channel, diff value is inverted */
+		((((~adc->channelID) >> 3) & 0x1) << 1) |
+		((adc->channelID >> 2) & 0x1),
+		((adc->channelID & 0x3) << 6),
 	};
 	uint16_t value[3];
 	int32_t ret;
 	adc_lock(a, waittime, -1);
 	HAL_LOCK(adc->adcc, waittime, -1);
+	PRINTF("Send: 0x%x 0x%x 0x%x\n", send[0], send[1], send[2]);
 	ret = spiSlave_transver(adc->adcc->slave, send, value, 3, waittime);
 	if (ret < 0) {
 		HAL_UNLOCK(adc->adcc, -1);
 		adc_unlock(a, -1);
 		return -1;
 	}
+	PRINTF("Recv: 0x%x 0x%x 0x%x\n", value[0], value[1], value[2]);
 	HAL_UNLOCK(adc->adcc, -1);
 	adc_unlock(a, -1);
 	/* Bit 5 must 0x0 else error! */
-	if (((value[1] >> 5) & 0x1) != 0x0) {
+	if (((value[1] >> 4) & 0x1) != 0x0) {
 		return -1;
 	}
-	return ((value[1] & 0xF) << 8) & value[0];
+	return ((value[1] & 0xF) << 8) & value[2];
 }
 ADC_GET_ISR(mcp320x, a) {
 	struct adc_mcp320x *adc = (struct adc_mcp320x *) a;
 	uint16_t send[3] = {
 		/* start bit */
 		BIT(2) | 
-		/* channel 4 - 7 are diff channel */
-		(((adc->channelID >> 2) & 0x1) << 1),
-		/* channel 0 - 3 are adc */
-		((adc->channelID & 0x3) << 7),
-		0,
+		/* channel 8 - 15 are diff channel, diff value is inverted */
+		((((~adc->channelID) >> 3) & 0x1) << 1) |
+		((adc->channelID >> 2) & 0x1),
+		((adc->channelID & 0x3) << 6),
 	};
 	uint16_t value[3];
 	int32_t ret;
+	PRINTF("Send: 0x%x 0x%x 0x%x\n", send[0], send[1], send[2]);
 	ret = spiSlave_transverISR(adc->adcc->slave, send, value, 3);
 	if (ret < 0) {
 		return -1;
 	}
+	PRINTF("Recv: 0x%x 0x%x 0x%x\n", value[0], value[1], value[2]);
 	/* Bit 5 must 0x0 else error! */
-	if (((value[1] >> 5) & 0x1) != 0x0) {
+	if (((value[1] >> 4) & 0x1) != 0x0) {
 		return -1;
 	}
-	return ((value[1] & 0xF) << 8) & value[0];
-
+	return ((value[1] & 0xF) << 8) & value[2];
 }
 ADC_SET_CALLBACK(mcp320x, a, callback, data) {
 	struct adc_mcp320x *adc = (struct adc_mcp320x *) a;

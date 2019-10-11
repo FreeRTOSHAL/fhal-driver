@@ -40,6 +40,9 @@ menuconfig ADC
 			help
 				MCP320X Support Callback by FreeRTOS Thread
 				On HW this is ISR Callback
+		config MCP320X_DEBUG
+			bool "MCP320X Debug printf"
+			default n
 	config ADC_TEST
 		bool "ADC Test Driver"
 		default n
