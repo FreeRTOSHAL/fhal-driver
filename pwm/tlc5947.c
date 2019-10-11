@@ -196,7 +196,7 @@ GPIO_PIN_SET_VALUE(tlc5947, p, value) {
 }
 GPIO_PIN_SET_PIN(tlc5947, p) {
 	struct tlc5947_gpioPin *pin = (struct tlc5947_gpioPin *) p;
-	pin->pwm->val = 1000;
+	pin->pwm->val = (1 << 12) - 1;
 	return tlc5947_update(pin->pwm->tlc);
 }
 GPIO_PIN_CLEAR_PIN(tlc5947, p) {
@@ -206,7 +206,7 @@ GPIO_PIN_CLEAR_PIN(tlc5947, p) {
 }
 GPIO_PIN_TOGGLE_PIN(tlc5947, p) {
 	struct tlc5947_gpioPin *pin = (struct tlc5947_gpioPin *) p;
-	pin->pwm->val = (pin->pwm->val == 0) ? 1000 : 0;
+	pin->pwm->val = (pin->pwm->val == 0) ? ((1 << 12) - 1) : 0;
 	return tlc5947_update(pin->pwm->tlc);
 }
 GPIO_PIN_GET_VALUE(tlc5947, p) {
