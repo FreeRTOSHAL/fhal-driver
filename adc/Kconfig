@@ -42,6 +42,7 @@ menuconfig ADC
 				On HW this is ISR Callback
 		config MCP320X_DEBUG
 			bool "MCP320X Debug printf"
+			depends on MCP320X
 			default n
 	config ADC_TEST
 		bool "ADC Test Driver"

@@ -143,7 +143,8 @@ ADC_GET(mcp320x, a, waittime) {
 	if (((value[1] >> 4) & 0x1) != 0x0) {
 		return -1;
 	}
-	return ((value[1] & 0xF) << 8) & value[2];
+	PRINTF("Value: 0x%x\n", ((value[1] & 0xF) << 8) | value[2]);
+	return ((value[1] & 0xF) << 8) | value[2];
 }
 ADC_GET_ISR(mcp320x, a) {
 	struct adc_mcp320x *adc = (struct adc_mcp320x *) a;
@@ -167,7 +168,8 @@ ADC_GET_ISR(mcp320x, a) {
 	if (((value[1] >> 4) & 0x1) != 0x0) {
 		return -1;
 	}
-	return ((value[1] & 0xF) << 8) & value[2];
+	PRINTF("Value: 0x%x\n", ((value[1] & 0xF) << 8) | value[2]);
+	return ((value[1] & 0xF) << 8) | value[2];
 }
 ADC_SET_CALLBACK(mcp320x, a, callback, data) {
 	struct adc_mcp320x *adc = (struct adc_mcp320x *) a;
