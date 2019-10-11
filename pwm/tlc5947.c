@@ -6,11 +6,11 @@
 
 static int32_t tlc5947_update(struct tlc5947 *tlc) {
 	int32_t ret;
-	int i;
+	int i, j;
 	uint16_t send[24];
 	uint16_t recv[24];
-	for (i = 0; i < 24; i++) {
-		send[i] = tlc->pins[i]->val;
+	for (i = 0, j = 24; i < 24; i++,j--) {
+		send[i] = tlc->pins[j]->val;
 		recv[i] = 0;
 	}
 	ret = spiSlave_transverISR(tlc->slave, send, recv, 24);
