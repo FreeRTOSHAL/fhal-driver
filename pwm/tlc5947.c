@@ -69,6 +69,7 @@ int32_t tlc5947_init(int32_t index, struct spi *spi,  uint32_t cs, uint32_t spi_
 		gpioPin_deinit(tlc->black);
 		return -1;
 	}
+	tlc->gen.init = true;
 	return 0;
 }
 int32_t tlc5947_deinit(int32_t index) {
