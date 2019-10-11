@@ -17,3 +17,9 @@ menuconfig PWM
 		config PWM_SOFTWARE_DEBUG
 			bool "Debug Mode"
 			depends on PWM_SOFTWARE
+	config TLC5947
+		bool "TLC5947 LED Driver"
+		depends on PWM
+		depends on GPIO
+		help
+			TLC5947 LED Driver
