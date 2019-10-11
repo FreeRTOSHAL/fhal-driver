@@ -260,30 +260,30 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	 */
 	ret = mpu9250_isAlive(mpu, waittime);;
 	if (ret < 0) {
-		goto mpu9250_init_error1;
+		goto mpu9250_init_error2;
 	}
 	PRINTF("MPU9250 Reset\n");
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error1;
+		goto mpu9250_init_error2;
 	}
 	/* 
 	 * Check MPU is alive after Reset
 	 */
 	ret = mpu9250_isAlive(mpu, waittime);;
 	if (ret < 0) {
-		goto mpu9250_init_error1;
+		goto mpu9250_init_error2;
 	}
 	PRINTF("MPU Calibrate");
 	ret = mpu9250_calibrate(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error1;
+		goto mpu9250_init_error2;
 	}
 
 	PRINTF("MPU9250 Reset\n");
 	ret = mpu9250_reset(mpu, waittime);
 	if (ret < 0) {
-		goto mpu9250_init_error1;
+		goto mpu9250_init_error2;
 	}
 
 	PRINTF("MPU Config");
@@ -296,7 +296,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error1;
+			goto mpu9250_init_error2;
 		}
 	}
 	/* 
@@ -305,7 +305,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 	{
 		ret = mpu9250_send(mpu, MPU_SMPLRT_DIV, 0x1, waittime);
 		if (ret < 0) {
-			goto mpu9250_init_error1;
+			goto mpu9250_init_error2;
 		}
 	}
 	/* 
@@ -326,7 +326,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error1;
+			goto mpu9250_init_error2;
 		}
 	}
 	/* 
@@ -347,7 +347,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error1;
+			goto mpu9250_init_error2;
 		}
 	}
 	/* 
@@ -367,11 +367,13 @@ struct mpu9250 *mpu9250_init(uint32_t index, TickType_t waittime) {
 			waittime
 		);
 		if (ret < 0) {
-			goto mpu9250_init_error1;
+			goto mpu9250_init_error2;
 		}
 	}
 #endif
 	return mpu;
+mpu9250_init_error2:
+	spiSlave_deinit(mpu->slave);
 mpu9250_init_error1:
 	hal_deinit(mpu);	
 mpu9250_init_error0:
