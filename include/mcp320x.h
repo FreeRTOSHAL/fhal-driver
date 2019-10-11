@@ -10,7 +10,7 @@
 extern const struct adc_ops mcp320x_ops;
 struct adc_mcp320x_contoller {
 	struct hal gen;
-	struct adc_mcp320x *channels[8];
+	struct adc_mcp320x *channels[16];
 	struct spi_slave *slave;
 	
 };
@@ -49,6 +49,14 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio);
 	ADD_MCP320X_CHANNEL(ID, 5); \
 	ADD_MCP320X_CHANNEL(ID, 6); \
 	ADD_MCP320X_CHANNEL(ID, 7); \
+	ADD_MCP320X_CHANNEL(ID, 8); \
+	ADD_MCP320X_CHANNEL(ID, 9); \
+	ADD_MCP320X_CHANNEL(ID, 10); \
+	ADD_MCP320X_CHANNEL(ID, 11); \
+	ADD_MCP320X_CHANNEL(ID, 12); \
+	ADD_MCP320X_CHANNEL(ID, 13); \
+	ADD_MCP320X_CHANNEL(ID, 14); \
+	ADD_MCP320X_CHANNEL(ID, 15); \
 	struct adc_mcp320x_contoller mcp320x_##ID = { \
 		HAL_NAME("TI MCP320x " #ID) \
 		.channels = { \
@@ -56,6 +64,18 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio);
 			&mcp320x_##ID##_1, \
 			&mcp320x_##ID##_2, \
 			&mcp320x_##ID##_3, \
+			&mcp320x_##ID##_4, \
+			&mcp320x_##ID##_5, \
+			&mcp320x_##ID##_6, \
+			&mcp320x_##ID##_7, \
+			&mcp320x_##ID##_8, \
+			&mcp320x_##ID##_9, \
+			&mcp320x_##ID##_10, \
+			&mcp320x_##ID##_11, \
+			&mcp320x_##ID##_12, \
+			&mcp320x_##ID##_13, \
+			&mcp320x_##ID##_14, \
+			&mcp320x_##ID##_15, \
 		}, \
 	}; \
 	HAL_ADDDEV(hal, mcp320x, mcp320x_##ID)
