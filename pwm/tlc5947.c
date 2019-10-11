@@ -148,7 +148,7 @@ GPIO_PIN_INIT(tlc5947, g, p, dir, setting) {
 	struct tlc5947 *tlc;
 	struct tlc5947_pwm *pwm;
 	struct tlc5947_gpioPin *pin;
-	if (gpio != NULL) {
+	if (gpio == NULL) {
 		return NULL;
 	}
 	tlc = gpio->tlc;
