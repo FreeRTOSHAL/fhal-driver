@@ -54,6 +54,7 @@ extern const struct pwm_ops tlc5947_pwm_ops;
 extern const struct gpio_ops tlc5947_gpio_ops;
 #define TLC5947_PWM_ADDDEV(id, i) \
 	struct tlc5947_pwm tlc5947_##id##_pwm_##i = { \
+		PWM_INIT_DEV(tlc5947) \
 		.val = 0,\
 		.pin = { \
 			.gen.gpio = (struct gpio_generic *) &tlc5947_##id##_gpio, \
@@ -126,6 +127,7 @@ int32_t tlc5947_deinit(int32_t index);
 			&tlc5947_##id##_pwm_17, \
 			&tlc5947_##id##_pwm_18, \
 			&tlc5947_##id##_pwm_19, \
+			&tlc5947_##id##_pwm_20, \
 			&tlc5947_##id##_pwm_21, \
 			&tlc5947_##id##_pwm_22, \
 			&tlc5947_##id##_pwm_23, \
@@ -135,6 +137,6 @@ int32_t tlc5947_deinit(int32_t index);
 
 #define TLC5947_ID(id) HAL_GET_ID(hal, tlc5947, tlc5947_##id)
 #define TLC5947_GPIO_ID(id) HAL_GET_ID(gpio, tlc5947, tlc5947_##id##_gpio)
-#define TLC5947_PWM_ID(id) HAL_GET_ID(pwm, tlc5947, tlc5947_##id##_gpio)
+#define TLC5947_PWM_ID(id, channelID) HAL_GET_ID(pwm, tlc5947, tlc5947_##id##_pwm_##channelID)
 /**\}*/
 #endif

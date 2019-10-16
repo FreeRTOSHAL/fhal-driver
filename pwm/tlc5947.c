@@ -7,25 +7,27 @@
 static int32_t tlc5947_update(struct tlc5947 *tlc) {
 	int32_t ret;
 	int i, j;
-	uint16_t send[24];
-	uint16_t recv[24];
-	for (i = 0, j = 24; i < 24; i++,j--) {
+	uint16_t send[48];
+	uint16_t recv[48];
+	/* sending two request at once */
+	for (i = 0, j = 23; i < 24; i++,j--) {
 		send[i] = tlc->pins[j]->val;
+		send[i + 24] = tlc->pins[j]->val;
 		recv[i] = 0;
 	}
-	ret = spiSlave_transverISR(tlc->slave, send, recv, 24);
+	HAL_LOCK(tlc, portMAX_DELAY, -1);
+	ret = spiSlave_transverISR(tlc->slave, send, recv, 48);
 	if (ret < 0) {
+		HAL_UNLOCK(tlc, -1);
 		return -1;
 	}
-	ret = spiSlave_transverISR(tlc->slave, send, recv, 24);
-	if (ret < 0) {
-		return -1;
-	}
-	for (i = 0; i < 24; i++) {
+	for (i = 24; i < 48; i++) {
 		if (send[i] != recv[i]) {
+			HAL_UNLOCK(tlc, -1);
 			return -1;
 		}
 	}
+	HAL_UNLOCK(tlc, -1);
 	return 0;
 }
 
@@ -48,6 +50,10 @@ int32_t tlc5947_init(int32_t index, struct spi *spi,  uint32_t cs, uint32_t spi_
 	int32_t ret;
 	if (tlc->gen.init) {
 		return 0;
+	}
+	ret = hal_init(tlc);
+	if (ret < 0) {
+		return -1;
 	}
 	tlc->slave = spiSlave_init(spi, &options);
 	if (!tlc->slave) {
@@ -100,7 +106,7 @@ PWM_INIT(tlc5947, index) {
 	}
 	pwm->gen.init = true;
 	pwm->val = 0;
-	return pwm;
+	return (struct pwm *) pwm;
 }
 PWM_DEINIT(tlc5947, p) {
 	struct tlc5947_pwm *pwm = (struct tlc5947_pwm *) p;
@@ -113,9 +119,9 @@ PWM_SET_PERIOD(tlc5947, p, us) {
 	return 0;
 }
 PWM_SET_DUTY_CYCLE(tlc5947, p, us) {
-	struct tlc5947_pwm *pwm = (struct tlc5947_pwm *) pwm;
+	struct tlc5947_pwm *pwm = (struct tlc5947_pwm *) p;
 	pwm->val = ((us * ((1 << 12) - 1)) / pwm->us);
-	return 0;
+	return tlc5947_update(pwm->tlc);
 }
 
 GPIO_INIT(tlc5947, index) {
