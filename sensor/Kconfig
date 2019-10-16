@@ -44,8 +44,8 @@ menuconfig GYRO
 		help
 			Multiply Gyros
 
-config MPU9250
-	bool "MCU-9250"
+config INVIMU
+	bool "Invensense IMU"
 	depends on SENSOR
 	depends on MACH_HAS_SPI
 	select USE_MUTEXES
@@ -56,7 +56,16 @@ config MPU9250
 	default n
 	help
 		MPU-9250 Driver
+if INVIMU = y
+	choice
+		prompt "Select Device"
+		config MPU9250
+			bool "MPU-9250"
+		config ICM20948
+			bool "ICM-20948"
+	endchoice
+
 	config MPU9250_DEBUG
 		bool "MPU Debug"
-		depends on MPU9250
 		default n
+endif

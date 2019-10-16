@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Andreas Werner <kernel@andy89.org>
+ * Copyright (c) 2019 Andreas Werner <kernel@andy89.org>
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 
@@ -47,23 +47,28 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 	/* Configure MPU9250 gyro and accelerometer for bias calculati */
 	{
 		uint16_t count;
-		/* set low-pass filter to 188 Hz */
-		ret = mpu_send(mpu, MPU_CONFIG, 0x01, waittime);
-		if (ret < 0) {
-			goto mpu9250_calibrate_error0;
-		}
-		/* Set sample rate to 1 kHz */
-		ret = mpu_send(mpu, MPU_SMPLRT_DIV, 0x0, waittime);
+		/* Set sample rate to 1.125 kHz */
+		ret = mpu_send(mpu, MPU_GYRO_SMPLRT_DIV, 0x0, waittime);
 		if (ret < 0) {
 			goto mpu9250_calibrate_error0;
 		}
 		/* Set gyro full-scale to 250 degrees per second, maximum sensitivity */
-		ret = mpu_send(mpu, MPU_GYRO_CONFIG, 0x0, waittime);
+		/* set low-pass filter to 187.6 */
+		ret = mpu_send(mpu, MPU_GYRO_CONFIG_1, MPU_GYRO_CONFIG_1_GYRO_DLPFCFG(1) | MPU_GYRO_CONFIG_1_GYRO_FCHOICE | MPU_GYRO_CONFIG_1_GYRO_FS_SEL_2000DPS, waittime);
 		if (ret < 0) {
 			goto mpu9250_calibrate_error0;
 		}
-		/* Set accelerometer full-scale to 2 g, maximum sensitivity */
-		ret = mpu_send(mpu, MPU_ACCEL_CONFIG, 0x0, waittime);
+		/* Set sample rate to 1.125 kHz */
+		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_1, 0x0, waittime);
+		if (ret < 0) {
+			goto mpu9250_calibrate_error0;
+		}
+		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_2, 0x0, waittime);
+		if (ret < 0) {
+			goto mpu9250_calibrate_error0;
+		}
+		/* Set accelerometer full-scale to 2 g, maximum sensitivity, and set FCHOICE */
+		ret = mpu_send(mpu, MPU_ACCEL_CONFIG, MPU_ACCEL_CONFIG_ACCEL_FS_SEL_2G | MPU_ACCEL_CONFIG_ACCEL_FCHOICE | MPU_ACCEL_CONFIG_ACCEL_DLPFCFG(0), waittime);
 		if (ret < 0) {
 			goto mpu9250_calibrate_error0;
 		}
@@ -78,12 +83,12 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			/* Enable gyro and accelerometer sensors for FIFO (max size 512 bytes in MPU-9250) */
 			ret = mpu_send(
 				mpu, 
-				MPU_FIFO_EN, 
+				MPU_FIFO_EN_2, 
 				(
-					MPU_FIFO_EN_ACCEL | 
-					MPU_FIFO_EN_GYRO_ZOUT | 
-					MPU_FIFO_EN_GYRO_YOUT | 
-					MPU_FIFO_EN_GYRO_GYRO_XOUT
+					MPU_FIFO_EN_2_ACCEL_FIFO_EN | 
+					MPU_FIFO_EN_2_GYRO_Z_FIFO_EN | 
+					MPU_FIFO_EN_2_GYRO_Y_FIFO_EN | 
+					MPU_FIFO_EN_2_GYRO_X_FIFO_EN
 				), 
 				waittime
 			);
@@ -95,7 +100,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 		}
 		/* At end of sample accumulation, turn off FIFO sensor read */
 		/* Disable gyro and accelerometer sensors for FIFO */
-		ret = mpu_send(mpu, MPU_FIFO_EN, 0x0, waittime);
+		ret = mpu_send(mpu, MPU_FIFO_EN_2, 0x0, waittime);
 		if (ret < 0) {
 			goto mpu9250_calibrate_error0;
 		}
@@ -248,89 +253,30 @@ struct mpu9250 *mpu9250_init(uint32_t index, struct spi *spi, uint8_t cs, uint16
 
 	PRINTF("MPU Config");
 	{
-		ret = mpu_clearSetBit(
-			mpu, 
-			MPU_CONFIG, 
-			MPU_CONFIG_DLPF_CFG(0x7), 
-			MPU_CONFIG_DLPF_CFG(0x2), /* 98 */
-			waittime
-		);
+		ret = mpu_send(mpu, MPU_GYRO_CONFIG_1, MPU_GYRO_CONFIG_1_GYRO_DLPFCFG(2) | MPU_GYRO_CONFIG_1_GYRO_FCHOICE | MPU_GYRO_CONFIG_1_GYRO_FS_SEL_2000DPS, waittime);
+		if (ret < 0) {
+			goto mpu9250_init_error2;
+		}
+		/* Set sample rate to 1.125 kHz */
+		ret = mpu_send(mpu, MPU_GYRO_SMPLRT_DIV, 0x0, waittime);
+		if (ret < 0) {
+			goto mpu9250_init_error2;
+		}
+		/* Set sample rate to 1.125 kHz */
+		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_1, 0x0, waittime);
+		if (ret < 0) {
+			goto mpu9250_init_error2;
+		}
+		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_2, 0x0, waittime);
+		if (ret < 0) {
+			goto mpu9250_init_error2;
+		}
+		/* Set accelerometer full-scale to 2 g, maximum sensitivity, and set FCHOICE */
+		ret = mpu_send(mpu, MPU_ACCEL_CONFIG, MPU_ACCEL_CONFIG_ACCEL_FS_SEL_8G | MPU_ACCEL_CONFIG_ACCEL_FCHOICE | MPU_ACCEL_CONFIG_ACCEL_DLPFCFG(0), waittime);
 		if (ret < 0) {
 			goto mpu9250_init_error2;
 		}
 	}
-	/* 
-	 * Setup Sample Frequenz
-	 */	
-	{
-		ret = mpu_send(mpu, MPU_SMPLRT_DIV, 0x1, waittime);
-		if (ret < 0) {
-			goto mpu9250_init_error2;
-		}
-	}
-	/* 
-	 * Setup Gyro Full Scale to +2000dps
-	 */
-	{
-		ret = mpu_clearSetBit(
-			mpu, 
-			MPU_GYRO_CONFIG, 
-			(
-				MPU_GYRO_CONFIG_ZGYRO_CT_EN | 
-				MPU_GYRO_CONFIG_YGYRO_CT_EN | 
-				MPU_GYRO_CONFIG_XGYRO_CT_EN |
-				MPU_GYRO_CONFIG_GYRO_FS_SEL(0x3) |
-				MPU_GYRO_CONFIG_FCHOICE_B(0x3)
-			), 
-			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x3),
-			waittime
-		);
-		if (ret < 0) {
-			goto mpu9250_init_error2;
-		}
-	}
-	/* 
-	 * Setup Accel Full Scale to +-8g
-	 * TODO Confgiuerable over KConfig
-	 */
-	{
-		ret = mpu_clearSetBit(
-			mpu, 
-			MPU_ACCEL_CONFIG, 
-			(
-				MPU_ACCEL_CONFIG_AZ_ST_EN | 
-				MPU_ACCEL_CONFIG_AY_ST_EN | 
-				MPU_ACCEL_CONFIG_AX_ST_EN | 
-				MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x3)
-			), 
-			MPU_ACCEL_CONFIG_ACCEL_FS_SEL(0x2),
-			waittime
-		);
-		if (ret < 0) {
-			goto mpu9250_init_error2;
-		}
-	}
-	/* 
-	 * Setup Accel to 1 kHz and 42 HZ bandwidth
-	 */
-#if 0
-	{
-		ret = mpu_clearSetBit(
-			mpu, 
-			MPU_ACCEL_CONFIG_2, 
-			(
-				MPU_ACCEL_CONFIG_2_ACCEL_FCHOICE_B(0x3) | 
-				MPU_ACCEL_CONFIG_2_A_DLPF_CFG(0x3)
-			), 
-			MPU_ACCEL_CONFIG_2_A_DLPF_CFG(0x3),
-			0,
-			waittime
-		);
-		if (ret < 0) {
-			goto mpu9250_init_error2;
-		}
-	}
-#endif
 	return mpu;
 mpu9250_init_error2:
 	spiSlave_deinit(mpu->slave);
@@ -347,7 +293,7 @@ int32_t mpu9250_deinit(struct mpu9250 *mpu) {
 int32_t mpu9250_reset(struct mpu9250 *mpu, TickType_t waittime) {
 	int32_t ret;
 	mpu9250_lock(mpu, waittime, -1);
-	ret = mpu_send(mpu, MPU_PWR_MGMT_1, MPU_PWR_MGMT_1_H_RESET, waittime);
+	ret = mpu_send(mpu, MPU_PWR_MGMT_1, MPU_PWR_MGMT_1_DEVICE_RESET, waittime);
 	if (ret < 0) {
 		goto mpu9250_reset_error1;
 	}
@@ -399,3 +345,4 @@ int32_t mpu9250_getGyro(struct mpu9250 *mpu, struct mpu9250_vector *vec, TickTyp
 	vec->z = (((float) vecRAW.z) * (2500.0/32768.0)) - (((float) mpu->gyro->gyroBasis.z) / 131.);
 	return 0;
 }
+
