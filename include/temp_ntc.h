@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Andreas Werner <kernel@andy89.org>
+ * Copyright (c) 2019 Andreas Werner <kernel@andy89.org>
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 
@@ -11,7 +11,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
- *  
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
@@ -20,51 +20,36 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef DRIVER_H_
-#ifdef LINKER_SCRIPT
-/**
- * \defgroup DRIVER Driver specific Linker Macros 
- * \ingroup LINKER
- * \code
- * #include <driver.h>
- * \endcode
- * \{
- */
-#include <linker.h>
-/**
- * Define Device Array Sections
- * \param name Driver Name like uart, timer, pwm, ...
- * \param location Location
- */
-#define DEV(name, location) \
-	SECTION_START(.rodata.dev.##name) \
-	SYMBOL(_dev_##name); \
-	KEEP(*(.rodata.dev.##name)) \
-	SYMBOL(_dev_##name##_end); \
-	SECTION_STOP(location)
-/**
- * Default Devices
- * \param location Location
- */
-#define DEV_DEFAULT(location) DEV(hal, location) \
-	DEV(gpio, location) \
-	DEV(uart, location) \
-	DEV(timer, location) \
-	DEV(pwm, location) \
-	DEV(capture, location) \
-	DEV(spi, location) \
-	DEV(accel, location) \
-	DEV(gyro, location) \
-	DEV(adc, location) \
-	DEV(example, location) \
-	DEV(sd, location) \
-	DEV(mailbox, location) \
-	DEV(phydev, location) \
-	DEV(mac, location) \
-	DEV(net, location) \
-	DEV(counter, location) \
-	DEV(rtc, location) \
-	DEV(temp, location) 
-#endif
-/**\}*/
+#ifndef TEMP_NTC_H_
+#define TEMP_NTC_H_
+/**\cond INTERNAL*/
+#include <temp.h>
+#define TEMP_PRV
+#include <temp_prv.h>
+#include <adc.h>
+#include <FreeRTOS.h>
+#include <task.h>
+extern const struct temp_ops ntc_temp_ops;
+struct temp_ntc {
+	struct temp_generic gen;
+	struct adc *adc;
+	float Tn;
+	float B;
+	float Rn;
+	int32_t adcmax;
+};
+/**\endcond*/
+int32_t ntc_temp_connect(struct temp *temp, struct adc *adc);
+#define TEMP_NTC(id, tn, b, rn, _adcmax) \
+	struct temp_ntc ntc_##id = { \
+		TEMP_INIT_DEV(ntc) \
+		HAL_NAME("NTC " #id) \
+		.adc = NULL, \
+		.Tn = tn, \
+		.B = b, \
+		.Rn = rn, \
+		.adcmax = _adcmax, \
+	}; \
+	TEMP_ADDDEV(ntc, ntc_##id)
+#define TEMP_NTC_ID(id) HAL_GET_ID(temp, ntc, ntc_##id)
 #endif

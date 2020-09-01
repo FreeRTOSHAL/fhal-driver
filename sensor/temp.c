@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Andreas Werner <kernel@andy89.org>
+ * Copyright (c) 2019 Andreas Werner <kernel@andy89.org>
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 
@@ -11,7 +11,7 @@
  * 
  * The above copyright notice and this permission notice shall be included 
  * in all copies or substantial portions of the Software.
- *  
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
@@ -20,51 +20,39 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  */
-#ifndef DRIVER_H_
-#ifdef LINKER_SCRIPT
-/**
- * \defgroup DRIVER Driver specific Linker Macros 
- * \ingroup LINKER
- * \code
- * #include <driver.h>
- * \endcode
- * \{
- */
-#include <linker.h>
-/**
- * Define Device Array Sections
- * \param name Driver Name like uart, timer, pwm, ...
- * \param location Location
- */
-#define DEV(name, location) \
-	SECTION_START(.rodata.dev.##name) \
-	SYMBOL(_dev_##name); \
-	KEEP(*(.rodata.dev.##name)) \
-	SYMBOL(_dev_##name##_end); \
-	SECTION_STOP(location)
-/**
- * Default Devices
- * \param location Location
- */
-#define DEV_DEFAULT(location) DEV(hal, location) \
-	DEV(gpio, location) \
-	DEV(uart, location) \
-	DEV(timer, location) \
-	DEV(pwm, location) \
-	DEV(capture, location) \
-	DEV(spi, location) \
-	DEV(accel, location) \
-	DEV(gyro, location) \
-	DEV(adc, location) \
-	DEV(example, location) \
-	DEV(sd, location) \
-	DEV(mailbox, location) \
-	DEV(phydev, location) \
-	DEV(mac, location) \
-	DEV(net, location) \
-	DEV(counter, location) \
-	DEV(rtc, location) \
-	DEV(temp, location) 
+#include <FreeRTOS.h>
+#include <task.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <temp.h>
+#define TEMP_PRV
+#include <temp_prv.h>
+
+
+int32_t temp_generic_init(struct temp *temp) {
+	struct temp_generic * s = (struct temp_generic *) temp;
+	if(hal_isInit(s)) {
+		return TEMP_ALREDY_INITED;
+	}
+#ifdef CONFIG_TEMP_THREAD_SAVE
+	{
+		int32_t ret = hal_init(s);
+		if (ret < 0) {
+			goto temp_genericInit_error0;
+		}
+	}
 #endif
-/**\}*/
+	s->init = true;
+	return 0;
+#ifdef CONFIG_TEMP_THREAD_SAVE
+temp_genericInit_error0:
+	return -1;
+#endif
+}
+#ifdef CONFIG_TEMP_MULTI
+struct temp *temp_init(uint32_t index);
+int32_t temp_deinit(struct temp *temp);
+
+int32_t temp_get(struct temp *temp, float *value, TickType_t waittime);
+int32_t temp_getISR(struct temp *temp, float *value);
 #endif

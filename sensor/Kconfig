@@ -28,7 +28,7 @@ menuconfig GYRO
 	depends on SENSOR
 	default n
 	help
-		Activate Accelerator Subssystem
+		Activate Gyroscope Subssystem
 	config GYRO_THREAD_SAVE
 		bool "Gyro is Thread Save"
 		depends on GYRO
@@ -36,13 +36,41 @@ menuconfig GYRO
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Accelerator Thread save
+			Make Gyroscope Thread save
 	config GYRO_MULTI
 		bool "Multiply Gyros"
 		depends on GYRO
 		default n
 		help
 			Multiply Gyros
+
+menuconfig TEMP
+	bool "Temperature Sensor Subssystem"
+	depends on SENSOR
+	default n
+	help
+		Activate Temperature Subssystem
+	config TEMP_THREAD_SAVE
+		bool "Temperature Sensor is Thread Save"
+		depends on TEMP
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		default n
+		help
+			Make Temperature Sensor Thread save
+	config TEMP_MULTI
+		bool "Multiply Temperature Sensor"
+		depends on TEMP
+		default n
+		help
+			Multiply Temperature Sensor
+	config TEMP_NTC
+		bool "NTC Temperature Sensor Driver"
+		depends on TEMP
+		depends on ADC
+		default n
+		help
+			NTC Temperature Sensor Driver need ADC
 
 config INVIMU
 	bool "Invensense IMU"
