@@ -70,23 +70,14 @@ TEMP_DEINIT(ntc, t) {
 	return 0;
 }
 static float temp_ntc_calcValue(struct temp_ntc *temp, int32_t value) {
-	return (1. / (
-			(
-				1. / temp->Tn /*K*/
-			) + (
-				(
-					1. / temp->B /* B */
-				) * (
-					log( 
-						(
-							/* calc Rt */
-							(value * temp->Rn) / ((float) (temp->adcmax - value))
-						) / temp->Rn
-					)
-				)
-			)
+	return ((temp->B * temp->Tn) / 
+		(
+			temp->B + log(
+				/* calc Rt */
+				(value * temp->Rn) / ((float) (temp->adcmax - value)) / temp->Rn
+			) * temp->Tn
 		)
-	) - 273.15 /* Kelvin to Celsius */;
+	) - 273.15;
 }
 
 TEMP_GET(ntc, t, value, waittime) {
