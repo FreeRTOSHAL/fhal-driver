@@ -49,8 +49,8 @@ HAL_DEFINE_GLOBAL_ARRAY(spi);
 
 # define SPI_SLAVE_INIT(ns, s, options) struct spi_slave *spiSlave_init(struct spi *s, struct spi_opt *options)
 # define SPI_SLAVE_DEINIT(ns, s) int32_t spiSlave_deinit(struct spi_slave *s)
-# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waitime) int32_t spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
-# define SPI_SLAVE_SEND(ns, s, data, len, waitime) int32_t spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waittime) int32_t spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_SEND(ns, s, data, len, waittime) int32_t spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_RECV(ns, s, data, len, waittime) int32_t spiSlave_recv(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 
 # define SPI_SLAVE_TRANSVER_ISR(ns,s, sendData, rescvData, len) int32_t spiSlave_transverISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
@@ -77,8 +77,8 @@ HAL_DEFINE_GLOBAL_ARRAY(spi);
 
 # define SPI_SLAVE_INIT(ns, s, options) static struct spi_slave *ns##_spiSlave_init(struct spi *s, struct spi_opt *options)
 # define SPI_SLAVE_DEINIT(ns, s) static int32_t ns##_spiSlave_deinit(struct spi_slave *s)
-# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waitime) static int32_t ns##_spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
-# define SPI_SLAVE_SEND(ns, s, data, len, waitime) static int32_t ns##_spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waittime) static int32_t ns##_spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_SEND(ns, s, data, len, waittime) static int32_t ns##_spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_RECV(ns, s, data, len, waittime) static int32_t ns##_spiSlave_recv(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 
 # define SPI_SLAVE_TRANSVER_ISR(ns,s, sendData, rescvData, len) static int32_t ns##_spiSlave_transverISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
