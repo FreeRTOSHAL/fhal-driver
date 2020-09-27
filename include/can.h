@@ -221,10 +221,6 @@ inline int32_t can_deinit(struct can *can) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_deinit(can);
 }
-inline int32_t can_deinit(struct can *can) {
-	struct can_generic *a = (struct can_generic *) can;
-	return a->ops->can_deinit(can);
-}
 inline int32_t can_setCallback(struct can *can, uint32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_setCallback(can, filter, callback, data);

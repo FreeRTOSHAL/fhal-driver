@@ -3,6 +3,9 @@ menuconfig CAN
 	depends on MACH_HAS_CAN 
 	help
 		Activate CAN Subsystem
+	config CAN_FD
+		bool "Activate CAN FD Support"
+		depends on CAN
 	config CAN_MULTI
 		bool "Multiply CAN"
 		depends on CAN
