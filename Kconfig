@@ -31,6 +31,7 @@ source driver/net/Kconfig
 source driver/counter/Kconfig
 source driver/rtc/Kconfig
 source driver/can/Kconfig
+source driver/i2c/Kconfig
 config CACHE
 	bool
 	help
