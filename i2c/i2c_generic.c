@@ -20,8 +20,8 @@ int32_t i2c_generic_init(struct i2c *t) {
 	int32_t i2c_deinit(struct i2c *i2c);
 	int32_t i2c_send(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime);
 	int32_t i2c_recv(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime);
-	int32_t i2c_transver(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
+	int32_t i2c_transfer(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
 	int32_t i2c_sendISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
 	int32_t i2c_recvISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
-	int32_t i2c_transverISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
+	int32_t i2c_transferISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
 #endif

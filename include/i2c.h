@@ -59,10 +59,10 @@ struct i2c_ops {
 	int32_t (*i2c_deinit)(struct i2c *i2c);
 	int32_t (*i2c_send)(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime);
 	int32_t (*i2c_recv)(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime);
-	int32_t (*i2c_transver)(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
+	int32_t (*i2c_transfer)(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
 	int32_t (*i2c_sendISR)(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
 	int32_t (*i2c_recvISR)(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
-	int32_t (*i2c_transverISR)(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
+	int32_t (*i2c_transferISR)(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
 };
 #endif
 /**
@@ -140,7 +140,7 @@ int32_t i2c_recv(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, Tick
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error 0 on ok
  */
-int32_t i2c_transver(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
+int32_t i2c_transfer(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime);
 /**
  * Send Bytes in Interrupt
  * \param i2c I2C instance
@@ -170,7 +170,7 @@ int32_t i2c_recvISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
  * \param recvLen Recv len
  * \return -1 on error 0 on ok
  */
-int32_t i2c_transverISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
+int32_t i2c_transferISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen);
 
 #else
 inline struct i2c *i2c_init(uint32_t index, enum i2c_mode mode) {
@@ -193,9 +193,9 @@ inline int32_t i2c_recv(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t le
 	struct i2c_generic *a = (struct i2c_generic *) i2c;
 	return a->ops->i2c_recv(i2c, id, data, len, waittime);
 }
-inline int32_t i2c_transver(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime) {
+inline int32_t i2c_transfer(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime) {
 	struct i2c_generic *a = (struct i2c_generic *) i2c;
-	return a->ops->i2c_transver(i2c, id, sendData, sendLen, recvData, recvLen, waittime);
+	return a->ops->i2c_transfer(i2c, id, sendData, sendLen, recvData, recvLen, waittime);
 }
 inline int32_t i2c_sendISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len) {
 	struct i2c_generic *a = (struct i2c_generic *) i2c;
@@ -205,9 +205,9 @@ inline int32_t i2c_recvISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t
 	struct i2c_generic *a = (struct i2c_generic *) i2c;
 	return a->ops->i2c_recvISR(i2c, id, data, len);
 }
-inline int32_t i2c_transverISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen) {
+inline int32_t i2c_transferISR(struct i2c *i2c, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen) {
 	struct i2c_generic *a = (struct i2c_generic *) i2c;
-	return a->ops->i2c_transverISR(i2c, id, sendData, sendLen, recvData, recvLen);
+	return a->ops->i2c_transferISR(i2c, id, sendData, sendLen, recvData, recvLen);
 }
 #endif
 /**\}*/
