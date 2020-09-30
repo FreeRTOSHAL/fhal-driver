@@ -97,3 +97,14 @@ if INVIMU = y
 		bool "MPU Debug"
 		default n
 endif
+
+config LTC6811
+	bool "LTC6811"
+	depends on ADC
+	depends on SPI
+	depends on SENSOR
+	select USE_MUTEXES
+	select USE_RECURSIVE_MUTEXES
+	config CONFIG_LTC6811_DEBUG
+		bool "LTC6811 Debug"
+		depends on LTC6811

@@ -4,3 +4,4 @@ obj-$(CONFIG_ACCEL) += accel.o
 obj-$(CONFIG_GYRO) += gyro.o
 obj-$(CONFIG_TEMP) += temp.o
 obj-$(CONFIG_TEMP_NTC) += temp_ntc.o
+obj-$(CONFIG_LTC6811) += ltc6811.o ltc6811_pec.o

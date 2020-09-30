@@ -28,7 +28,7 @@ struct i2c;
 /**
  * I2C Mode / Speed Config
  */
-enum i2c_mode{
+enum i2c_mode {
 	/**
 	 * Standard Mode (100 Kbit/s)
 	 */
