@@ -67,11 +67,9 @@ int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16
 ltc6811_connect_error0:
 	return -1;
 }
-int32_t ltc6811_connectSlave(struct ltc6811 *ltc, struct ltc6811 *slave) {
+
+static int32_t ltc6811_connectSlave(struct ltc6811 *ltc, struct ltc6811_slave *slave) {
 	int i;
-	if (ltc->slaves == NULL) {
-		ltc->slaves = calloc(sizeof(struct ltc6811 *), ltc->numberOfSlaves);
-	}
 	for (i = 0; i < ltc->numberOfSlaves; i++) {
 		if (ltc->slaves[i] == NULL) {
 			break;
@@ -81,8 +79,29 @@ int32_t ltc6811_connectSlave(struct ltc6811 *ltc, struct ltc6811 *slave) {
 		return -1;
 	}
 	ltc->slaves[i] = slave;
-	slave->first = ltc;
 	return 0;
+}
+
+struct ltc6811_slave *ltc6811_slave_init(uint32_t index) {
+	int32_t ret;
+	struct ltc6811_slave *ltc = (struct ltc6811_slave *) HAL_GET_GLOBAL_DEV(index);
+	if (ltc->gen.init) {
+		return ltc;
+	}
+	ret = hal_init(ltc);
+	if (ret < 0) {
+		goto ltc6811_slave_init_error0;
+	}
+	ltc->index = index;
+	ltc->gen.init = true;
+	PRINTF("LTC6811 Slave Init\n");
+	ret = ltc6811_connectSlave(ltc->master, ltc);
+	if (ret < 0) {
+		goto ltc6811_slave_init_error0;
+	}
+	return ltc;
+ltc6811_slave_init_error0:
+	return NULL;
 }
 
 int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t dataLen) {
@@ -93,10 +112,6 @@ int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint
 	uint16_t pec;
 	int32_t ret;
 	int i;
-	if (!ltc->isFirst) {
-		/* This device is not the first ltc */
-		ltc = ltc->first;
-	}
 	memset(sendData, 0xFF, len);
 	tmp[0] = (cmd >> 8) & 0xFF;
 	tmp[1] = (cmd >> 0) & 0xFF;
@@ -124,10 +139,6 @@ int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint3
 	uint16_t pec;
 	int32_t ret;
 	int i;
-	if (!ltc->isFirst) {
-		/* This device is not the first ltc */
-		ltc = ltc->first;
-	}
 	memset(sendData, 0xFF, len);
 	tmp[0] = (cmd >> 8) & 0xFF;
 	tmp[1] = (cmd >> 0) & 0xFF;
@@ -140,7 +151,7 @@ int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint3
 	if (ret < 0) {
 		return -1;
 	}
-	for (i = 0; i < dataLen; i++) {
+	for (i = 0; i < lenData; i++) {
 		data[i] = recvData[4 + i];
 	}
 
@@ -151,10 +162,6 @@ int32_t ltc6811_writeRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *ne
 	int i;
 	int16_t pec;
 	uint8_t *data = alloca(ltc->numberOfSlaves * 8);
-	if (!ltc->isFirst) {
-		/* This device is not the first ltc */
-		ltc = ltc->first;
-	}
 	for (i = 0; i < ltc->numberOfSlaves; i++) {
 		/* the first data is used by the last slave in the chain */
 		/* check if salve is seleced write new value */
@@ -188,10 +195,6 @@ int32_t ltc6811_readRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *reg
 	int16_t orgPec;
 	uint8_t *data = alloca(ltc->numberOfSlaves * 8);
 	int32_t ret;
-	if (!ltc->isFirst) {
-		/* This device is not the first ltc */
-		ltc = ltc->first;
-	}
 	ret = ltc6811_read(ltc, cmd, data, ltc->numberOfSlaves * 8);
 	if (ret < 0) {
 		PRINTF("CMD: 0x%x: Read error\n", cmd);

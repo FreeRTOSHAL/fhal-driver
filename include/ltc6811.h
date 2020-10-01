@@ -21,7 +21,27 @@ struct ltc6811 {
 	/**
 	 * Driver index
 	 */
-	const bool isFirst;
+	uint32_t index;
+	/**
+	 * Task
+	 */
+	OS_DEFINE_TASK(adcTask, 500);
+	/**
+	 * Bitmaks for select mutlible slaves
+	 */
+	int32_t selectSlaves;
+	/**
+	 * Slaves
+	 */
+	struct ltc6811_slave **slaves;
+	/**
+	 * SPI Slave
+	 */
+	struct spi_slave *spi;
+};
+
+struct ltc6811_slave {
+	struct hal gen;
 	/**
 	 * Driver index
 	 */
@@ -31,22 +51,9 @@ struct ltc6811 {
 	 */
 	struct i2c *i2c;
 	/**
-	 * SPI Slave (connection to the first slave)
-	 * Only be defined if ismaster == true
-	 */
-	struct spi_slave *spi;
-	/**
 	 * First Slave
 	 */
-	struct ltc6811 *first;
-	/**
-	 * Slaves
-	 */
-	struct ltc6811 **slaves;
-	/**
-	 * Bitmaks for select mutlible slaves
-	 */
-	int32_t selectSlaves;
+	struct ltc6811 *master;
 	/**
 	 * ADCs
 	 */
@@ -58,14 +65,14 @@ struct ltc6811 {
  */
 struct i2c_ltc6811 {
 	struct i2c_generic gen;
-	struct ltc6811 *ltc;
+	struct ltc6811_slave *ltc;
 };
 /**
  * adcs
  */
 struct adc_ltc6811 {
 	struct adc_generic gen;
-	struct ltc6811 *ltc;
+	struct ltc6811_slave *ltc;
 };
 
 /**\endcond*/
@@ -113,8 +120,8 @@ enum ltc_cmd {
 };
 
 struct ltc6811 *ltc6811_init(uint32_t index);
+struct ltc6811_slave *ltc6811_slave_init(uint32_t index);
 int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t bautrate);
-int32_t ltc6811_connectSlave(struct ltc6811 *ltc, struct ltc6811 *slave);
 int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t len);
 int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t len);
 uint16_t ltc6811_calcPEC(uint8_t* data, uint8_t len);
@@ -122,70 +129,79 @@ int32_t ltc6811_writeRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *ne
 int32_t ltc6811_readRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *registerContent);
 
 /**\cond INTERNAL*/
-#define LTC6811_ADC_DEV(id, adcID) \
-	struct adc_ltc6811 ltc6811_adc_##id##_##adcID = { \
-		.ltc = &ltc6811_dev_##id, \
+#define LTC6811_ADC_DEV(masterid, id, adcID) \
+	struct adc_ltc6811 ltc6811_adc_##masterid##_##id##_##adcID = { \
+		.ltc = &ltc6811_slave_##masterid##_##id, \
 	}; \
-	ADC_ADDDEV(ltc6811, ltc6811_adc_##id##_##adcID)
+	ADC_ADDDEV(ltc6811, ltc6811_adc_##masterid##_##id##_##adcID)
 #define ADC_PRV
 #include <adc_prv.h>
 extern const struct adc_ops lpc6811_adc_ops;
 /**\endcond*/
-
-#define LTC6811_ADDDEV(id, isfirst, numberofslave) \
-	extern struct adc_ltc6811 *ltc6811_adcs_##id[12]; \
+#define LTC6811_ADDDEV(id, numberofslave) \
+	struct ltc6811_slave *ltc6811_slaves_##id[numberofslave]; \
 	struct ltc6811 ltc6811_dev_##id = { \
 		HAL_NAME("LTC6811 " #id) \
 		.gen.init = false, \
 		.numberOfSlaves = numberofslave, \
 		.allSlavesMask = ((1 << numberofslave) - 1), \
 		.selectSlaves = ((1 << numberofslave) - 1), \
-		.isFirst = isfirst, \
+		.slaves = ltc6811_slaves_##id, \
+	}; \
+	HAL_ADD(ltc6811, ltc6811_dev_##id);
+
+#define LTC6811_SLAVE_ADDDEV(masterid, id) \
+	extern struct adc_ltc6811 *ltc6811_adcs_##id[12]; \
+	struct ltc6811_slave ltc6811_slave_##masterid##_##id = { \
+		HAL_NAME("LTC6811 " #id) \
+		.gen.init = false, \
+		.master = &ltc6811_dev_##masterid,\
 		.adcs = ltc6811_adcs_##id, \
 	}; \
-	HAL_ADD(ltc6811, ltc6811_dev_##id); \
-	LTC6811_ADC_DEV(id, 0); \
-	LTC6811_ADC_DEV(id, 1); \
-	LTC6811_ADC_DEV(id, 2); \
-	LTC6811_ADC_DEV(id, 3); \
-	LTC6811_ADC_DEV(id, 4); \
-	LTC6811_ADC_DEV(id, 5); \
-	LTC6811_ADC_DEV(id, 6); \
-	LTC6811_ADC_DEV(id, 7); \
-	LTC6811_ADC_DEV(id, 8); \
-	LTC6811_ADC_DEV(id, 9); \
-	LTC6811_ADC_DEV(id, 10); \
-	LTC6811_ADC_DEV(id, 11); \
+	HAL_ADD(ltc6811, ltc6811_slave_##masterid##_##id); \
+	LTC6811_ADC_DEV(masterid, id, 0); \
+	LTC6811_ADC_DEV(masterid, id, 1); \
+	LTC6811_ADC_DEV(masterid, id, 2); \
+	LTC6811_ADC_DEV(masterid, id, 3); \
+	LTC6811_ADC_DEV(masterid, id, 4); \
+	LTC6811_ADC_DEV(masterid, id, 5); \
+	LTC6811_ADC_DEV(masterid, id, 6); \
+	LTC6811_ADC_DEV(masterid, id, 7); \
+	LTC6811_ADC_DEV(masterid, id, 8); \
+	LTC6811_ADC_DEV(masterid, id, 9); \
+	LTC6811_ADC_DEV(masterid, id, 10); \
+	LTC6811_ADC_DEV(masterid, id, 11); \
 	struct adc_ltc6811 *ltc6811_adcs_##id[12] = { \
-		&ltc6811_adc_##id##_0, \
-		&ltc6811_adc_##id##_1, \
-		&ltc6811_adc_##id##_2, \
-		&ltc6811_adc_##id##_3, \
-		&ltc6811_adc_##id##_4, \
-		&ltc6811_adc_##id##_5, \
-		&ltc6811_adc_##id##_6, \
-		&ltc6811_adc_##id##_7, \
-		&ltc6811_adc_##id##_8, \
-		&ltc6811_adc_##id##_9, \
-		&ltc6811_adc_##id##_10, \
-		&ltc6811_adc_##id##_11, \
+		&ltc6811_adc_##masterid##_##id##_0, \
+		&ltc6811_adc_##masterid##_##id##_1, \
+		&ltc6811_adc_##masterid##_##id##_2, \
+		&ltc6811_adc_##masterid##_##id##_3, \
+		&ltc6811_adc_##masterid##_##id##_4, \
+		&ltc6811_adc_##masterid##_##id##_5, \
+		&ltc6811_adc_##masterid##_##id##_6, \
+		&ltc6811_adc_##masterid##_##id##_7, \
+		&ltc6811_adc_##masterid##_##id##_8, \
+		&ltc6811_adc_##masterid##_##id##_9, \
+		&ltc6811_adc_##masterid##_##id##_10, \
+		&ltc6811_adc_##masterid##_##id##_11, \
 	};
 
 #define LTC6811_ID(id) HAL_GET_ID(hal, ltc6811, ltc6811_dev_##id)
-#define LTC6811_ADC_ID(id, adcid) HAL_GET_ID(adc, ltc6811, ltc6811_adc_##id##_##adcid)
-#define LTC6811_GET_ALL_ADCS(id, adcs) { \
-	(adcs)[0] = adc_init(LTC6811_ADC_ID(id, 0), 12,0); \
-	(adcs)[1] = adc_init(LTC6811_ADC_ID(id, 1), 12,0); \
-	(adcs)[2] = adc_init(LTC6811_ADC_ID(id, 2), 12,0); \
-	(adcs)[3] = adc_init(LTC6811_ADC_ID(id, 3), 12,0); \
-	(adcs)[4] = adc_init(LTC6811_ADC_ID(id, 4), 12,0); \
-	(adcs)[5] = adc_init(LTC6811_ADC_ID(id, 5), 12,0); \
-	(adcs)[6] = adc_init(LTC6811_ADC_ID(id, 6), 12,0); \
-	(adcs)[7] = adc_init(LTC6811_ADC_ID(id, 7), 12,0); \
-	(adcs)[8] = adc_init(LTC6811_ADC_ID(id, 8), 12,0); \
-	(adcs)[9] = adc_init(LTC6811_ADC_ID(id, 9), 12,0); \
-	(adcs)[10] = adc_init(LTC6811_ADC_ID(id, 10), 12,0); \
-	(adcs)[11] = adc_init(LTC6811_ADC_ID(id, 11), 12,0); \
+#define LTC6811_SLAVE_ID(masterid, id) HAL_GET_ID(hal, ltc6811, ltc6811_slave_##masterid##_##id)
+#define LTC6811_ADC_ID(masterid, id, adcid) HAL_GET_ID(adc, ltc6811, ltc6811_adc_##masterid##_##id##_##adcid)
+#define LTC6811_GET_ALL_ADCS(masterid, id, adcs) { \
+	(adcs)[0] = adc_init(LTC6811_ADC_ID(masterid, id, 0), 12,0); \
+	(adcs)[1] = adc_init(LTC6811_ADC_ID(masterid, id, 1), 12,0); \
+	(adcs)[2] = adc_init(LTC6811_ADC_ID(masterid, id, 2), 12,0); \
+	(adcs)[3] = adc_init(LTC6811_ADC_ID(masterid, id, 3), 12,0); \
+	(adcs)[4] = adc_init(LTC6811_ADC_ID(masterid, id, 4), 12,0); \
+	(adcs)[5] = adc_init(LTC6811_ADC_ID(masterid, id, 5), 12,0); \
+	(adcs)[6] = adc_init(LTC6811_ADC_ID(masterid, id, 6), 12,0); \
+	(adcs)[7] = adc_init(LTC6811_ADC_ID(masterid, id, 7), 12,0); \
+	(adcs)[8] = adc_init(LTC6811_ADC_ID(masterid, id, 8), 12,0); \
+	(adcs)[9] = adc_init(LTC6811_ADC_ID(masterid, id, 9), 12,0); \
+	(adcs)[10] = adc_init(LTC6811_ADC_ID(masterid, id, 10), 12,0); \
+	(adcs)[11] = adc_init(LTC6811_ADC_ID(masterid, id, 11), 12,0); \
 } \
 
 #endif
