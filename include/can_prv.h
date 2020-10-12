@@ -69,5 +69,4 @@ HAL_DEFINE_GLOBAL_ARRAY(can);
 # define CAN_UP(ns, c) int32_t  ns##_can_up(struct can *c)
 # define CAN_DOWN(ns, c) int32_t  ns##_can_down(struct can *c)
 #endif
-/**\}*/
 #endif

@@ -354,5 +354,4 @@ inline int32_t spiSlave_recvISR(struct spi_slave *slave, uint16_t *data, uint32_
 	return s->ops->spiSlave_recvISR(slave, data, len);
 }
 #endif
-/**\}*/
 #endif

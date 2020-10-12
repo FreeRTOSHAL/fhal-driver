@@ -104,7 +104,7 @@ ltc6811_slave_init_error0:
 	return NULL;
 }
 
-int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t dataLen) {
+int32_t ltc6811_write(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_t dataLen) {
 	uint32_t len = 2 /* Command */ + 2 /* Command PEC */ + dataLen /* Data inclusive PEC! */;
 	uint16_t *sendData = alloca(len);
 	uint16_t *recvData = alloca(len);
@@ -131,7 +131,7 @@ int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint
 	return 0;
 }
 
-int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t lenData) {
+int32_t ltc6811_read(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_t lenData) {
 	uint32_t len = 2 /* Command */ + 2 /* Command PEC */ + lenData /* Data inclusive PEC! */;
 	uint16_t *sendData = alloca(len);
 	uint16_t *recvData = alloca(len);
@@ -158,7 +158,7 @@ int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint3
 	return 0;
 }
 
-int32_t ltc6811_writeRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *newData, uint8_t *oldData) {
+int32_t ltc6811_writeRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *newData, uint8_t *oldData) {
 	int i;
 	int16_t pec;
 	uint8_t *data = alloca(ltc->numberOfSlaves * 8);
@@ -188,7 +188,7 @@ int32_t ltc6811_writeRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *ne
 	return ltc6811_write(ltc, cmd, data, ltc->numberOfSlaves * 8);
 }
 
-int32_t ltc6811_readRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *registerContent) {
+int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *registerContent) {
 	int i;
 	int j;
 	int16_t pec;

@@ -57,6 +57,5 @@ HAL_DEFINE_GLOBAL_ARRAY(i2c);
 # define I2C_RECV_ISR(ns, i, id, data, len) int32_t i2c_recvISR(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len)
 # define I2C_TRANSVER_ISR(ns, i, id, sendData, sendLen, recvData, recvLen) int32_t ns##_i2c_transferISR(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen)
 #endif
-/**\}*/
 #endif
 

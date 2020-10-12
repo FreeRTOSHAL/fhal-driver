@@ -5,6 +5,16 @@
 #include <adc.h>
 #include <spi.h>
 
+/**
+ * \defgroup LTC6811 LTC6811 driver
+ * \ingroup HAL
+ * \code
+ * #include <ltc6811.h>
+ * \endcode
+ * 
+ * This is the LTC6811 Driver.
+ * \{
+ */
 /**\cond INTERNAL*/
 struct adc_ltc6811;
 struct ltc6811 {
@@ -155,19 +165,19 @@ struct adc_ltc6811 {
 #define LTC_CMD_CLRSCTRL (0x18)
 /**
  * Start Cell Voltage ADC Conversion and Poll Status (ADCV)
- * @param CH Cell Selection for ADC Conversion
- *        |     |                    | Total Conversion Time in the 8 ADC Modes ||||||||
- *        |  CH |                    | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
+ * \param CH Cell Selection for ADC Conversion
+ *        |  CH |                    | Total Conversion Time in the 8 ADC Modes ||||||||
  *        | :-- | :----------------- | :---: | :---: | :---: | :---: | :---: | :---: | :----: | :---: |
+ *        |  ^  |                    | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
  *        | 000 | All Cells          | 1.1ms | 1.3ms | 2.3ms | 3.0ms | 4.4ms | 7.2ms | 12.8ms | 201ms |
  *        | 001 | Cell 1 and Cell 7  | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms  |  34ms |
- *        | 010 | Cell 2 and Cell 8  |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 011 | Cell 3 and Cell 9  |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 100 | Cell 4 and Cell 10 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 101 | Cell 5 and Cell 11 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 110 | Cell 6 and Cell 12 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- * @param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
- * @param MD ADC Mode
+ *        | 010 | Cell 2 and Cell 8  | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 011 | Cell 3 and Cell 9  | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     | 
+ *        | 100 | Cell 4 and Cell 10 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 101 | Cell 5 and Cell 11 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 110 | Cell 6 and Cell 12 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ * \param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -179,20 +189,20 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADCV_NORM_DCP_ALL (0x370)
 /**
  * Start Open Wire ADC Conversion and Poll Status ADOW 0 1 1 1 (PUP)
- * @param CH Cell Selection for ADC Conversion
- *        |     |                    | Total Conversion Time in the 8 ADC Modes ||||||||
- *        |  CH |                    | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
+ * \param CH Cell Selection for ADC Conversion
+ *        |  CH |                    | Total Conversion Time in the 8 ADC Modes ||||||||
  *        | :-- | :----------------- | :---: | :---: | :---: | :---: | :---: | :---: | :----: | :---: |
+ *        |  ^  |                    | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
  *        | 000 | All Cells          | 1.1ms | 1.3ms | 2.3ms | 3.0ms | 4.4ms | 7.2ms | 12.8ms | 201ms |
  *        | 001 | Cell 1 and Cell 7  | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms  |  34ms |
- *        | 010 | Cell 2 and Cell 8  |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 011 | Cell 3 and Cell 9  |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 100 | Cell 4 and Cell 10 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 101 | Cell 5 and Cell 11 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 110 | Cell 6 and Cell 12 |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- * @param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
- * @param PUP Pull-Up/Pull-Down Current for Open Wire Conversions 0 = Pull-Down Current 1 = Pull-Up Current
- * @param MD ADC Mode
+ *        | 010 | Cell 2 and Cell 8  | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 011 | Cell 3 and Cell 9  | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 100 | Cell 4 and Cell 10 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 101 | Cell 5 and Cell 11 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 110 | Cell 6 and Cell 12 | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ * \param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
+ * \param PUP Pull-Up/Pull-Down Current for Open Wire Conversions 0 = Pull-Down Current 1 = Pull-Up Current
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -205,13 +215,13 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADOW_NORM_PDN_ALL (0x338)
 /**
  * Start Self Test Cell Voltage Conversion and Poll Status (CVST)
- * @param ST Self Test Mode Selection 
- *        |    |             | Self Test Conversion Result |||||||||
- *        | ST |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
+ * \param ST Self Test Mode Selection 
+ *        | ST |             | Self Test Conversion Result ||||||||
  *        | :--| :---------: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
+ *        | ^  |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
  *        | 01 | Self Test 1 | 0x9565 | 0x9553 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 |
  *        | 10 | Self Test 2 | 0x6A9A | 0x6AAC | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA |
- * @param MD ADC Mode
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -223,8 +233,8 @@ struct adc_ltc6811 {
 #define LTC_CMD_CVST_NORM_ST1 (0x327)
 /**
  * Start Overlap Measurement of Cell 7 Voltage (ADOL)
- * @param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
- * @param MD ADC Mode
+ * \param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -236,18 +246,18 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADOL_NORM_DCP (0x311)
 /**
  * Start GPIOs ADC Conversion and Poll Status (ADAX)
- * @param CHG GPIO Selection for ADC Conversion
- *        |     | Total Conversion Time in the 8 ADC Modes |||||||||
- *        | CHG |                   | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
+ * \param CHG GPIO Selection for ADC Conversion
+ *        | CHG | Total Conversion Time in the 8 ADC Modes |||||||||
  *        | :-- | :---------------- | :---: | :---: | :---: | :---: | :---: | :---: | :----: | :---: |
+ *        | ^   |                   | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
  *        | 000 | GPIO 1-5, 2nd Ref | 1.1ms | 1.3ms | 2.3ms | 3.0ms | 4.4ms | 7.2ms | 12.8ms | 201ms |
  *        | 001 | GPIO 1            | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms  | 34ms  |
- *        | 010 | GPIO 2            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 011 | GPIO 3            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 100 | GPIO 4            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 101 | GPIO 5            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 110 | 2 nd Reference    |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- * @param MD ADC Mode
+ *        | 010 | GPIO 2            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 011 | GPIO 3            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 100 | GPIO 4            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 101 | GPIO 5            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 110 | 2 nd Reference    | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -260,18 +270,18 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADAX_NORM_GPIO2 (0x562)
 /**
  * Start GPIOs ADC Conversion With Digital Redundancy and Poll Status (ADAXD)
- * @param CHG GPIO Selection for ADC Conversion
- *        |     | Total Conversion Time in the 8 ADC Modes |||||||||
- *        | CHG |                   | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
+ * \param CHG GPIO Selection for ADC Conversion
+ *        | CHG | Total Conversion Time in the 8 ADC Modes |||||||||
  *        | :-- | :---------------- | :---: | :---: | :---: | :---: | :---: | :---: | :----: | :---: |
+ *        | ^   |                   | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz  | 26Hz  |
  *        | 000 | GPIO 1-5, 2nd Ref | 1.1ms | 1.3ms | 2.3ms | 3.0ms | 4.4ms | 7.2ms | 12.8ms | 201ms |
  *        | 001 | GPIO 1            | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms  | 34ms  |
- *        | 010 | GPIO 2            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 011 | GPIO 3            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 100 | GPIO 4            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 101 | GPIO 5            |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- *        | 110 | 2 nd Reference    |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^    |   ^   |
- * @param MD ADC Mode
+ *        | 010 | GPIO 2            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 011 | GPIO 3            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 100 | GPIO 4            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 101 | GPIO 5            | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ *        | 110 | 2 nd Reference    | ^     | ^     | ^     | ^     | ^     | ^     | ^      | ^     |
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -284,13 +294,13 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADAXD_NORM_GPIO2 (0x502)
 /**
  * Start Self Test GPIOs Conversion and Poll Status (AXST)
- * @param ST Self Test Mode Selection 
- *        |    |             | Self Test Conversion Result |||||||||
- *        | ST |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
+ * \param ST Self Test Mode Selection 
+ *        | ST |             | Self Test Conversion Result ||||||||
  *        | :--| :---------: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
+ *        | ^  |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
  *        | 01 | Self Test 1 | 0x9565 | 0x9553 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 |
  *        | 10 | Self Test 2 | 0x6A9A | 0x6AAC | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA |
- * @param MD ADC Mode
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -302,15 +312,17 @@ struct adc_ltc6811 {
 #define LTC_CMD_AXST_NORM_ST1 (0x527)
 /**
  * Start Status Group ADC Conversion and Poll Status (ADSTAT)
- * @param CHST Status Group Selection
- *        |      | Total Conversion Time in the 8 ADC Modes ||||||||
- *        | CHST |                  | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz | 26Hz  |
+ * \param CHST Status Group Selection
+ *        | CHST | Total Conversion Time in the 8 ADC Modes|||||||||
+ *        | :--- | :--------------: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+ *        | ^    |                  | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz | 26Hz  |
  *        | 000  | SC, ITMP, VA, VD | 748μs | 865μs | 1.6ms | 2.0ms | 3.0ms | 4.8ms | 8.5ms | 134ms |
  *        | 001  | SC               | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms | 34ms  |
- *        | 010  | ITMP             |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- *        | 011  | VA               |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- *        | 100  | VD               |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- * @param MD ADC Mode
+ *        | 010  | ITMP             | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ *        | 011  | VA               | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ *        | 100  | VD               | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ *
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -322,15 +334,16 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADSTAT_NORM_ALL (0x568)
 /**
  * Start Status Group ADC Conversion With Digital Redundancy and Poll Status (ADSTATD)
- * @param CHST Status Group Selection
- *        |      | Total Conversion Time in the 8 ADC Modes ||||||||
- *        | CHST |                  | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz | 26Hz  |
+ * \param CHST Status Group Selection
+ *        | CHST | Total Conversion Time in the 8 ADC Modes|||||||||
+ *        | :--- | :--------------: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+ *        | ^    |                  | 27kHz | 14kHz | 7kHz  | 3kHz  | 2kHz  | 1kHz  | 422Hz | 26Hz  |
  *        | 000  | SC, ITMP, VA, VD | 748μs | 865μs | 1.6ms | 2.0ms | 3.0ms | 4.8ms | 8.5ms | 134ms |
  *        | 001  | SC               | 201μs | 230μs | 405μs | 501μs | 754μs | 1.2ms | 2.2ms | 34ms  |
- *        | 010  | ITMP             |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- *        | 011  | VA               |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- *        | 100  | VD               |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |   ^   |
- * @param MD ADC Mode
+ *        | 010  | ITMP             | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ *        | 011  | VA               | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ *        | 100  | VD               | ^     | ^     | ^     | ^     | ^     | ^     | ^     | ^     |
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -342,13 +355,13 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADSTATD_NORM_ALL (0x508)
 /**
  * Start Self Test Status Group Conversion and Poll Status (STATST)
- * @param ST Self Test Mode Selection 
- *        |    |             | Self Test Conversion Result |||||||||
- *        | ST |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
+ * \param ST Self Test Mode Selection 
+ *        | ST |             | Self Test Conversion Result ||||||||
  *        | :--| :---------: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
+ *        | ^  |             | 27kHz  | 14kHz  | 7kHz   | 3kHz   | 2kHz   | 1kHz   | 422Hz  | 26Hz   |
  *        | 01 | Self Test 1 | 0x9565 | 0x9553 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 | 0x9555 |
  *        | 10 | Self Test 2 | 0x6A9A | 0x6AAC | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA | 0x6AAA |
- * @param MD ADC Mode
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -360,8 +373,8 @@ struct adc_ltc6811 {
 #define LTC_CMD_STATST_NORM_ST1 (0x52F)
 /**
  * Start Combined Cell Voltage and GPIO1, GPIO2 Conversion and Poll Status (ADCVAX)
- * @param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
- * @param MD ADC Mode
+ * \param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -373,8 +386,8 @@ struct adc_ltc6811 {
 #define LTC_CMD_ADCVAX_NORM_DCP (0x57F)
 /**
  * Start Combined Cell Voltage and SC Conversion and Poll Status (ADCVSC)
- * @param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
- * @param MD ADC Mode
+ * \param DCP Discharge Permitted 0 = Discharge Not Permitted 1 = Discharge Permitted
+ * \param MD ADC Mode
  *        | MD  | ADCOPT(CFGR0[0]) = 0 | ADCOPT(CFGR0[0]) = 1 | 
  *        | :-: | :------------------: | :------------------: |
  *        | 00  | 422Hz Mode           | 1kHz Mode            |
@@ -417,14 +430,76 @@ struct adc_ltc6811 {
  */
 #define LTC_CMD_STCOMM (0x723)
 
+/**
+ * CMD
+ */
+typedef int16_t ltc_cmd_t;
+
+/**
+ * Init LTC6811
+ * \param index Driver Index
+ * \return LTC6811 Instance or NULL on error
+ */
 struct ltc6811 *ltc6811_init(uint32_t index);
+/**
+ * Init LTC6811 Slave
+ * \param index Driver Index
+ * \return LTC6811 Slave Instance or NULL on error
+ */
 struct ltc6811_slave *ltc6811_slave_init(uint32_t index);
+/**
+ * Connect LTC6811 to spi Bus
+ *
+ * \param ltc LTC6811 Instance
+ * \param spi SPI Master
+ * \param cs CS Number or SPI_OPT_CS_DIS
+ * \param gpio GPIO Pin Number or SPI_OPT_GPIO_DIS
+ * \param bautrate Bautrate
+ * \return -1 on error 0 on ok
+ */
 int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t bautrate);
-int32_t ltc6811_write(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t len);
-int32_t ltc6811_read(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *data, uint32_t len);
+/**
+ * Write to LTC6811 in dasy-chain!
+ * \param ltc LTC6811 Instance
+ * \param cmd Command PEC is generated automatically 
+ * \param data Data to send PEC is not generated! Proper size must be selected to send to all Slave in the chain!
+ * \param len Size of Data
+ * \return -1 on error 0 on ok
+ */
+int32_t ltc6811_write(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_t len);
+/**
+ * Read from LTC6811 in dasy-chain!
+ * \param ltc LTC6811 Instance
+ * \param cmd Command PEC is generated automatically 
+ * \param data Data to send PEC is not generated! Proper size must be selected to send to all Slave in the chain!
+ * \param len Size of Data
+ * \return -1 on error 0 on ok
+ */
+int32_t ltc6811_read(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_t len);
+/**
+ * Calc PEC of Payload
+ * \param data Data
+ * \param len Len of data
+ * \return PEC
+ */
 uint16_t ltc6811_calcPEC(uint8_t* data, uint8_t len);
-int32_t ltc6811_writeRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *newData, uint8_t *oldData);
-int32_t ltc6811_readRegister(struct ltc6811 *ltc, enum ltc_cmd cmd, uint8_t *registerContent);
+/**
+ * Write to LTC6811 Register
+ * \param ltc LTC6811 Instance
+ * \param cmd Command PEC is generated automatically
+ * \param newData New Register Content (send to all selected slaves) Array must be 6 bytes! PEC is generated automatically
+ * \param oldData Old Register Content (send also to all not selected slaves) Array must be 6 bytes! PEC is generated automatically
+ * \return -1 on error 0 on ok
+ */
+int32_t ltc6811_writeRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *newData, uint8_t *oldData);
+/**
+ * Read from all LTC6811 Register
+ * \param ltc LTC6811 Instance
+ * \param cmd Command PEC is checked automatically
+ * \param registerContent Array must be 6 bytes! * Number of Slaves
+ * \return -1 on error 0 on ok
+ */
+int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *registerContent);
 
 /**\cond INTERNAL*/
 #define LTC6811_ADC_DEV(masterid, id, adcID) \
@@ -502,4 +577,5 @@ extern const struct adc_ops lpc6811_adc_ops;
 	(adcs)[11] = adc_init(LTC6811_ADC_ID(masterid, id, 11), 12,0); \
 } \
 
+/**\}*/
 #endif

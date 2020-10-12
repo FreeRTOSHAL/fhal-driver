@@ -119,5 +119,4 @@ HAL_DEFINE_GLOBAL_ARRAY(sd);
 # define SD_WIRTE_ISR(ns, s, c, arg, l, d) static int32_t ns##_sd_writeISR(struct sd *s, uint32_t c, uint32_t arg, size_t l, uint32_t *d)
 # define SD_READ_ISR(ns, s, c, arg, l, d) static int32_t ns##_sd_readISR(struct sd *s, uint32_t c, uint32_t arg, size_t l, uint32_t *d)
 #endif
-/**\}*/
 #endif

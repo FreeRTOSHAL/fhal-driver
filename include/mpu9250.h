@@ -456,6 +456,9 @@ struct mpu9250_vector {
  * MPU9250 init
  * \param index Driver Index
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
+ * \param spi SPI Device
+ * \param cs CS Number or SPI_OPT_CS_DIS
+ * \param gpio GPIO Pin Number or SPI_OPT_GPIO_DIS
  * \return MPU9250 Instance or NULL on error
  */
 struct mpu9250 *mpu9250_init(uint32_t index, struct spi *spi, uint8_t cs, uint16_t gpio, TickType_t waittime);
@@ -501,10 +504,6 @@ extern const struct accel_ops mpu9250_accel_ops;
  * this Macro to define a new MPU9250 dev
  * \warning do not use the created Variable directly! Use the init function!
  * \param id Unique identifier
- * \param spi_id Index of SPI Dev
- * \param cs_id CS Number or SPI_OPT_CS_DIS
- * \param gpio_id GPIO Pin Number or SPI_OPT_GPIO_DIS
- * \param baut Bautrate
  */
 #define MPU9250_ADDDEV(id) \
 		struct mpu9250 mpu9250_##id; \

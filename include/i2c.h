@@ -135,7 +135,7 @@ int32_t i2c_recv(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, Tick
  * \param id ID if id > 7-Bit Exended IDs is used
  * \param sendData Send Data
  * \param sendLen Send len
- * \param recvdData Recv Data
+ * \param recvData Recv Data
  * \param recvLen Recv len
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error 0 on ok
@@ -166,7 +166,7 @@ int32_t i2c_recvISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
  * \param id ID if id > 7-Bit Exended IDs is used
  * \param sendData Send Data
  * \param sendLen Send len
- * \param recvdData Recv Data
+ * \param recvData Recv Data
  * \param recvLen Recv len
  * \return -1 on error 0 on ok
  */

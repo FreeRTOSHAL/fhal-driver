@@ -10,12 +10,14 @@
 #include <system.h>
 #include <stdbool.h>
 /**
- * \defgroup Operation System Layer for FreeRTOS
+ * \defgroup OS Operation System Layer for FreeRTOS
  * \ingroup HAL
  * 
  * \code
  * #include <os.h>
  * \endcode
+ *
+ * \{
  */
 #ifdef CONFIG_USE_STATIC
 # define OS_DEFINE_TASK(name, stackSize) StaticTask_t name##_buffer; StackType_t name##_stack[stackSize]; TaskHandle_t name; 

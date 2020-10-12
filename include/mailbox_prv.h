@@ -53,5 +53,4 @@ HAL_DEFINE_GLOBAL_ARRAY(mailbox);
 # define MAILBOX_SEND_ISR(ns, p, data) int32_t ns##_mailbox_sendISR(struct mailbox *p, uint32_t data)
 # define MAILBOX_RECV_ISR(ns, p, data) int32_t ns##_mailbox_recvISR(struct mailbox *p, uint32_t *data)
 #endif
-/**\}*/
 #endif
