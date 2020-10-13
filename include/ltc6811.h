@@ -29,13 +29,25 @@ struct ltc6811 {
 	 */
 	const uint32_t allSlavesMask;
 	/**
+	 * Cell Under Voltage Threashold
+	 */
+	const uint32_t cellUnderVoltage;
+	/**
+	 * Cell Over Voltage Threashold
+	 */
+	const uint32_t cellOverVoltage;
+	/**
 	 * Driver index
 	 */
 	uint32_t index;
 	/**
-	 * Task
+	 * ADC Task for all ADCs
 	 */
 	OS_DEFINE_TASK(adcTask, 500);
+	/**
+	 * ADC is Running
+	 */
+	bool adcIsRunning;
 	/**
 	 * Bitmaks for select mutlible slaves
 	 */
@@ -48,6 +60,14 @@ struct ltc6811 {
 	 * SPI Slave
 	 */
 	struct spi_slave *spi;
+	/**
+	 * ADC Callback
+	 */
+	bool (*callback)(struct ltc6811 *ltc, void *data);
+	/**
+	 * ADC Data
+	 */
+	void *callbackData;
 };
 
 struct ltc6811_slave {
@@ -83,6 +103,7 @@ struct i2c_ltc6811 {
 struct adc_ltc6811 {
 	struct adc_generic gen;
 	struct ltc6811_slave *ltc;
+	uint16_t value;
 };
 
 /**\endcond*/
@@ -500,6 +521,9 @@ int32_t ltc6811_writeRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *newDa
  * \return -1 on error 0 on ok
  */
 int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *registerContent);
+int32_t ltc6811_setADCCallback(struct ltc6811 *ltc, bool (*callback)(struct ltc6811 *ltc, void *data), void *data);
+int32_t ltc6811_startADC(struct ltc6811 *ltc);
+int32_t ltc6811_stopADC(struct ltc6811 *ltc);
 
 /**\cond INTERNAL*/
 #define LTC6811_ADC_DEV(masterid, id, adcID) \
@@ -511,7 +535,7 @@ int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *regist
 #include <adc_prv.h>
 extern const struct adc_ops lpc6811_adc_ops;
 /**\endcond*/
-#define LTC6811_ADDDEV(id, numberofslave) \
+#define LTC6811_ADDDEV(id, numberofslave, _cellUnderVoltage, _cellOverVoltage) \
 	struct ltc6811_slave *ltc6811_slaves_##id[numberofslave]; \
 	struct ltc6811 ltc6811_dev_##id = { \
 		HAL_NAME("LTC6811 " #id) \
@@ -520,6 +544,8 @@ extern const struct adc_ops lpc6811_adc_ops;
 		.allSlavesMask = ((1 << numberofslave) - 1), \
 		.selectSlaves = ((1 << numberofslave) - 1), \
 		.slaves = ltc6811_slaves_##id, \
+		.cellUnderVoltage = _cellUnderVoltage, \
+		.cellOverVoltage = _cellOverVoltage, \
 	}; \
 	HAL_ADD(ltc6811, ltc6811_dev_##id);
 
