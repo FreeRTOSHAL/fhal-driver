@@ -111,11 +111,36 @@ int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16
 	{
 		uint8_t registerContent[6];
 		registerContent[0] = 0xFC;
+		registerContent[0] = 0x0;
+#ifdef CONFIG_LTC6811_GPIO1_PULLUP
+		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(0);
+#endif
+#ifdef CONFIG_LTC6811_GPIO2_PULLUP
+		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(1);
+#endif
+#ifdef CONFIG_LTC6811_GPIO3_PULLUP
+		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(2);
+#endif
+#ifdef CONFIG_LTC6811_GPIO4_PULLUP
+		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(3);
+#endif
+#ifdef CONFIG_LTC6811_GPIO5_PULLUP
+		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(4);
+#endif
+#ifdef CONFIG_LTC6811_REFON
+		registerContent[0] |= LTC_CMD_WRCFGA_0_REFON;
+#endif
+		//registerContent[0] |= LTC_CMD_WRCFGA_0_DTEN; // Read-Only
+#if defined(CONFIG_LTC6811_CONVERSION_HZ_14kHz) || defined(CONFIG_LTC6811_CONVERSION_HZ_3kHz) || defined(CONFIG_LTC6811_CONVERSION_HZ_1kHz) || defined(CONFIG_LTC6811_CONVERSION_HZ_2kHz)
+		/* if 14kHz, 3kHz, 1kHz or 2kHz -> 1 else 0 */
+		registerContent[0] |= LTC_CMD_WRCFGA_0_ADCOPT;
+#endif
 		registerContent[1] = (ltc->cellUnderVoltage & 0xFF);
 		registerContent[2] = ((ltc->cellUnderVoltage >> 8) & 0xF) | ((ltc->cellOverVoltage & 0xF) << 4);
 		registerContent[3] = ((ltc->cellOverVoltage >> 4) & 0xFF);
 		registerContent[4] = 0x0;
-		registerContent[5] = 0x0;
+		/* TODO Move to Kconfig */
+		registerContent[5] = LTC_CMD_WRCFGA_5_DCTO(0);
 		/* Select All */
 		ltc->selectSlaves = ltc->allSlavesMask;
 		/* old Value not used by this */
@@ -324,7 +349,7 @@ static void ltc6811_adcTask(void *data) {
 		}
 		/* Start Cell Voltage ADC Conversion and Poll Status */
 		/* in Normal Mode, All Cells, Discharges Permitted  */
-		ret = ltc6811_write(ltc, LTC_CMD_ADCV(0, true, 0x2), NULL, 0);
+		ret = ltc6811_write(ltc, LTC_CMD_ADCV(0, false, 0x2), NULL, 0);
 		if (ret != 0) {
 			PRINTF("Can't clear Cells\n");
 			CONFIG_ASSERT(ret == 0);
@@ -336,7 +361,7 @@ static void ltc6811_adcTask(void *data) {
 			/* should be correct, wait time is calculated by datasheet */
 			/* TODO release lock for LTC if possible? */
 			/* TODO Check LTC can be preformed action wile ADC is performing */
-			vTaskDelay((LTC6811_CONVERSION_TIME * ltc->numberOfSlaves) / portTICK_PERIOD_MS);
+			vTaskDelay(LTC6811_CONVERSION_TIME / portTICK_PERIOD_MS);
 			do {
 				ret = ltc6811_read(ltc, LTC_CMD_PLADC, adc_state, ltc->numberOfSlaves);
 				if (ret < 0) {
@@ -355,7 +380,7 @@ static void ltc6811_adcTask(void *data) {
 				}
 				if (!finished) {
 					/* Ok Wait ones more */
-					vTaskDelay(LTC6811_CONVERSION_TIME / portTICK_PERIOD_MS);
+					vTaskDelay(1 / portTICK_PERIOD_MS);
 				}
 			} while(!finished);
 		}
@@ -460,3 +485,43 @@ ADC_STOP(ltc6811, a) {
 	return -1;
 }
 ADC_OPS(ltc6811);
+#ifdef CONFIG_LTC6811_I2C
+I2C_INIT(ltc6811, index, mode) {
+	struct i2c_ltc6811 *i2c;
+	int32_t ret;
+	i2c = (struct i2c_ltc6811 *) ADC_GET_DEV(index);
+	ret = i2c_genericInit((struct i2c *) i2c);
+	if (ret < 0) {
+		goto ltc_i2c_init_error0;
+	}
+	if (ret > 0) {
+		goto ltc_i2c_init_exit;
+	}
+ltc_i2c_init_exit:
+	return (struct i2c *) i2c;
+ltc_i2c_init_error0:
+	return NULL;
+}
+I2C_DEINIT(ltc6811, i) {
+	return -1;
+}
+I2C_SEND(ltc6811, i, id, data, len, waittime) {
+	return -1;
+}
+I2C_RECV(ltc6811, i, id, data, len, waittime) {
+	return -1;
+}
+I2C_TRANSVER(ltc6811, i, id, sendData, sendLen, recvData, recvLen, waittime) {
+	return -1;
+}
+I2C_SEND_ISR(ltc6811, i, id, data, len) {
+	return -1;
+}
+I2C_RECV_ISR(ltc6811, i, id, data, len) {
+	return -1;
+}
+I2C_TRANSVER_ISR(ltc6811, i, id, sendData, sendLen, recvData, recvLen) {
+	return -1;
+}
+I2C_OPS(ltc6811);
+#endif

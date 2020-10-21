@@ -68,18 +68,23 @@ struct ltc6811 {
 	 * ADC Data
 	 */
 	void *callbackData;
+#ifdef CONFIG_LTC6811_I2C
+	/**
+	 * Send I2C Command to All Devices
+	 */
+	bool sendI2CToAll;
+#endif
 };
 
+#ifdef CONFIG_LTC6811_I2C
+struct i2c_ltc6811;
+#endif
 struct ltc6811_slave {
 	struct hal gen;
 	/**
 	 * Driver index
 	 */
 	uint32_t index;
-	/**
-	 * I2C Master
-	 */
-	struct i2c *i2c;
 	/**
 	 * First Slave
 	 */
@@ -88,8 +93,19 @@ struct ltc6811_slave {
 	 * ADCs
 	 */
 	struct adc_ltc6811 **adcs;
+	/**
+	 * GPIO ADCs
+	 */
+	struct adc_ltc6811 **gpioADCS;
+#ifdef CONFIG_LTC6811_I2C
+	/**
+	 * I2C
+	 */
+	struct i2c_ltc6811 *i2c;
+#endif
 };
 
+#ifdef CONFIG_LTC6811_I2C
 /**
  * I2C Master in LTC6811
  */
@@ -97,6 +113,7 @@ struct i2c_ltc6811 {
 	struct i2c_generic gen;
 	struct ltc6811_slave *ltc;
 };
+#endif
 /**
  * adcs
  */
@@ -124,6 +141,45 @@ struct adc_ltc6811 {
  * Write Configuration Register Group A (WRCFGA)
  */
 #define LTC_CMD_WRCFGA (0x1)
+/**
+ * Define GPIO Pullup 
+ * @param gpio 0 = GPIO1, 1 = GPIO2, etc
+ */
+#define LTC_CMD_WRCFGA_0_GPIO_PULLUP(gpio) ((1 << gpio) << 3)
+/**
+ * References Powered Up
+ * 
+ * 1 = References Remain Powered Up Until Watchdog Timeout
+ * 0 = References Shut Down After Conversions
+ */
+#define LTC_CMD_WRCFGA_0_REFON BIT(2)
+/**
+ * Discharge Timer Enable (Read Only)
+ * 1 -> Enables the Discharge Timer for Discharge Switches
+ * 0 -> Disables Discharge Timer
+ */
+#define LTC_CMD_WRCFGA_0_DTEN BIT(1)
+/**
+ * ADC Mode Option Bit
+ * 0 -> Selects Modes 27kHz, 7kHz, 422Hz or 26Hz with MD[1:0] Bits in ADC Conversion Commands (Default)
+ * 1 -> Selects Modes 14kHz, 3kHz, 1kHz or 2kHz with MD[1:0] Bits in ADC Conversion Commands
+ */
+#define LTC_CMD_WRCFGA_0_ADCOPT BIT(0)
+/**
+ * Discharge Cell
+ * @param Cell 0 - 11 (16 Bit Acces!)
+ */
+#define LTC_CMD_WRCFGA_4_DCC(x) BIT(x)
+/**
+ * Discharge Timeout Value
+ *
+ * @param DCTO 0x0-0xF 
+ * | DCTO      | 0       |  1  | 2 | 3 | 4 | 5 | 6 | 7  | 8  | 9  | A  | B  | C  | D  | E  |  F  |
+ * | :-------- |:-------:|:--: |:-:|:-:|:-:|:-:|:-:|:-: |:-: |:-: |:-: |:-: |:-: |:-: |:-: | :-: |
+ * |Time (MIN) |Disabled | 0.5 | 1 | 2 | 3 | 4 | 5 | 10 | 15 | 20 | 30 | 40 | 60 | 75 | 90 | 120 |
+ */
+#define LTC_CMD_WRCFGA_5_DCTO(DCTO) (DCTO << 4)
+
 /**
  * Read Configuration Register Group A (RDCFGA)
  */
@@ -544,8 +600,8 @@ extern const struct adc_ops lpc6811_adc_ops;
 		.allSlavesMask = ((1 << numberofslave) - 1), \
 		.selectSlaves = ((1 << numberofslave) - 1), \
 		.slaves = ltc6811_slaves_##id, \
-		.cellUnderVoltage = _cellUnderVoltage, \
-		.cellOverVoltage = _cellOverVoltage, \
+		.cellUnderVoltage = (((_cellUnderVoltage) / (16 * 100E-3)) - 1), \
+		.cellOverVoltage = ((_cellOverVoltage) / (16 * 100E-3)), \
 	}; \
 	HAL_ADD(ltc6811, ltc6811_dev_##id);
 
