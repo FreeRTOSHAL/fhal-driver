@@ -110,7 +110,6 @@ int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16
 	}
 	{
 		uint8_t registerContent[6];
-		registerContent[0] = 0xFC;
 		registerContent[0] = 0x0;
 #ifdef CONFIG_LTC6811_GPIO1_PULLUP
 		registerContent[0] |= LTC_CMD_WRCFGA_0_GPIO_PULLUP(0);
