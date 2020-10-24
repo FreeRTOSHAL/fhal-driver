@@ -9,6 +9,19 @@ menu "Generic Driver Settings"
 		bool "Use FreeRTOS Static Function"
 		depends on SUPPORT_STATIC_ALLOCATION
 		default y
+	config GEN_VERSION
+		bool "Generated Version"
+		default n
+		help
+			Generated Version Strings for all Subssystems
+			
+			Strings are defined in hal.h
+
+			versionDriver: Driver git Version
+			versionMach: Mach git Version
+			versionArch: Arch git Version
+			versionKernel: Kernel git Version
+
 endmenu
 source driver/gcc/Kconfig
 source driver/gpio/Kconfig
