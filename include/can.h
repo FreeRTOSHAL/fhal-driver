@@ -38,7 +38,7 @@ struct can_filter {
 	/**
 	 * ID
 	 */
-	uint16_t id;
+	uint32_t id;
 	/**
 	 * Mask
 	 */
@@ -57,17 +57,25 @@ struct can_filter {
  */
 struct can_msg {
 	/**
+	 * Timestamp
+	 *
+	 * May from a free Running Conunter of the Hardware
+	 */
+	uint32_t ts;
+	/**
 	 * ID
 	 */
-	uint16_t id;
+	uint32_t id;
 	/**
 	 * Request Flag
 	 */
 	bool req;
 	/**
 	 * Length
+	 *
+	 * DLC values ranging from 1001 to 1111 are used to specify the data lengths of 12, 16, 20, 24, 32, 48, and 64 bytes.
 	 */
-	uint8_t len;
+	uint8_t length;
 	/**
 	 * Daten
 	 */
@@ -78,15 +86,15 @@ struct can_msg {
  * Function of CAN driver in Multi Driver implementation mode 
  */
 struct can_ops {
-	struct can *(*can_init)(uint32_t index, uint8_t bitrate, struct gpio_pin *pin, bool pinHigh);
+	struct can *(*can_init)(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh);
 	int32_t (*can_deinit)(struct can *can);
-	int32_t (*can_setCallback)(struct can *can, uint32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data);
+	int32_t (*can_setCallback)(struct can *can, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data);
 	int32_t (*can_registerFilter)(struct can *can, struct can_filter *filter);
-	int32_t (*can_deregisterFilter)(struct can *can, uint32_t filterID);
+	int32_t (*can_deregisterFilter)(struct can *can, int32_t filterID);
 	int32_t (*can_send)(struct can *can, struct can_msg *msg, TickType_t waittime);
-	int32_t (*can_recv)(struct can *can, uint32_t filterID, struct can_msg *msg, TickType_t waittime);
+	int32_t (*can_recv)(struct can *can, int32_t filterID, struct can_msg *msg, TickType_t waittime);
 	int32_t (*can_sendISR)(struct can *can, struct can_msg *msg);
-	int32_t (*can_recvISR)(struct can *can, uint32_t filterID, struct can_msg *msg);
+	int32_t (*can_recvISR)(struct can *can, int32_t filterID, struct can_msg *msg);
 	int32_t (*can_up)(struct can *can);
 	int32_t (*can_down)(struct can *can);
 };
@@ -128,7 +136,7 @@ struct can_generic {
  * \param pinHigh Enable Pin Driven High or low for enable
  * \return CAN Instance NULL on Error if only get instance on bits == 0 
  */
-struct can *can_init(uint32_t index, uint8_t bitrate, struct gpio_pin *pin, bool pinHigh);
+struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh);
 
 /**
  * Deinit CAN
@@ -139,13 +147,15 @@ int32_t can_deinit(struct can *can);
 
 /**
  * Set CAN Interrupt Callback for a filter
+ *
+ * \warning This Callback is may executed in the contex of CAN interrupt ISR!
  * \param can CAN instance
  * \param filterID filterID
  * \param callback Callback
  * \param data Data parsed to Callback
  * \return -1 on error 0 on ok
  */
-int32_t can_setCallback(struct can *can, uint32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data);
+int32_t can_setCallback(struct can *can, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data);
 /**
  * Register CAN Filter
  * \param can CAN instance
@@ -159,7 +169,7 @@ int32_t can_registerFilter(struct can *can, struct can_filter *filter);
  * \param filterID FilterID
  * \return -1 on error 0 on ok
  */
-int32_t can_deregisterFilter(struct can *can, uint32_t filterID);
+int32_t can_deregisterFilter(struct can *can, int32_t filterID);
 
 /**
  * Send CAN Message
@@ -177,7 +187,7 @@ int32_t can_send(struct can *can, struct can_msg *msg, TickType_t waittime);
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error 0 on ok
  */
-int32_t can_recv(struct can *can, uint32_t filterID, struct can_msg *msg, TickType_t waittime);
+int32_t can_recv(struct can *can, int32_t filterID, struct can_msg *msg, TickType_t waittime);
 /**
  * Send CAN Message
  * \param can CAN instance
@@ -192,7 +202,7 @@ int32_t can_sendISR(struct can *can, struct can_msg *msg);
  * \param msg CAN Message
  * \return -1 on error 0 on ok
  */
-int32_t can_recvISR(struct can *can, uint32_t filterID, struct can_msg *msg);
+int32_t can_recvISR(struct can *can, int32_t filterID, struct can_msg *msg);
 
 /**
  * Start CAN Net
@@ -209,7 +219,7 @@ int32_t can_up(struct can *can);
 int32_t can_down(struct can *can);
 
 #else
-inline struct can *can_init(uint32_t index, uint8_t bitrate, struct gpio_pin *pin, bool pinHigh) {
+inline struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh) {
 	HAL_DEFINE_GLOBAL_ARRAY(can);
 	struct can_generic *a = (struct can_generic *) HAL_GET_DEV(can, index);
 	if (a == NULL) {
@@ -221,33 +231,33 @@ inline int32_t can_deinit(struct can *can) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_deinit(can);
 }
-inline int32_t can_setCallback(struct can *can, uint32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data) {
+inline int32_t can_setCallback(struct can *can, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data) {
 	struct can_generic *a = (struct can_generic *) can;
-	return a->ops->can_setCallback(can, filter, callback, data);
+	return a->ops->can_setCallback(can, filterID, callback, data);
 }
 inline int32_t can_registerFilter(struct can *can, struct can_filter *filter) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_registerFilter(can, filter);
 }
-inline int32_t can_deregisterFilter(struct can *can, uint32_t filterID) {
+inline int32_t can_deregisterFilter(struct can *can, int32_t filterID) {
 	struct can_generic *a = (struct can_generic *) can;
-	return a->ops->can_deregisterFilter(can, filter);
+	return a->ops->can_deregisterFilter(can, filterID);
 }
 inline int32_t can_send(struct can *can, struct can_msg *msg, TickType_t waittime) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_send(can, msg, waittime);
 }
-inline int32_t can_recv(struct can *can, uint32_t filterID, struct can_msg *msg, TickType_t waittime) {
+inline int32_t can_recv(struct can *can, int32_t filterID, struct can_msg *msg, TickType_t waittime) {
 	struct can_generic *a = (struct can_generic *) can;
-	return a->ops->can_recv(can, filter, msg, waittime);
+	return a->ops->can_recv(can, filterID, msg, waittime);
 }
 inline int32_t can_sendISR(struct can *can, struct can_msg *msg) {
 	struct can_generic *a = (struct can_generic *) can;
 	return a->ops->can_sendISR(can, msg);
 }
-inline int32_t can_recvISR(struct can *can, uint32_t filterID, struct can_msg *msg) {
+inline int32_t can_recvISR(struct can *can, int32_t filterID, struct can_msg *msg) {
 	struct can_generic *a = (struct can_generic *) can;
-	return a->ops->can_recvISR(can, filter, msg);
+	return a->ops->can_recvISR(can, filterID, msg);
 }
 inline int32_t can_up(struct can *can) {
 	struct can_generic *a = (struct can_generic *) can;

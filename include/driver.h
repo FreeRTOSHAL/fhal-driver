@@ -47,7 +47,8 @@
 	DEV(net, location) \
 	DEV(counter, location) \
 	DEV(rtc, location) \
-	DEV(temp, location) 
+	DEV(temp, location) \
+	DEV(can, location) 
 #endif
 /**\}*/
 #endif

@@ -45,6 +45,8 @@ int32_t hal_printNames() {
 	printNameOfDriver(net);
 	printNameOfDriver(counter);
 	printNameOfDriver(rtc);
+	printNameOfDriver(temp);
+	printNameOfDriver(can);
 	return 0;
 }
 #endif
