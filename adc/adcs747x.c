@@ -87,7 +87,7 @@ int32_t adcs747x_connect(struct adc *a, struct spi *spi, uint8_t cs, uint16_t gp
 ADC_DEINIT(adcs747x, a) {
 	struct adc_adcs747x *adc = (struct adc_adcs747x *) a;
 	adc->gen.init = false;
-	return -1;
+	return 0;
 }
 ADC_GET(adcs747x, a, waittime) {
 	struct adc_adcs747x *adc = (struct adc_adcs747x *) a;

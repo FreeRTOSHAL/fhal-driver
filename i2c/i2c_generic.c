@@ -7,7 +7,7 @@
 #define I2C_PRV
 #include <i2c_prv.h>
 
-int32_t i2c_generic_init(struct i2c *t) {
+int32_t i2c_genericInit(struct i2c *t) {
 	struct i2c_generic *i2c = (struct i2c_generic *) t;
 	if (hal_isInit(i2c)) {
 		return I2C_ALREDY_INITED;

@@ -105,6 +105,54 @@ config LTC6811
 	depends on SENSOR
 	select USE_MUTEXES
 	select USE_RECURSIVE_MUTEXES
-	config CONFIG_LTC6811_DEBUG
+if LTC6811
+	config LTC6811_DEBUG
 		bool "LTC6811 Debug"
-		depends on LTC6811
+	config LTC6811_PRIO
+		int "LTC6811 ADC Task Prio"
+		default 2
+	choice
+		prompt "Select Conversion Time"
+		config LTC6811_CONVERSION_HZ_3kHz
+			bool "3kHz (3.0ms)"
+		config LTC6811_CONVERSION_HZ_27kHz
+			bool "27kHz (1.1ms)"
+		config LTC6811_CONVERSION_HZ_14kHz
+			bool "15kHz (1.3ms)"
+		config LTC6811_CONVERSION_HZ_2kHz
+			bool "2kHz (4.4ms)"
+		config LTC6811_CONVERSION_HZ_1kHz
+			bool "1kHz (7.2ms)"
+		config LTC6811_CONVERSION_HZ_7kHz
+			bool "7kHz (2.3ms)"
+		config LTC6811_CONVERSION_HZ_422Hz
+			bool "422Hz (12.8ms)"
+		config LTC6811_CONVERSION_HZ_26Hz
+			bool "26Hz (201ms)"
+	endchoice
+	config LTC6811_FREQ_MS
+		int "ADC Period (in ms)"
+		default 100
+	config LTC6811_GPIO1_PULLUP
+		bool "Set GPIO 1 Pull-up"
+		default y
+	config LTC6811_GPIO2_PULLUP
+		bool "Set GPIO 2 Pull-up"
+		default y
+	config LTC6811_GPIO3_PULLUP
+		bool "Set GPIO 3 Pull-up"
+		default y
+	config LTC6811_GPIO4_PULLUP
+		bool "Set GPIO 4 Pull-up"
+		default y
+	config LTC6811_GPIO5_PULLUP
+		bool "Set GPIO 5 Pull-up"
+		default y
+	config LTC6811_REFON
+		bool "References Remain Powered Up Until Watchdog Timeout"
+		default n
+	config LTC6811_I2C
+		bool "Enable I2C on GPIO 3 and GPIO 4"
+		depends on I2C
+		default n
+endif

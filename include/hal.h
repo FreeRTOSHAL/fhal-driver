@@ -231,5 +231,12 @@ HAL_DEFINE_GLOBAL_ARRAY(hal);
 		ret; \
 	})
 
+#ifdef CONFIG_GEN_VERSION
+extern const char *versionDriver;
+extern const char *versionMach;
+extern const char *versionArch;
+extern const char *versionKernel;
+#endif
+
 /**\}*/
 #endif

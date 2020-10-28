@@ -29,13 +29,25 @@ struct ltc6811 {
 	 */
 	const uint32_t allSlavesMask;
 	/**
+	 * Cell Under Voltage Threashold
+	 */
+	const uint32_t cellUnderVoltage;
+	/**
+	 * Cell Over Voltage Threashold
+	 */
+	const uint32_t cellOverVoltage;
+	/**
 	 * Driver index
 	 */
 	uint32_t index;
 	/**
-	 * Task
+	 * ADC Task for all ADCs
 	 */
 	OS_DEFINE_TASK(adcTask, 500);
+	/**
+	 * ADC is Running
+	 */
+	bool adcIsRunning;
 	/**
 	 * Bitmaks for select mutlible slaves
 	 */
@@ -48,18 +60,31 @@ struct ltc6811 {
 	 * SPI Slave
 	 */
 	struct spi_slave *spi;
+	/**
+	 * ADC Callback
+	 */
+	bool (*callback)(struct ltc6811 *ltc, void *data);
+	/**
+	 * ADC Data
+	 */
+	void *callbackData;
+#ifdef CONFIG_LTC6811_I2C
+	/**
+	 * Send I2C Command to All Devices
+	 */
+	bool sendI2CToAll;
+#endif
 };
 
+#ifdef CONFIG_LTC6811_I2C
+struct i2c_ltc6811;
+#endif
 struct ltc6811_slave {
 	struct hal gen;
 	/**
 	 * Driver index
 	 */
 	uint32_t index;
-	/**
-	 * I2C Master
-	 */
-	struct i2c *i2c;
 	/**
 	 * First Slave
 	 */
@@ -68,8 +93,19 @@ struct ltc6811_slave {
 	 * ADCs
 	 */
 	struct adc_ltc6811 **adcs;
+	/**
+	 * GPIO ADCs
+	 */
+	struct adc_ltc6811 **gpioADCS;
+#ifdef CONFIG_LTC6811_I2C
+	/**
+	 * I2C
+	 */
+	struct i2c_ltc6811 *i2c;
+#endif
 };
 
+#ifdef CONFIG_LTC6811_I2C
 /**
  * I2C Master in LTC6811
  */
@@ -77,12 +113,14 @@ struct i2c_ltc6811 {
 	struct i2c_generic gen;
 	struct ltc6811_slave *ltc;
 };
+#endif
 /**
  * adcs
  */
 struct adc_ltc6811 {
 	struct adc_generic gen;
 	struct ltc6811_slave *ltc;
+	uint16_t value;
 };
 
 /**\endcond*/
@@ -103,6 +141,45 @@ struct adc_ltc6811 {
  * Write Configuration Register Group A (WRCFGA)
  */
 #define LTC_CMD_WRCFGA (0x1)
+/**
+ * Define GPIO Pullup 
+ * @param gpio 0 = GPIO1, 1 = GPIO2, etc
+ */
+#define LTC_CMD_WRCFGA_0_GPIO_PULLUP(gpio) ((1 << gpio) << 3)
+/**
+ * References Powered Up
+ * 
+ * 1 = References Remain Powered Up Until Watchdog Timeout
+ * 0 = References Shut Down After Conversions
+ */
+#define LTC_CMD_WRCFGA_0_REFON BIT(2)
+/**
+ * Discharge Timer Enable (Read Only)
+ * 1 -> Enables the Discharge Timer for Discharge Switches
+ * 0 -> Disables Discharge Timer
+ */
+#define LTC_CMD_WRCFGA_0_DTEN BIT(1)
+/**
+ * ADC Mode Option Bit
+ * 0 -> Selects Modes 27kHz, 7kHz, 422Hz or 26Hz with MD[1:0] Bits in ADC Conversion Commands (Default)
+ * 1 -> Selects Modes 14kHz, 3kHz, 1kHz or 2kHz with MD[1:0] Bits in ADC Conversion Commands
+ */
+#define LTC_CMD_WRCFGA_0_ADCOPT BIT(0)
+/**
+ * Discharge Cell
+ * @param Cell 0 - 11 (16 Bit Acces!)
+ */
+#define LTC_CMD_WRCFGA_4_DCC(x) BIT(x)
+/**
+ * Discharge Timeout Value
+ *
+ * @param DCTO 0x0-0xF 
+ * | DCTO      | 0       |  1  | 2 | 3 | 4 | 5 | 6 | 7  | 8  | 9  | A  | B  | C  | D  | E  |  F  |
+ * | :-------- |:-------:|:--: |:-:|:-:|:-:|:-:|:-:|:-: |:-: |:-: |:-: |:-: |:-: |:-: |:-: | :-: |
+ * |Time (MIN) |Disabled | 0.5 | 1 | 2 | 3 | 4 | 5 | 10 | 15 | 20 | 30 | 40 | 60 | 75 | 90 | 120 |
+ */
+#define LTC_CMD_WRCFGA_5_DCTO(DCTO) (DCTO << 4)
+
 /**
  * Read Configuration Register Group A (RDCFGA)
  */
@@ -500,6 +577,9 @@ int32_t ltc6811_writeRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *newDa
  * \return -1 on error 0 on ok
  */
 int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *registerContent);
+int32_t ltc6811_setADCCallback(struct ltc6811 *ltc, bool (*callback)(struct ltc6811 *ltc, void *data), void *data);
+int32_t ltc6811_startADC(struct ltc6811 *ltc);
+int32_t ltc6811_stopADC(struct ltc6811 *ltc);
 
 /**\cond INTERNAL*/
 #define LTC6811_ADC_DEV(masterid, id, adcID) \
@@ -511,7 +591,7 @@ int32_t ltc6811_readRegister(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *regist
 #include <adc_prv.h>
 extern const struct adc_ops lpc6811_adc_ops;
 /**\endcond*/
-#define LTC6811_ADDDEV(id, numberofslave) \
+#define LTC6811_ADDDEV(id, numberofslave, _cellUnderVoltage, _cellOverVoltage) \
 	struct ltc6811_slave *ltc6811_slaves_##id[numberofslave]; \
 	struct ltc6811 ltc6811_dev_##id = { \
 		HAL_NAME("LTC6811 " #id) \
@@ -520,6 +600,8 @@ extern const struct adc_ops lpc6811_adc_ops;
 		.allSlavesMask = ((1 << numberofslave) - 1), \
 		.selectSlaves = ((1 << numberofslave) - 1), \
 		.slaves = ltc6811_slaves_##id, \
+		.cellUnderVoltage = (((_cellUnderVoltage) / (16 * 100E-3)) - 1), \
+		.cellOverVoltage = ((_cellOverVoltage) / (16 * 100E-3)), \
 	}; \
 	HAL_ADD(ltc6811, ltc6811_dev_##id);
 
