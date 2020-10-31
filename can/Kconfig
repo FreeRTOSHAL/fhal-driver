@@ -3,6 +3,13 @@ menuconfig CAN
 	depends on MACH_HAS_CAN 
 	help
 		Activate CAN Subsystem
+	config CAN_THREAD_SAVE
+		bool "CAN is Therad Save"
+		depends on CAN
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		help
+			Make CAN Thread save
 	config CAN_FD
 		bool "Activate CAN FD Support"
 		depends on CAN

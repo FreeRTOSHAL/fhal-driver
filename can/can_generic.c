@@ -12,8 +12,18 @@ int32_t can_genericInit(struct can *t) {
 	if (hal_isInit(can)) {
 		return CAN_ALREDY_INITED;
 	}
+#ifdef CONFIG_CAN_THREAD_SAVE
+	{
+		int32_t ret = hal_init(t);
+		if (ret < 0) {
+			goto can_genericInit_error0;
+		}
+	}
+#endif
 	can->init = true;
 	return 0;
+can_genericInit_error0:
+	return -1;
 }
 
 #ifdef CONFIG_CAN_MULTI
