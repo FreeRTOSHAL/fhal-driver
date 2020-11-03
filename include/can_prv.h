@@ -66,7 +66,7 @@ int32_t can_calcBittiming(struct can_bittiming *bt, struct can_bittiming_const c
 #ifndef CONFIG_CAN_MULTI
 # define CAN_OPS(ns)
 # define CAN_INIT_DEV(ns) 
-# define CAN_INIT(ns, index, bitrate, pin, pinHigh) struct can * can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh)
+# define CAN_INIT(ns, index, bitrate, pin, pinHigh, callback, data) struct can * can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t d), void *data)
 # define CAN_DEINIT(ns, c) int32_t  can_deinit(struct can *c)
 # define CAN_SET_CALLBACK(ns, c, filterID, callback, data) int32_t  can_setCallback(struct can *c, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data)
 # define CAN_REGISTER_FILTER(ns, c, filter) int32_t  can_registerFilter(struct can *c, struct can_filter *filter)
@@ -94,7 +94,7 @@ int32_t can_calcBittiming(struct can_bittiming *bt, struct can_bittiming_const c
 	.can_down = &ns##_can_down, \
 }
 # define CAN_INIT_DEV(ns) .gen.ops = &ns##_can_ops,
-# define CAN_INIT(ns, index, bitrate, pin, pinHigh) struct can * ns##_can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh)
+# define CAN_INIT(ns, index, bitrate, pin, pinHigh, callback, data) struct can * ns##_can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t d), void *data)
 # define CAN_DEINIT(ns, c) int32_t  ns##_can_deinit(struct can *c)
 # define CAN_SET_CALLBACK(ns, c, filterID, callback, data) int32_t  ns##_can_setCallback(struct can *c, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data)
 # define CAN_REGISTER_FILTER(ns, c, filter) int32_t  ns##_can_registerFilter(struct can *c, struct can_filter *filter)

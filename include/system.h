@@ -112,6 +112,10 @@
  */
 #define BIT(x) (1 << (x))
 /**
+ * Set a Bit on 64Bit Value 
+ */
+#define BIT64(x) (1ULL << (x))
+/**
  * Get Array Size
  * \warning Waring only posibile with const arrays!
  * \param x const Variable
