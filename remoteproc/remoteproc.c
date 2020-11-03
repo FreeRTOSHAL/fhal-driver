@@ -31,6 +31,7 @@ static int32_t handleTrace(struct fw_rsc_trace *trace) {
 	return 0;
 }
 static int32_t handleVdev(struct fw_rsc_vdev *vdev) {
+#ifdef CONFIG_RPROC_DEBUG
 	uint8_t i;
 	PRINTF("%s\n", __FUNCTION__);
 	PRINTF("vdev: id: %ld notifyid: %ld dfeatures: 0x%08lx gfeatures: 0x%08lx config_len: 0x%08lx status: 0x%08x num of vrings: %d\n", vdev->id, vdev->notifyid, vdev->dfeatures, vdev->gfeatures, vdev->config_len, vdev->status, vdev->num_of_vrings);
@@ -38,6 +39,7 @@ static int32_t handleVdev(struct fw_rsc_vdev *vdev) {
 		struct fw_rsc_vdev_vring *vring = &vdev->vring[i];
 		PRINTF("\tvring: da: 0x%08lx align: 0x%08lx num: 0x%08lx notifyid: 0x%08lx\n", vring->da, vring->align, vring->num, vring->notifyid);
 	}
+#endif
 	return 0;
 }
 static int32_t parseRSC(struct rproc *rproc) {
