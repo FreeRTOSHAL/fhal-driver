@@ -584,6 +584,7 @@ int32_t ltc6811_stopADC(struct ltc6811 *ltc);
 /**\cond INTERNAL*/
 #define LTC6811_ADC_DEV(masterid, id, adcID) \
 	struct adc_ltc6811 ltc6811_adc_##masterid##_##id##_##adcID = { \
+		ADC_INIT_DEV(ltc6811), \
 		.ltc = &ltc6811_slave_##masterid##_##id, \
 	}; \
 	ADC_ADDDEV(ltc6811, ltc6811_adc_##masterid##_##id##_##adcID)
