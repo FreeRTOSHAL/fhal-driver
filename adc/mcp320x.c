@@ -80,7 +80,7 @@ ADC_INIT(mcp320x, index, bits, hz) {
 	/* waittime per ticks */
 	adc->ticks = (1000 * portTICK_PERIOD_MS) / hz;
 	adc->bits = bits;
-	ret = OS_CREATE_TASK(mcp320x_task, "ADC747x Task", 500, adc, CONFIG_MCP320X_PRIO, adc->task);
+	ret = OS_CREATE_TASK(mcp320x_task, "MCP320x Task", 100, adc, CONFIG_MCP320X_PRIO, adc->task);
 	if (ret != pdPASS) {
 		goto mcp320x_adc_init_error0;
 	}
