@@ -24,6 +24,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 	/* Turn on internal clock source */
 	ret = mpu_send(mpu, MPU_PWR_MGMT_1, 0x0, waittime);
 	if (ret < 0) {
+		PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 		goto mpu9250_calibrate_error0;
 	}
 	vTaskDelay(15 / portTICK_PERIOD_MS);
@@ -33,26 +34,31 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 		/* Set sample rate to 1.125 kHz */
 		ret = mpu_send(mpu, MPU_GYRO_SMPLRT_DIV, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		/* Set gyro full-scale to 250 degrees per second, maximum sensitivity */
 		/* set low-pass filter to 187.6 */
 		ret = mpu_send(mpu, MPU_GYRO_CONFIG_1, MPU_GYRO_CONFIG_1_GYRO_DLPFCFG(1) | MPU_GYRO_CONFIG_1_GYRO_FCHOICE | MPU_GYRO_CONFIG_1_GYRO_FS_SEL_2000DPS, waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		/* Set sample rate to 1.125 kHz */
 		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_1, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_2, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		/* Set accelerometer full-scale to 2 g, maximum sensitivity, and set FCHOICE */
 		ret = mpu_send(mpu, MPU_ACCEL_CONFIG, MPU_ACCEL_CONFIG_ACCEL_FS_SEL_2G | MPU_ACCEL_CONFIG_ACCEL_FCHOICE | MPU_ACCEL_CONFIG_ACCEL_DLPFCFG(0), waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		{
@@ -60,6 +66,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			/* Configure FIFO to capture accelerometer and gyro data for bias calculation */
 			ret = mpu_send(mpu, MPU_USER_CTRL, MPU_USER_CTRL_FIFO_EN, waittime);
 			if (ret < 0) {
+				PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 				goto mpu9250_calibrate_error0;
 			}
 			lastWakeUpTime = xTaskGetTickCount();
@@ -76,6 +83,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 				waittime
 			);
 			if (ret < 0) {
+				PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 				goto mpu9250_calibrate_error0;
 			}
 			/* accumulate 40 samples in 40 milliseconds = 480 bytes */
@@ -85,6 +93,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 		/* Disable gyro and accelerometer sensors for FIFO */
 		ret = mpu_send(mpu, MPU_FIFO_EN_2, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("MPU send Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 			goto mpu9250_calibrate_error0;
 		}
 		/* 
@@ -94,9 +103,11 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			uint8_t countRAW[2];
 			ret = mpu_recv(mpu, MPU_FIFO_COUNTH, countRAW, 2, waittime);
 			if (ret < 0) {
+				PRINTF("MPU recv Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 				goto mpu9250_calibrate_error0;
 			}
 			count = (((uint16_t) countRAW[0]) << 8) | ((uint16_t) countRAW[1]);
+			PRINTF("MPU get %u items from FIFO\n", count);
 		}
 		{
 			int32_t accelVec32[3];
@@ -109,6 +120,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 				struct vector gyroVec;
 				ret = mpu_recv(mpu, MPU_FIFO_R_W, data, 12, waittime);
 				if (ret < 0) {
+					PRINTF("MPU recv Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 					goto mpu9250_calibrate_error0;
 				}
 				mpu_buildVec(&accelVec, data);
@@ -133,12 +145,15 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			} else {
 				mpu->accel->accelBasis.z += MPU_GRAVITY;
 			}
+			PRINTF("MPU accelBasis (x,y,z): %d, %d, %d\n", mpu->accel->accelBasis.x, mpu->accel->accelBasis.y, mpu->accel->accelBasis.z);
+			PRINTF("MPU gyroBasis (x,y,z): %d, %d, %d\n", mpu->gyro->gyroBasis.x, mpu->gyro->gyroBasis.y, mpu->gyro->gyroBasis.z);
 		}
 
 		{
 			uint8_t countRAW[2];
 			ret = mpu_recv(mpu, MPU_FIFO_COUNTH, countRAW, 2, waittime);
 			if (ret < 0) {
+				PRINTF("MPU recv Failed: File: %s Line: %d Function: %s\n",__FILE__, __LINE__, __FUNCTION__);
 				goto mpu9250_calibrate_error0;
 			}
 			count = (((uint16_t) countRAW[0]) << 8) | ((uint16_t) countRAW[1]);
@@ -146,6 +161,7 @@ static int32_t mpu9250_calibrate(struct mpu9250 *mpu, TickType_t waittime) {
 			 * FIFO should be empty
 			 */
 			if (count != 0) {
+				PRINTF("MPU count should be empty, FIFO has %u items left: File: %s Line: %d Function: %s\n", count, __FILE__, __LINE__, __FUNCTION__);
 				goto mpu9250_calibrate_error0;
 			}
 		}
