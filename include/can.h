@@ -42,7 +42,7 @@ struct can_filter {
 	/**
 	 * Mask
 	 */
-	uint16_t mask;
+	uint32_t mask;
 };
 #ifdef CONFIG_CAN_FD
 # define CAN_MAX_LENGTH 64
