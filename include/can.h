@@ -337,7 +337,7 @@ typedef uint64_t can_errorData_t;
  * Function of CAN driver in Multi Driver implementation mode 
  */
 struct can_ops {
-	struct can *(*can_init)(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data), void *data);
+	struct can *(*can_init)(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data, void *userData), void *data);
 	int32_t (*can_deinit)(struct can *can);
 	int32_t (*can_setCallback)(struct can *can, int32_t filterID, bool (*callback)(struct can *can, struct can_msg *msg, void *data), void *data);
 	int32_t (*can_registerFilter)(struct can *can, struct can_filter *filter);
@@ -389,7 +389,7 @@ struct can_generic {
  * \param data Callback User Data
  * \return CAN Instance NULL on Error if only get instance on bits == 0 
  */
-struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data), void *data);
+struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data, void *userData), void *data);
 
 /**
  * Deinit CAN
@@ -472,13 +472,13 @@ int32_t can_up(struct can *can);
 int32_t can_down(struct can *can);
 
 #else
-inline struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data), void *data) {
+inline struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data, void *userData), void *data) {
 	HAL_DEFINE_GLOBAL_ARRAY(can);
 	struct can_generic *a = (struct can_generic *) HAL_GET_DEV(can, index);
 	if (a == NULL) {
 		return NULL;
 	}
-	return a->ops->can_init(index, bitrate, pin, pinHigh, callback, data);
+	return a->ops->can_init(index, bitrate, pin, pinHigh, callback, data, userData);
 }
 inline int32_t can_deinit(struct can *can) {
 	struct can_generic *a = (struct can_generic *) can;
