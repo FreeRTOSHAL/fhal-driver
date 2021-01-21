@@ -27,7 +27,7 @@ can_genericInit_error0:
 }
 
 #ifdef CONFIG_CAN_MULTI
-struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data), void *data);
+struct can *can_init(uint32_t index, uint32_t bitrate, struct gpio_pin *pin, bool pinHigh, bool (*callback)(struct can *can, can_error_t error, can_errorData_t data, void *userData), void *data);
 int32_t can_deinit(struct can *can);
 int32_t can_setCallback(struct can *can, int32_t filterID, bool callback(struct can *can, struct can_msg *msg, void *data), void *data);
 int32_t can_registerFilter(struct can *can, struct can_filter *filter);
