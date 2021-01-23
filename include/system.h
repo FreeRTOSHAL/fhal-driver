@@ -110,7 +110,7 @@
 /**
  * Set a Bit on Value
  */
-#define BIT(x) (1 << (x))
+#define BIT(x) (1UL << (x))
 /**
  * Set a Bit on 64Bit Value 
  */
