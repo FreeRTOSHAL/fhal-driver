@@ -67,10 +67,6 @@ struct can_msg {
 	 */
 	uint32_t id;
 	/**
-	 * Request Flag
-	 */
-	bool req;
-	/**
 	 * Length
 	 *
 	 * DLC values ranging from 1001 to 1111 are used to specify the data lengths of 12, 16, 20, 24, 32, 48, and 64 bytes.
@@ -81,6 +77,16 @@ struct can_msg {
 	 */
 	uint8_t data[CAN_MAX_LENGTH];
 };
+
+/* special address description flags for the CAN_ID */
+#define CAN_EFF_FLAG 0x80000000UL /* EFF/SFF is set in the MSB */
+#define CAN_RTR_FLAG 0x40000000UL /* remote transmission request */
+#define CAN_ERR_FLAG 0x20000000UL /* error message frame */
+
+/* valid bits in CAN ID for frame formats */
+#define CAN_SFF_MASK 0x000007FFUL /* standard frame format (SFF) */
+#define CAN_EFF_MASK 0x1FFFFFFFUL /* extended frame format (EFF) */
+#define CAN_ERR_MASK 0x1FFFFFFFUL /* omit EFF, RTR, ERR flags */
 
 typedef uint32_t can_error_t;
 typedef uint64_t can_errorData_t;
