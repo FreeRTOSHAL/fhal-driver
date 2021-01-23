@@ -79,14 +79,12 @@ struct can_msg {
 };
 
 /* special address description flags for the CAN_ID */
-#define CAN_EFF_FLAG 0x80000000UL /* EFF/SFF is set in the MSB */
-#define CAN_RTR_FLAG 0x40000000UL /* remote transmission request */
-#define CAN_ERR_FLAG 0x20000000UL /* error message frame */
+#define CAN_EFF_FLAG BIT(31) /* EFF/SFF is set in the MSB */
+#define CAN_RTR_FLAG BIT(30) /* remote transmission request */
 
 /* valid bits in CAN ID for frame formats */
 #define CAN_SFF_MASK 0x000007FFUL /* standard frame format (SFF) */
 #define CAN_EFF_MASK 0x1FFFFFFFUL /* extended frame format (EFF) */
-#define CAN_ERR_MASK 0x1FFFFFFFUL /* omit EFF, RTR, ERR flags */
 
 typedef uint32_t can_error_t;
 typedef uint64_t can_errorData_t;
