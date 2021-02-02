@@ -109,12 +109,54 @@
 #define NSEC_PER_SEC 1000000000ULL
 /**
  * Set a Bit on Value
+ * \param x bit position to set
  */
 #define BIT(x) (1UL << (x))
 /**
+ * Set bits (32 bit), shift them and apply a mask
+ * \param x bits to set
+ * \param mask mask applied after shifting
+ * \param shift number of bits x gets shifted
+ */
+#define BITS(x, mask, shift) ((((uint32_t) (x))<<(shift)) & (mask))
+/**
+ * Extract bits (32 bit) by applying a mask and a shift
+ * \param x 32-bit input value to extract the bits from
+ * \param mask mask applied to the input value
+ * \param shift numberof bits masked x gets shifted
+ */
+#define BITS_INV(x, mask, shift) ((((uint32_t) (x)) & (mask))>>(shift))
+/**
+ * Generate a mask (32 bit) given the number of bits and the shift
+ * \param bits number of bits set to 1
+ * \param shift number of bits the block of ones gets shifted
+ */
+#define BITS_MASK(bits, shift) ((~(0xFFFFFFFFUL << (bits))) << (shift))
+/**
  * Set a Bit on 64Bit Value 
+ * \param x bit position to set
  */
 #define BIT64(x) (1ULL << (x))
+/**
+ * Set bits (64 bit), shift them and apply a mask
+ * \param x bits to set
+ * \param mask mask applied after shifting
+ * \param shift number of bits x gets shifted
+ */
+#define BITS64(x, mask, shift) ((((uint64_t) (x))<<(shift)) & (mask))
+/**
+ * Extract bits (64 bit) by applying a mask and a shift
+ * \param x 32-bit input value to extract the bits from
+ * \param mask mask applied to the input value
+ * \param shift numberof bits masked x gets shifted
+ */
+#define BITS64_INV(x, mask, shift) ((((uint64_t) (x)) & (mask))>>(shift))
+/**
+ * Generate a mask (64 bit) given the number of bits and the shift
+ * \param bits number of bits set to 1
+ * \param shift number of bits the block of ones gets shifted
+ */
+#define BITS64_MASK(bits, shift) ((~(0xFFFFFFFFFFFFFFFFUL << (bits))) << (shift))
 /**
  * Get Array Size
  * \warning Waring only posibile with const arrays!
