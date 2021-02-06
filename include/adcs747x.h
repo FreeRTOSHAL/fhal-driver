@@ -7,7 +7,7 @@
 #include <spi.h>
 #include <FreeRTOS.h>
 #include <task.h>
-extern const struct adc_ops adcs747x_ops;
+extern const struct adc_ops adcs747x_adc_ops;
 struct adc_adcs747x {
 	struct adc_generic gen;
 	bool running;

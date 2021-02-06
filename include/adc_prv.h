@@ -38,7 +38,7 @@ HAL_DEFINE_GLOBAL_ARRAY(adc);
 #define ADC_START(ns, a) int32_t adc_start(struct adc *a)
 #define ADC_STOP(ns, a) int32_t adc_stop(struct adc *a)
 #else
-# define ADC_OPS(ns) const struct adc_ops ns##_ops = { \
+# define ADC_OPS(ns) const struct adc_ops ns##_adc_ops = { \
 	.adc_init = &ns##_adc_init, \
 	.adc_deinit = &ns##_adc_deinit, \
 	.adc_get = &ns##_adc_get, \
@@ -47,7 +47,7 @@ HAL_DEFINE_GLOBAL_ARRAY(adc);
 	.adc_start = &ns##_adc_start, \
 	.adc_stop = &ns##_adc_stop, \
 }
-# define ADC_INIT_DEV(ns) .gen.ops = &ns##_ops,
+# define ADC_INIT_DEV(ns) .gen.ops = &ns##_adc_ops,
 
 #define ADC_INIT(ns, index, bits, hz) static struct adc *ns##_adc_init(uint32_t index, uint8_t bits, uint32_t hz)
 #define ADC_DEINIT(ns, a) static int32_t ns##_adc_deinit(struct adc *a)
