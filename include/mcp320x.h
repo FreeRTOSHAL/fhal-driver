@@ -7,7 +7,7 @@
 #include <spi.h>
 #include <FreeRTOS.h>
 #include <task.h>
-extern const struct adc_ops mcp320x_ops;
+extern const struct adc_ops mcp320x_adc_ops;
 struct adc_mcp320x_contoller {
 	struct hal gen;
 	struct adc_mcp320x *channels[16];

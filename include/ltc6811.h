@@ -590,7 +590,7 @@ int32_t ltc6811_stopADC(struct ltc6811 *ltc);
 	ADC_ADDDEV(ltc6811, ltc6811_adc_##masterid##_##id##_##adcID)
 #define ADC_PRV
 #include <adc_prv.h>
-extern const struct adc_ops lpc6811_adc_ops;
+extern const struct adc_ops ltc6811_adc_ops;
 /**\endcond*/
 #define LTC6811_ADDDEV(id, numberofslave, _cellUnderVoltage, _cellOverVoltage) \
 	struct ltc6811_slave *ltc6811_slaves_##id[numberofslave]; \
