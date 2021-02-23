@@ -2,6 +2,13 @@ menuconfig COUNTER
 	bool "Counter Subsystem"
 	help
 		Activate Hartware Counter Subsystem
+	config COUNTER_THREAD_SAVE
+		bool "Counter is Thread Save"
+		depends on COUNTER
+		select USE_MUTEXES
+		select USE_RECURSIVE_MUTEXES
+		help
+			Make Counter Thread save
 	config COUNTER_MULTI
 		bool "Multiply Counter driver"
 		depends on COUNTER
