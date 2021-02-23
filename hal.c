@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /*
  * Author: Andreas Werner <kernel@andy89.org>
- * Date: 2016
+ * Date: 2021
  */
 #include <hal.h>
 #include <stdio.h>
@@ -28,25 +28,6 @@ uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index);
 }
 int32_t hal_printNames() {
 	printNameOfDriver(hal);
-	printNameOfDriver(gpio);
-	printNameOfDriver(uart);
-	printNameOfDriver(timer);
-	printNameOfDriver(pwm);
-	printNameOfDriver(capture);
-	printNameOfDriver(spi);
-	printNameOfDriver(accel);
-	printNameOfDriver(gyro);
-	printNameOfDriver(adc);
-	printNameOfDriver(example);
-	printNameOfDriver(sd);
-	printNameOfDriver(mailbox);
-	printNameOfDriver(phydev);
-	printNameOfDriver(mac);
-	printNameOfDriver(net);
-	printNameOfDriver(counter);
-	printNameOfDriver(rtc);
-	printNameOfDriver(temp);
-	printNameOfDriver(can);
 	return 0;
 }
 #endif
