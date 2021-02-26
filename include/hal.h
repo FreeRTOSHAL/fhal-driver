@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: MIT */
 /*
  * Author: Andreas Werner <kernel@andy89.org>
- * Date: 2016
+ * Date: 2021
  */
 #ifndef HAL_H_
 #define HAL_H_
@@ -149,8 +149,8 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param gns Namespace like uart
  */
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
-		extern uintptr_t *_dev_##gns; \
-		extern uintptr_t *_dev_##gns##_end
+		extern uintptr_t *_devs; \
+		extern uintptr_t *_devs##_end
 /**
  * Get Device form global Array
  * 
@@ -159,7 +159,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param index Index in Array
  * \return see hal_getDev()
  */
-#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_dev_##gns, &_dev_##gns##_end, index)
+#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_devs, &_devs##_end, index)
 /**
  * Lock Driver
  * \param data Driver Struct like {@link hal}
@@ -198,7 +198,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param ns Namespace of Driver
  * \param p Pointer to Driver Struct
  */
-#define HAL_ADDDEV(gns, ns, p) struct gns##_generic SECTION(".rodata.dev." #gns) USED NO_REORDER const * const ns##_##p = (void const *) &p
+#define HAL_ADDDEV(gns, ns, p) struct gns##_generic SECTION(".rodata.devs") USED NO_REORDER const * const ns##_##p = (void const *) &p
 
 /**
  * Add some Devices without Global Namespace like a instances of MPU9250 Driver
@@ -227,7 +227,7 @@ HAL_DEFINE_GLOBAL_ARRAY(hal);
 #define HAL_GET_ID(gns, ns, p) ({ \
 		HAL_DEFINE_DEVICE_ENTRY(gns, ns, p); \
 		uint32_t ret; \
-		ret = (uint32_t) ((((uintptr_t) (&ns##_##p)) - ((uintptr_t) (&_dev_##gns))) / sizeof(uintptr_t)); \
+		ret = (uint32_t) ((((uintptr_t) (&ns##_##p)) - ((uintptr_t) (&_devs))) / sizeof(uintptr_t)); \
 		ret; \
 	})
 
