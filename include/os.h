@@ -20,7 +20,7 @@
  * \{
  */
 #ifdef CONFIG_USE_STATIC
-# define OS_DEFINE_TASK(name, stackSize) StaticTask_t name##_buffer; StackType_t name##_stack[stackSize]; TaskHandle_t name; 
+# define OS_DEFINE_TASK(name, stackSize) StaticTask_t name##_buffer; StackType_t name##_stack[stackSize]; TaskHandle_t name
 # define OS_DEFINE_QUEUE(name, length, size) StaticQueue_t name##_buffer; uint8_t name##_storage[length * size]; QueueHandle_t name 
 # define OS_DEFINE_TIMER(name) StaticTimer_t name##_buffer; TimerHandle_t name
 # define OS_DEFINE_EVENT_GROUP(name) StaticEventGroup_t name##_buffer; EventGroupHandle_t name
