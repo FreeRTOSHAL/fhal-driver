@@ -150,7 +150,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  */
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
 		extern uintptr_t *_devs; \
-		extern uintptr_t *_devs##_end
+		extern uintptr_t *_devs_end
 /**
  * Get Device form global Array
  * 
@@ -159,7 +159,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param index Index in Array
  * \return see hal_getDev()
  */
-#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_devs, &_devs##_end, index)
+#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_devs, &_devs_end, index)
 /**
  * Lock Driver
  * \param data Driver Struct like {@link hal}
