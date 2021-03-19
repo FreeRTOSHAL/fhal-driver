@@ -102,7 +102,7 @@
 /**
  * This attribute specifies a minimum alignment for the variable or structure field, measured in bytes.
  */
-#define ALGIN(x) __attribute__((aligned(x)))
+#define ALIGN(x) __attribute__((aligned(x)))
 /**
  * Nanosecond per Second 
  */
