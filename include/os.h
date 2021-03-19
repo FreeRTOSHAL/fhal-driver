@@ -10,7 +10,7 @@
 #include <system.h>
 #include <stdbool.h>
 #include <system.h>
-#include <portmacro.h>
+#include <portable.h>
 /**
  * \defgroup OS Operation System Layer for FreeRTOS
  * \ingroup HAL
