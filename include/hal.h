@@ -10,6 +10,10 @@
 #include <system.h>
 #include <stdbool.h>
 #include <os.h>
+#ifdef __FRAMAC__
+/* include FRAMAC FreeROTS specification */
+# include <framaC/freeRTOS.h>
+#endif
 
 /**
  * \defgroup HAL Hardware Abstraction Layer for FreeRTOS
@@ -139,11 +143,19 @@ int32_t hal_printNames();
  * \return NULL if index to big else pointer to dev
  */
 inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) {
+#ifndef __FRAMAC__
+	/* Eva has problems to handle with this protection mechanism */
 	if ((devs + index) >= end) {
 		return NULL;
 	}
+#endif
 	return devs[index];
 }
+#ifdef __FRAMAC__
+#define HAL_DEFINE_GLOBAL_ARRAY(gns) \
+		extern uintptr_t _devs[]; \
+		extern uintptr_t *_devs##_end
+#else
 /**
  * Define Global Array for Namespace
  * \param gns Namespace like uart
@@ -151,6 +163,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
 		extern uintptr_t *_devs; \
 		extern uintptr_t *_devs##_end
+#endif
 /**
  * Get Device form global Array
  * 
@@ -159,7 +172,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  * \param index Index in Array
  * \return see hal_getDev()
  */
-#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_devs, &_devs##_end, index)
+#define HAL_GET_DEV(gns, index) (void *) hal_getDev(&_devs, &_devs_end, index)
 /**
  * Lock Driver
  * \param data Driver Struct like {@link hal}
