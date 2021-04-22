@@ -154,7 +154,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
 #ifdef __FRAMAC__
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
 		extern uintptr_t _devs[]; \
-		extern uintptr_t *_devs##_end
+		extern uintptr_t *_devs_end
 #else
 /**
  * Define Global Array for Namespace
@@ -162,7 +162,7 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
  */
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
 		extern uintptr_t *_devs; \
-		extern uintptr_t *_devs##_end
+		extern uintptr_t *_devs_end
 #endif
 /**
  * Get Device form global Array
