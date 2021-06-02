@@ -40,9 +40,9 @@ int32_t tlc5947_init(int32_t index, struct spi *spi,  uint32_t cs, uint32_t spi_
 		.csLowInactive = false,
 		.gpio = spi_gpio,
 		.size = 12,
-		.wdelay = 1,
-		.cs_hold = 1,
-		.cs_delay = 1,
+		.wdelay = 1000,
+		.cs_hold = 1000,
+		.cs_delay = 1000,
 		.bautrate = 1000000,
 	};
 	struct tlc5947 *tlc = (struct tlc5947 *) HAL_GET_DEV(hal, index);

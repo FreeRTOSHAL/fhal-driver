@@ -89,9 +89,9 @@ int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16
 			.csLowInactive = false,
 			.gpio = gpio,
 			.size = 8,
-			.wdelay = 0, /* t8: 60 ns */
-			.cs_hold = 1, /* t6: 0.65 us */
-			.cs_delay = 1, /* t7: 1s */
+			.wdelay = 60, /* t8: 60 ns */
+			.cs_hold = 650, /* t6: 0.65 us */
+			.cs_delay = 1000, /* t7: 1s */
 			.bautrate = bautrate,
 		};
 		ltc->spi = spiSlave_init(spi, &opt);

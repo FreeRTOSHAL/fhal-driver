@@ -99,9 +99,9 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio) {
 		.csLowInactive = false, 
 		.gpio = gpio, 
 		.size = 8,
-		.wdelay = 1, /* min 0.0050 us */
-		.cs_hold = 1, /* min 0.0500 us */
-		.cs_delay = 1, /* min 0.0100 us */
+		.wdelay = 5, /* min 0.0050 us */
+		.cs_hold = 50, /* min 0.0500 us */
+		.cs_delay = 10, /* min 0.0100 us */
 		.bautrate = 1000000, /* 1 MHz at VDD: 2.7V and 2 MHz at VDD: 5 V */
 	};
 	adcc->slave = spiSlave_init(spi, &options);

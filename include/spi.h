@@ -74,15 +74,15 @@ struct spi_opt {
 	 */
 	uint8_t size;
 	/**
-	 * Delay in us between Write Cycle
+	 * Delay in ns between Write Cycle
 	 */
 	uint32_t wdelay;
 	/**
-	 * Holt Time in us CS after Transfer 
+	 * Holt Time in ns CS after Transfer 
 	 */
 	uint32_t cs_hold;
 	/**
-	 * Time in us CS is set and data Transfer start
+	 * Time in ns CS is set and data Transfer start
 	 */
 	uint32_t cs_delay;
 	/**
