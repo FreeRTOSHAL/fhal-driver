@@ -14,3 +14,13 @@ menuconfig DAC
 		depends on DAC
 		help
 			Multiple DACs
+	config MCP492X
+		bool "TI MCP492X Driver"
+		depends on SPI
+		depends on DAC
+		help 
+			TI MCP492X Driver connected with spi
+		config MCP492X_DEBUG
+			bool "MCP492X Debug printf"
+			depends on MCP492X
+			default n
