@@ -37,7 +37,7 @@ struct adc_mcp320x {
 /**\endcond*/
 
 void *mcp320x_contoller_init(uint32_t index);
-int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio);
+int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate);
 
 #define ADD_MCP320X(ID) \
 	extern struct adc_mcp320x_contoller mcp320x_##ID;\

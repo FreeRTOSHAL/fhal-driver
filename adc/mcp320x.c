@@ -80,16 +80,12 @@ ADC_INIT(mcp320x, index, bits, hz) {
 	/* waittime per ticks */
 	adc->ticks = (1000 * portTICK_PERIOD_MS) / hz;
 	adc->bits = bits;
-	ret = OS_CREATE_TASK(mcp320x_task, "MCP320x Task", 100, adc, CONFIG_MCP320X_PRIO, adc->task);
-	if (ret != pdPASS) {
-		goto mcp320x_adc_init_error0;
-	}
 mcp320x_adc_init_exit:
 	return (struct adc *) adc;
 mcp320x_adc_init_error0:
 	return NULL;
 }
-int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio) {
+int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate) {
 	struct adc_mcp320x_contoller *adcc = (struct adc_mcp320x_contoller *) ac;
 	struct spi_opt options = {
 		.lsb = false,
@@ -102,7 +98,7 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio) {
 		.wdelay = 5, /* min 0.0050 us */
 		.cs_hold = 50, /* min 0.0500 us */
 		.cs_delay = 10, /* min 0.0100 us */
-		.bautrate = 1000000, /* 1 MHz at VDD: 2.7V and 2 MHz at VDD: 5 V */
+		.bautrate = baudrate==0?1000000:baudrate, /* 1 MHz at VDD: 2.7V and 2 MHz at VDD: 5 V */
 	};
 	adcc->slave = spiSlave_init(spi, &options);
 	if (!adcc->slave) {
@@ -173,11 +169,18 @@ ADC_GET_ISR(mcp320x, a) {
 }
 ADC_SET_CALLBACK(mcp320x, a, callback, data) {
 	struct adc_mcp320x *adc = (struct adc_mcp320x *) a;
+	int32_t ret;
 	if (callback == NULL) {
 		adc_stop((struct adc *) adc);
 	}
 	adc->callback = callback;
 	adc->data = data;
+	if (adc->task == NULL) {
+		ret = OS_CREATE_TASK(mcp320x_task, "MCP320x Task", 100, adc, CONFIG_MCP320X_PRIO, adc->task);
+		if (ret != pdPASS) {
+			return -1;
+		}
+	}
 	return 0;
 }
 ADC_START(mcp320x, a) {
