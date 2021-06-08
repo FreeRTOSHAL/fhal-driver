@@ -74,7 +74,7 @@ ltc6811_init_error0:
 	return NULL;
 }
 
-int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t bautrate) {
+int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate) {
 	int32_t ret;
 	/* Allredy connected */ 
 	if (ltc->spi != NULL) {
@@ -92,7 +92,7 @@ int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16
 			.wdelay = 60, /* t8: 60 ns */
 			.cs_hold = 650, /* t6: 0.65 us */
 			.cs_delay = 1000, /* t7: 1s */
-			.bautrate = bautrate,
+			.baudrate = baudrate,
 		};
 		ltc->spi = spiSlave_init(spi, &opt);
 		if (ltc->spi == NULL) {
@@ -210,7 +210,7 @@ int32_t ltc6811_write(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_
 	for (i = 0; i < dataLen; i++) {
 		sendData[4 + i] = data[i];
 	}
-	ret = spiSlave_transver(ltc->spi, sendData, recvData, len, LTC6811_TIMEOUT);
+	ret = spiSlave_transfer(ltc->spi, sendData, recvData, len, LTC6811_TIMEOUT);
 	if (ret < 0) {
 		return -1;
 	}
@@ -234,7 +234,7 @@ int32_t ltc6811_read(struct ltc6811 *ltc, ltc_cmd_t cmd, uint8_t *data, uint32_t
 	sendData[1] = tmp[1];
 	sendData[2] = (pec >> 8) & 0xFF;
 	sendData[3] = (pec >> 0) & 0xFF;
-	ret = spiSlave_transver(ltc->spi, sendData, recvData, len, LTC6811_TIMEOUT);
+	ret = spiSlave_transfer(ltc->spi, sendData, recvData, len, LTC6811_TIMEOUT);
 	if (ret < 0) {
 		return -1;
 	}
@@ -510,7 +510,7 @@ I2C_SEND(ltc6811, i, id, data, len, waittime) {
 I2C_RECV(ltc6811, i, id, data, len, waittime) {
 	return -1;
 }
-I2C_TRANSVER(ltc6811, i, id, sendData, sendLen, recvData, recvLen, waittime) {
+I2C_TRANSFER(ltc6811, i, id, sendData, sendLen, recvData, recvLen, waittime) {
 	return -1;
 }
 I2C_SEND_ISR(ltc6811, i, id, data, len) {
@@ -519,7 +519,7 @@ I2C_SEND_ISR(ltc6811, i, id, data, len) {
 I2C_RECV_ISR(ltc6811, i, id, data, len) {
 	return -1;
 }
-I2C_TRANSVER_ISR(ltc6811, i, id, sendData, sendLen, recvData, recvLen) {
+I2C_TRANSFER_ISR(ltc6811, i, id, sendData, sendLen, recvData, recvLen) {
 	return -1;
 }
 I2C_OPS(ltc6811);

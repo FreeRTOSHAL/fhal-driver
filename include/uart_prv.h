@@ -29,7 +29,7 @@ HAL_DEFINE_GLOBAL_ARRAY(uart);
 #ifndef CONFIG_UART_MULTI
 # define UART_OPS(ns)
 # define UART_INIT_DEV(ns) 
-# define UART_INIT(ns, port, bautrate) struct uart *uart_init(uint8_t port, uint32_t bautrate) 
+# define UART_INIT(ns, port, baudrate) struct uart *uart_init(uint8_t port, uint32_t baudrate) 
 # define UART_DEINIT(ns, u) int32_t uart_deinit(struct uart *u)
 # define UART_GETC(ns, u, waittime) char uart_getc(struct uart *u, TickType_t waittime) 
 # define UART_PUTC(ns, u, c, waittime) int32_t uart_putc(struct uart *u, char c, TickType_t waittime) 
@@ -73,7 +73,7 @@ HAL_DEFINE_GLOBAL_ARRAY(uart);
 
 # define UART_INIT_DEV(ns) .gen.ops = &ns##_uart_ops,
 
-# define UART_INIT(ns, port, bautrate) static struct uart *ns##_uart_init(uint8_t port, uint32_t bautrate) 
+# define UART_INIT(ns, port, baudrate) static struct uart *ns##_uart_init(uint8_t port, uint32_t baudrate) 
 # define UART_DEINIT(ns, u) static int32_t ns##_uart_deinit(struct uart *u)
 # define UART_GETC(ns, u, waittime) static char ns##_uart_getc(struct uart *u, TickType_t waittime) 
 # define UART_PUTC(ns, u, c, waittime) static int32_t ns##_uart_putc(struct uart *u, char c, TickType_t waittime) 

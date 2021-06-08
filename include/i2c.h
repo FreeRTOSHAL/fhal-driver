@@ -129,7 +129,7 @@ int32_t i2c_send(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, Tick
  */
 int32_t i2c_recv(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime);
 /**
- * Transver Send and Recv
+ * Transfer Send and Recv
  *
  * \param i2c I2C instance
  * \param id ID if id > 7-Bit Exended IDs is used
@@ -160,7 +160,7 @@ int32_t i2c_sendISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
  */
 int32_t i2c_recvISR(struct i2c *i2c, uint16_t id, uint8_t *data, uint32_t len);
 /**
- * Transver Send and Recv in Interrupt
+ * Transfer Send and Recv in Interrupt
  *
  * \param i2c I2C instance
  * \param id ID if id > 7-Bit Exended IDs is used

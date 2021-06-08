@@ -94,7 +94,7 @@
  */
 #define ACMD(x) (x)
 /**
- * Handle of a Instants of a SD Contoller
+ * Handle of a Instants of a SD Controller
  */
 struct sd;
 #ifdef CONFIG_SD_MULTI
@@ -120,15 +120,15 @@ struct sd_ops {
  */
 enum sd_mode {
 	/**
-	 * Contoller is in SPI Mode
+	 * Controller is in SPI Mode
 	 */
 	SD_SPI,
 	/**
-	 * Contoller is in SD Mode
+	 * Controller is in SD Mode
 	 */
 	SD_SD,
 	/**
-	 * Contoller is in SDIO Mode
+	 * Controller is in SDIO Mode
 	 */
 	SD_SDIO
 };

@@ -2,7 +2,7 @@
 #define UART_PRV
 #include <uart_prv.h>
 #include <remoteproc_trace.h>
-UART_INIT(remoteproc, port, bautrate) {
+UART_INIT(remoteproc, port, baudrate) {
 	struct uart *uart = (struct uart *) UART_GET_DEV(port);
 	int32_t ret;
 	if (uart == NULL) {
@@ -19,7 +19,7 @@ UART_INIT(remoteproc, port, bautrate) {
 		return uart;
 	}
 	/* ignored */
-	(void) bautrate;
+	(void) baudrate;
 	if (!uart->base || !uart->len) {
 		uart->gen.init = false;
 		return NULL;

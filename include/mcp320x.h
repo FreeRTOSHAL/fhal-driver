@@ -8,7 +8,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 extern const struct adc_ops mcp320x_adc_ops;
-struct adc_mcp320x_contoller {
+struct adc_mcp320x_controller {
 	struct hal gen;
 	struct adc_mcp320x *channels[16];
 	struct spi_slave *slave;
@@ -16,7 +16,7 @@ struct adc_mcp320x_contoller {
 };
 struct adc_mcp320x {
 	struct adc_generic gen;
-	struct adc_mcp320x_contoller *adcc;
+	struct adc_mcp320x_controller *adcc;
 	uint32_t bits;
 	uint32_t ticks;
 	uint32_t channelID;
@@ -36,11 +36,11 @@ struct adc_mcp320x {
 	ADC_ADDDEV(mcp320x, mcp320x_##ID##_##_channelID)
 /**\endcond*/
 
-void *mcp320x_contoller_init(uint32_t index);
+void *mcp320x_controller_init(uint32_t index);
 int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate);
 
 #define ADD_MCP320X(ID) \
-	extern struct adc_mcp320x_contoller mcp320x_##ID;\
+	extern struct adc_mcp320x_controller mcp320x_##ID;\
 	ADD_MCP320X_CHANNEL(ID, 0); \
 	ADD_MCP320X_CHANNEL(ID, 1); \
 	ADD_MCP320X_CHANNEL(ID, 2); \
@@ -57,7 +57,7 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, ui
 	ADD_MCP320X_CHANNEL(ID, 13); \
 	ADD_MCP320X_CHANNEL(ID, 14); \
 	ADD_MCP320X_CHANNEL(ID, 15); \
-	struct adc_mcp320x_contoller mcp320x_##ID = { \
+	struct adc_mcp320x_controller mcp320x_##ID = { \
 		HAL_NAME("TI MCP320x " #ID) \
 		.channels = { \
 			&mcp320x_##ID##_0, \

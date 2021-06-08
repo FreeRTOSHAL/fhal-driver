@@ -69,7 +69,7 @@ int32_t mcp492x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, ui
 		.wdelay = 5, /* min 0.0050 us */
 		.cs_hold = 40, /* min 0.0400 us */
 		.cs_delay = 15, /* min 0.0150 us */
-		.bautrate = baudrate==0?10000000:baudrate, /* 10 MHz maximum */
+		.baudrate = baudrate==0?10000000:baudrate, /* 10 MHz maximum */
 	};
 	dacc->slave = spiSlave_init(spi, &options);
 	if (!dacc->slave) {

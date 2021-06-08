@@ -173,7 +173,7 @@ static inline int32_t tps_write(struct tps65381 *tps, uint8_t cmd, uint8_t data,
 		(uint16_t) data,
 	};
 	uint16_t rdata[] = {0, 0};
-	int32_t ret = spiSlave_transver(tps->slave, wdata, rdata, 2, waittime);
+	int32_t ret = spiSlave_transfer(tps->slave, wdata, rdata, 2, waittime);
 	if (ret < 0) {
 		return ret;
 	}
@@ -192,7 +192,7 @@ static inline int32_t tps_read(struct tps65381 *tps, uint8_t cmd, uint8_t *data,
 		0xFF
 	};
 	uint16_t rdata[] = {0, 0};
-	int32_t ret = spiSlave_transver(tps->slave, wdata, rdata, 2, waittime);
+	int32_t ret = spiSlave_transfer(tps->slave, wdata, rdata, 2, waittime);
 	if (ret < 0) {
 		return ret;
 	}

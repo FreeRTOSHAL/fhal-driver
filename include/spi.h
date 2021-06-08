@@ -23,12 +23,12 @@
  * \{\}
  */
 /**
- * Disable CS Contoll over GPIO 
+ * Disable CS Control over GPIO 
  * \ingroup SPI_SLAVE
  */
 #define SPI_OPT_GPIO_DIS 0xFF
 /**
- * Disable CS Contoll over Contoller
+ * Disable CS Control over Controller
  * \ingroup SPI_SLAVE
  */
 #define SPI_OPT_CS_DIS 0x7
@@ -52,7 +52,7 @@ struct spi_opt {
 	 */
 	bool cpha;
 	/**
-	 * CS ID contolled by SPI Contoller
+	 * CS ID controlled by SPI Controller
 	 * Disable if value is SPI_OPT_CS_DIS
 	 */
 	uint8_t cs;
@@ -62,7 +62,7 @@ struct spi_opt {
 	bool csLowInactive;
 	/**
 	 * CS GPIO Pin Index
-	 * CS is Contolled by GPIO Pin
+	 * CS is Controlled by GPIO Pin
 	 * Ignored if cs not SPI_OPT_CS_DIS 
 	 * Disabled if value is SPI_OPT_GPIO_DIS
 	 */
@@ -86,9 +86,9 @@ struct spi_opt {
 	 */
 	uint32_t cs_delay;
 	/**
-	 * Baut in HZ
+	 * Frequency in HZ
 	 */
-	uint32_t bautrate;
+	uint32_t baudrate;
 };
 /**
  * SPI Mode
@@ -135,11 +135,11 @@ struct spi_ops {
 
 	struct spi_slave *(*spiSlave_init)(struct spi *spi, struct spi_opt *options);
 	int32_t (*spiSlave_deinit)(struct spi_slave *slave);
-	int32_t (*spiSlave_transver)(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
+	int32_t (*spiSlave_transfer)(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
 	int32_t (*spiSlave_send)(struct spi_slave *slave, uint16_t *data, uint32_t len, TickType_t waittime);
 	int32_t (*spiSlave_recv)(struct spi_slave *slave, uint16_t *data, uint32_t len, TickType_t waittime);
 
-	int32_t (*spiSlave_transverISR)(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
+	int32_t (*spiSlave_transferISR)(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
 	int32_t (*spiSlave_sendISR)(struct spi_slave *slave, uint16_t *data, uint32_t len);
 	int32_t (*spiSlave_recvISR)(struct spi_slave *slave, uint16_t *data, uint32_t len);
 	};
@@ -249,7 +249,7 @@ int32_t spiSlave_deinit(struct spi_slave *slave);
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error 0 on ok
  */
-int32_t spiSlave_transver(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
+int32_t spiSlave_transfer(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
 /**
  * Send Data to Slave
  * \param slave Slave instance
@@ -277,7 +277,7 @@ int32_t spiSlave_recv(struct spi_slave *slave, uint16_t *data, uint32_t len, Tic
  * \param len Length of Data
  * \return -1 on error 0 on ok
  */
-int32_t spiSlave_transverISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
+int32_t spiSlave_transferISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
 /**
  * Send Data to Slave in ISR
  * \param slave Slave instance
@@ -322,10 +322,10 @@ inline int32_t spiSlave_deinit(struct spi_slave *slave) {
 	struct spi_generic *s = (struct spi_generic *) sp->spi;
 	return s->ops->spiSlave_deinit(slave);
 }
-inline int32_t spiSlave_transver(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime) {
+inline int32_t spiSlave_transfer(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime) {
 	struct spi_slave_generic *sp = (struct spi_slave_generic *) slave;
 	struct spi_generic *s = (struct spi_generic *) sp->spi;
-	return s->ops->spiSlave_transver(slave, sendData, recvData, len, waittime);
+	return s->ops->spiSlave_transfer(slave, sendData, recvData, len, waittime);
 }
 inline int32_t spiSlave_send(struct spi_slave *slave, uint16_t *data, uint32_t len, TickType_t waittime) {
 	struct spi_slave_generic *sp = (struct spi_slave_generic *) slave;
@@ -338,10 +338,10 @@ inline int32_t spiSlave_recv(struct spi_slave *slave, uint16_t *data, uint32_t l
 	return s->ops->spiSlave_recv(slave, data, len, waittime);
 }
 
-inline int32_t spiSlave_transverISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len) {
+inline int32_t spiSlave_transferISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len) {
 	struct spi_slave_generic *sp = (struct spi_slave_generic *) slave;
 	struct spi_generic *s = (struct spi_generic *) sp->spi;
-	return s->ops->spiSlave_transverISR(slave, sendData, recvData, len);
+	return s->ops->spiSlave_transferISR(slave, sendData, recvData, len);
 }
 inline int32_t spiSlave_sendISR(struct spi_slave *slave, uint16_t *data, uint32_t len) {
 	struct spi_slave_generic *sp = (struct spi_slave_generic *) slave;

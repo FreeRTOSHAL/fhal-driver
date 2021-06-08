@@ -32,10 +32,10 @@ HAL_DEFINE_GLOBAL_ARRAY(i2c);
 # define I2C_DEINIT(ns, i) int32_t  i2c_deinit(struct i2c *i)
 # define I2C_SEND(ns, i, id, data, len, waittime) int32_t i2c_send(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime)
 # define I2C_RECV(ns, i, id, data, len, waittime) int32_t i2c_recv(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime)
-# define I2C_TRANSVER(ns, i, id, sendData, sendLen, recvData, recvLen, waittime) int32_t i2c_transfer(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime)
+# define I2C_TRANSFER(ns, i, id, sendData, sendLen, recvData, recvLen, waittime) int32_t i2c_transfer(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime)
 # define I2C_SEND_ISR(ns, i, id, data, len) int32_t i2c_sendISR(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len)
 # define I2C_RECV_ISR(ns, i, id, data, len) int32_t i2c_recvISR(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len)
-# define I2C_TRANSVER_ISR(ns, i, id, sendData, sendLen, recvData, recvLen) int32_t i2c_transferISR(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen)
+# define I2C_TRANSFER_ISR(ns, i, id, sendData, sendLen, recvData, recvLen) int32_t i2c_transferISR(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen)
 #else
 # define I2C_OPS(ns) const struct i2c_ops ns##_i2c_ops = { \
 	.i2c_init = &ns##_i2c_init,\
@@ -52,10 +52,10 @@ HAL_DEFINE_GLOBAL_ARRAY(i2c);
 # define I2C_DEINIT(ns, i) int32_t  ns##_i2c_deinit(struct i2c *i)
 # define I2C_SEND(ns, i, id, data, len, waittime) int32_t ns##_i2c_send(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime)
 # define I2C_RECV(ns, i, id, data, len, waittime) int32_t ns##_i2c_recv(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len, TickType_t waittime)
-# define I2C_TRANSVER(ns, i, id, sendData, sendLen, recvData, recvLen, waittime) int32_t ns##_i2c_transfer(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime)
+# define I2C_TRANSFER(ns, i, id, sendData, sendLen, recvData, recvLen, waittime) int32_t ns##_i2c_transfer(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen, TickType_t waittime)
 # define I2C_SEND_ISR(ns, i, id, data, len) int32_t ns##_i2c_sendISR(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len)
 # define I2C_RECV_ISR(ns, i, id, data, len) int32_t ns##_i2c_recvISR(struct i2c *i, uint16_t id, uint8_t *data, uint32_t len)
-# define I2C_TRANSVER_ISR(ns, i, id, sendData, sendLen, recvData, recvLen) int32_t ns##_i2c_transferISR(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen)
+# define I2C_TRANSFER_ISR(ns, i, id, sendData, sendLen, recvData, recvLen) int32_t ns##_i2c_transferISR(struct i2c *i, uint16_t id, uint8_t *sendData, uint32_t sendLen, uint8_t *recvData, uint32_t recvLen)
 #endif
 #endif
 

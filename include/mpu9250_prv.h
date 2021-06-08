@@ -56,7 +56,7 @@ static int32_t mpu_recv(struct mpu9250 *mpu, uint16_t reg, uint8_t *data, uint32
 	memset(wdata, 0xFF, size);
 	memset(rdata, 0x00, size);
 	wdata[0] = MPU_READ | (reg & 0xFF);
-	ret = spiSlave_transver(mpu->slave, wdata, rdata, (len + 1), waittime);
+	ret = spiSlave_transfer(mpu->slave, wdata, rdata, (len + 1), waittime);
 	for (i = 1; i < (len + 1); i++) {
 		data[i - 1] = (uint8_t) rdata[i];
 	}

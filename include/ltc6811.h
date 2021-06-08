@@ -531,10 +531,10 @@ struct ltc6811_slave *ltc6811_slave_init(uint32_t index);
  * \param spi SPI Master
  * \param cs CS Number or SPI_OPT_CS_DIS
  * \param gpio GPIO Pin Number or SPI_OPT_GPIO_DIS
- * \param bautrate Bautrate
+ * \param baudrate Baudrate
  * \return -1 on error 0 on ok
  */
-int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t bautrate);
+int32_t ltc6811_connect(struct ltc6811 *ltc, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate);
 /**
  * Write to LTC6811 in dasy-chain!
  * \param ltc LTC6811 Instance

@@ -76,7 +76,7 @@ int32_t adcs747x_connect(struct adc *a, struct spi *spi, uint8_t cs, uint16_t gp
 		.wdelay = 50,
 		.cs_hold = 50,
 		.cs_delay = 10,
-		.bautrate = 1000000,
+		.baudrate = 1000000,
 	};
 	adc->slave = spiSlave_init(spi, &options);
 	if (!adc->slave) {

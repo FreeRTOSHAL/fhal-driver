@@ -16,7 +16,7 @@ static int32_t tlc5947_update(struct tlc5947 *tlc) {
 		recv[i] = 0;
 	}
 	HAL_LOCK(tlc, portMAX_DELAY, -1);
-	ret = spiSlave_transverISR(tlc->slave, send, recv, 48);
+	ret = spiSlave_transferISR(tlc->slave, send, recv, 48);
 	if (ret < 0) {
 		HAL_UNLOCK(tlc, -1);
 		return -1;
@@ -43,7 +43,7 @@ int32_t tlc5947_init(int32_t index, struct spi *spi,  uint32_t cs, uint32_t spi_
 		.wdelay = 1000,
 		.cs_hold = 1000,
 		.cs_delay = 1000,
-		.bautrate = 1000000,
+		.baudrate = 1000000,
 	};
 	struct tlc5947 *tlc = (struct tlc5947 *) HAL_GET_DEV(hal, index);
 	int i;

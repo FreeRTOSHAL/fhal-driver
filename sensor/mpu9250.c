@@ -196,7 +196,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, struct spi *spi, uint8_t cs, uint16
 		.wdelay = 0,
 		.cs_hold = 500,
 		.cs_delay = 500,
-		.bautrate = 1000000,
+		.baudrate = 1000000,
 	};
 	struct mpu9250 *mpu = (struct mpu9250 *) HAL_GET_GLOBAL_DEV(index);
 	if (mpu->gen.init) {

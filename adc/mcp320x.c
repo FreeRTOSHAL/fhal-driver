@@ -40,10 +40,10 @@ static void mcp320x_task(void *data) {
 	}
 }
 
-void *mcp320x_contoller_init(uint32_t index) {
+void *mcp320x_controller_init(uint32_t index) {
 	int32_t ret;
-	struct adc_mcp320x_contoller *adcc;
-	adcc = (struct adc_mcp320x_contoller *) HAL_GET_DEV(hal, index);
+	struct adc_mcp320x_controller *adcc;
+	adcc = (struct adc_mcp320x_controller *) HAL_GET_DEV(hal, index);
 	if (adcc == NULL) {
 		return NULL;
 	}
@@ -86,7 +86,7 @@ mcp320x_adc_init_error0:
 	return NULL;
 }
 int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, uint32_t baudrate) {
-	struct adc_mcp320x_contoller *adcc = (struct adc_mcp320x_contoller *) ac;
+	struct adc_mcp320x_controller *adcc = (struct adc_mcp320x_controller *) ac;
 	struct spi_opt options = {
 		.lsb = false,
 		.cpol = false,
@@ -98,7 +98,7 @@ int32_t mcp320x_connect(void *ac, struct spi *spi, uint8_t cs, uint16_t gpio, ui
 		.wdelay = 5, /* min 0.0050 us */
 		.cs_hold = 50, /* min 0.0500 us */
 		.cs_delay = 10, /* min 0.0100 us */
-		.bautrate = baudrate==0?1000000:baudrate, /* 1 MHz at VDD: 2.7V and 2 MHz at VDD: 5 V */
+		.baudrate = baudrate==0?1000000:baudrate, /* 1 MHz at VDD: 2.7V and 2 MHz at VDD: 5 V */
 	};
 	adcc->slave = spiSlave_init(spi, &options);
 	if (!adcc->slave) {
@@ -126,7 +126,7 @@ ADC_GET(mcp320x, a, waittime) {
 	adc_lock(a, waittime, -1);
 	HAL_LOCK(adc->adcc, waittime, -1);
 	PRINTF("Send: 0x%x 0x%x 0x%x\n", send[0], send[1], send[2]);
-	ret = spiSlave_transver(adc->adcc->slave, send, value, 3, waittime);
+	ret = spiSlave_transfer(adc->adcc->slave, send, value, 3, waittime);
 	if (ret < 0) {
 		HAL_UNLOCK(adc->adcc, -1);
 		adc_unlock(a, -1);
@@ -155,7 +155,7 @@ ADC_GET_ISR(mcp320x, a) {
 	uint16_t value[3];
 	int32_t ret;
 	PRINTF("Send: 0x%x 0x%x 0x%x\n", send[0], send[1], send[2]);
-	ret = spiSlave_transverISR(adc->adcc->slave, send, value, 3);
+	ret = spiSlave_transferISR(adc->adcc->slave, send, value, 3);
 	if (ret < 0) {
 		return -1;
 	}

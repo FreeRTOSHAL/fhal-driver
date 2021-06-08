@@ -32,11 +32,11 @@ HAL_DEFINE_GLOBAL_ARRAY(spi);
 
 # define SPI_SLAVE_INIT(ns, s, options) struct spi_slave *spiSlave_init(struct spi *s, struct spi_opt *options)
 # define SPI_SLAVE_DEINIT(ns, s) int32_t spiSlave_deinit(struct spi_slave *s)
-# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waittime) int32_t spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_TRANSFER(ns, s, sendData, recvData, len, waittime) int32_t spiSlave_transfer(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_SEND(ns, s, data, len, waittime) int32_t spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_RECV(ns, s, data, len, waittime) int32_t spiSlave_recv(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 
-# define SPI_SLAVE_TRANSVER_ISR(ns,s, sendData, rescvData, len) int32_t spiSlave_transverISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
+# define SPI_SLAVE_TRANSFER_ISR(ns,s, sendData, rescvData, len) int32_t spiSlave_transferISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
 # define SPI_SLAVE_SEND_ISR(ns,s, data, len) int32_t spiSlave_sendISR(struct spi_slave *s, uint16_t *data, uint32_t len)
 # define SPI_SLAVE_RECV_ISR(ns, s, data, len) int32_t spiSlave_recvISR(struct spi_slave *s, uint16_t *data, uint32_t len)
 #else
@@ -46,10 +46,10 @@ HAL_DEFINE_GLOBAL_ARRAY(spi);
 	.spi_setCallback = &ns##_spi_setCallback, \
 	.spiSlave_init = &ns##_spiSlave_init, \
 	.spiSlave_deinit = &ns##_spiSlave_deinit, \
-	.spiSlave_transver = &ns##_spiSlave_transver, \
+	.spiSlave_transfer = &ns##_spiSlave_transfer, \
 	.spiSlave_send = &ns##_spiSlave_send, \
 	.spiSlave_recv = &ns##_spiSlave_recv, \
-	.spiSlave_transverISR = ns##_spiSlave_transverISR, \
+	.spiSlave_transferISR = ns##_spiSlave_transferISR, \
 	.spiSlave_sendISR = ns##_spiSlave_sendISR, \
 	.spiSlave_recvISR = ns##_spiSlave_recvISR, \
 }
@@ -60,11 +60,11 @@ HAL_DEFINE_GLOBAL_ARRAY(spi);
 
 # define SPI_SLAVE_INIT(ns, s, options) static struct spi_slave *ns##_spiSlave_init(struct spi *s, struct spi_opt *options)
 # define SPI_SLAVE_DEINIT(ns, s) static int32_t ns##_spiSlave_deinit(struct spi_slave *s)
-# define SPI_SLAVE_TRANSVER(ns, s, sendData, recvData, len, waittime) static int32_t ns##_spiSlave_transver(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
+# define SPI_SLAVE_TRANSFER(ns, s, sendData, recvData, len, waittime) static int32_t ns##_spiSlave_transfer(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_SEND(ns, s, data, len, waittime) static int32_t ns##_spiSlave_send(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 # define SPI_SLAVE_RECV(ns, s, data, len, waittime) static int32_t ns##_spiSlave_recv(struct spi_slave *s, uint16_t *data, uint32_t len, TickType_t waittime)
 
-# define SPI_SLAVE_TRANSVER_ISR(ns,s, sendData, rescvData, len) static int32_t ns##_spiSlave_transverISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
+# define SPI_SLAVE_TRANSFER_ISR(ns,s, sendData, rescvData, len) static int32_t ns##_spiSlave_transferISR(struct spi_slave *s, uint16_t *sendData, uint16_t *recvData, uint32_t len)
 # define SPI_SLAVE_SEND_ISR(ns,s, data, len) static int32_t ns##_spiSlave_sendISR(struct spi_slave *s, uint16_t *data, uint32_t len)
 # define SPI_SLAVE_RECV_ISR(ns, s, data, len) static int32_t ns##_spiSlave_recvISR(struct spi_slave *s, uint16_t *data, uint32_t len)
 #endif

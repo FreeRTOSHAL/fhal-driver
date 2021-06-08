@@ -95,7 +95,7 @@ typedef uint64_t can_errorData_t;
 #define CAN_ERR_CRTL BIT64(0)
 #define CAN_ERR_CTRL_OFFSET 0
 /**
- * unspecified contoller protocol
+ * unspecified controller protocol
  */
 #define CAN_ERR_CRTL_UNSPEC BIT64(CAN_ERR_CTRL_OFFSET + 0)
 /**

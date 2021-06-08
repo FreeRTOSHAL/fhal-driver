@@ -145,7 +145,7 @@ int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length) {
 }
 #endif
 #ifdef CONFIG_UART_MULTI
-struct uart *uart_init(uint8_t port, uint32_t bautrate);
+struct uart *uart_init(uint8_t port, uint32_t baudrate);
 int32_t uart_deinit(struct uart *uart);
 char uart_getc(struct uart *uart, TickType_t waittime);
 int32_t uart_putc(struct uart *uart, char c, TickType_t waittime);

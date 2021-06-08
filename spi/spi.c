@@ -38,11 +38,11 @@ int32_t spi_setCallback(struct spi *spi, bool (*callback)(struct spi_slave *slav
 
 struct spi_slave *spiSlave_init(struct spi *spi, struct spi_opt *options);
 int32_t spiSlave_deinit(struct spi_slave *slave);
-int32_t spiSlave_transver(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
+int32_t spiSlave_transfer(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len, TickType_t waittime);
 int32_t spiSlave_send(struct spi_slave *slave, uint16_t *data, uint32_t len, TickType_t waittime);
 int32_t spiSlave_recv(struct spi_slave *slave, uint16_t *data, uint32_t len, TickType_t waittime);
 
-int32_t spiSlave_transverISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
+int32_t spiSlave_transferISR(struct spi_slave *slave, uint16_t *sendData, uint16_t *recvData, uint32_t len);
 int32_t spiSlave_sendISR(struct spi_slave *slave, uint16_t *data, uint32_t len);
 int32_t spiSlave_recvISR(struct spi_slave *slave, uint16_t *data, uint32_t len);
 #endif

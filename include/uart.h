@@ -30,7 +30,7 @@ struct uart;
  * Function of UART driver in Multi Driver implementation mode 
  */
 struct uart_ops {
-	struct uart *(*uart_init)(uint8_t port, uint32_t bautrate);
+	struct uart *(*uart_init)(uint8_t port, uint32_t baudrate);
 	int32_t (*uart_deinit)(struct uart *uart);
 	char (*uart_getc)(struct uart *uart, TickType_t waittime);
 	int32_t (*uart_putc)(struct uart *uart, char c, TickType_t waittime);
@@ -86,10 +86,10 @@ struct uart_generic {
 /**
  * Init UART Instance
  * \param port Index of UART
- * \param bautrate UART Bautrate if bautrate == 0 only get Instance
+ * \param baudrate UART Baudrate if baudrate == 0 only get Instance
  * \return UART Instance NULL on error
  */
-struct uart *uart_init(uint8_t port, uint32_t bautrate);
+struct uart *uart_init(uint8_t port, uint32_t baudrate);
 /**
  * Deinit UART Instance
  * \param uart UART Instance 
@@ -175,13 +175,13 @@ int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length);
 int32_t uart_putsISR(struct uart *uart, char *s);
 #else
 /* #ifdef CONFIG_UART_MULTI */
-inline struct uart *uart_init(uint8_t port, uint32_t bautrate) {
+inline struct uart *uart_init(uint8_t port, uint32_t baudrate) {
 	HAL_DEFINE_GLOBAL_ARRAY(uart);
 	struct uart_generic *uart = (struct uart_generic *) HAL_GET_DEV(uart, port);
 	if (uart == NULL) {
 		return NULL;
 	}
-	return uart->ops->uart_init(port, bautrate);
+	return uart->ops->uart_init(port, baudrate);
 }
 inline int32_t uart_deinit(struct uart *uart) {
 	struct uart_generic *u = (struct uart_generic *) uart;
