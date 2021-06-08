@@ -31,6 +31,7 @@ source driver/buffer/Kconfig
 source driver/spi/Kconfig
 source driver/sensor/Kconfig
 source driver/adc/Kconfig
+source driver/dac/Kconfig
 source driver/power/Kconfig
 source driver/timer/Kconfig
 source driver/pwm/Kconfig
