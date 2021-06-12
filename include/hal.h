@@ -135,26 +135,12 @@ inline int32_t hal_unlock(void *data) {
  */
 int32_t hal_printNames();
 #endif
-/**
- * Get Device form global Array
- * \param devs Array
- * \param end Last Position in Array
- * \param index Index in Array
- * \return NULL if index to big else pointer to dev
- */
-inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) {
-#ifndef __FRAMAC__
-	/* Eva has problems to handle with this protection mechanism */
-	if ((devs + index) >= end) {
-		return NULL;
-	}
-#endif
-	return devs[index];
-}
+
 #ifdef __FRAMAC__
 #define HAL_DEFINE_GLOBAL_ARRAY(gns) \
 		extern uintptr_t _devs[]; \
 		extern uintptr_t *_devs_end
+extern uint32_t _devs_size;
 #else
 /**
  * Define Global Array for Namespace
@@ -164,6 +150,27 @@ inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) 
 		extern uintptr_t *_devs; \
 		extern uintptr_t *_devs_end
 #endif
+
+/**
+ * Get Device form global Array
+ * \param devs Array
+ * \param end Last Position in Array
+ * \param index Index in Array
+ * \return NULL if index to big else pointer to dev
+ */
+inline uintptr_t *hal_getDev(uintptr_t **devs, uintptr_t **end, uint32_t index) {
+#ifdef __FRAMAC__
+	if (index >= _devs_size) {
+		return NULL;
+	}
+#else
+	/* Eva has problems to handle with this protection mechanism */
+	if ((devs + index) >= end) {
+		return NULL;
+	}
+#endif
+	return devs[index];
+}
 /**
  * Get Device form global Array
  * 
