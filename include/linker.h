@@ -185,7 +185,23 @@
 /**
  * Default in Data Section
  */
-#define DATA_DEFAULT *(.data) *(.data*) *(.fini_array)
+#define DATA_DEFAULT \
+	*(.data) \
+	*(.data*) \
+	*(.fini_array) \
+	*(.gnu.linkonce.d.*) \
+	. = ALIGN(8); \
+	PROVIDE( __global_pointer$ = . + 0x800 ); \
+	*(.sdata .sdata.*) \
+	*(.sdata2 .sdata2.*) \
+	*(.gnu.linkonce.s.*) \
+	. = ALIGN(8); \
+	*(.srodata.cst16) \
+	*(.srodata.cst8) \
+	*(.srodata.cst4) \
+	*(.srodata.cst2) \
+	*(.srodata .srodata.*)
+
 /**
  * FreeRTOS Data Section
  */
@@ -237,6 +253,7 @@
 	. = ALIGN(4); \
 	SYMBOL(_start_stack); \
 	_end_stack = (ORIGIN(location) + LENGTH(location)); \
+	__freertos_irq_stack_top = (ORIGIN(location) + LENGTH(location)); \
 	SECTION_STOP(location)
 /**
  * End Symbol
