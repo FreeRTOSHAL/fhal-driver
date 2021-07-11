@@ -165,6 +165,7 @@
  * start Data Table Section
  */
 #define DATA_TABLE_START SYMBOL(_data_table);
+#ifndef CONFIG_ARCH_64BIT
 /**
  * Add a Entry in a data table
  * \param sname Name of data section for example .data or .data.freertos
@@ -173,6 +174,16 @@
 	LONG(LOADADDR(sname)); \
 	LONG(ADDR(sname)); \
 	LONG(SIZEOF(sname));
+#else
+/**
+ * Add a Entry in a data table
+ * \param sname Name of data section for example .data or .data.freertos
+ */
+#define DATA_TABLE(sname) \
+	QUAD(LOADADDR(sname)); \
+	QUAD(ADDR(sname)); \
+	QUAD(SIZEOF(sname));
+#endif
 /**
  * Stop Data Table Section
  */
@@ -191,16 +202,13 @@
 	*(.fini_array) \
 	*(.gnu.linkonce.d.*) \
 	. = ALIGN(8); \
-	PROVIDE( __global_pointer$ = . + 0x800 ); \
-	*(.sdata .sdata.*) \
-	*(.sdata2 .sdata2.*) \
-	*(.gnu.linkonce.s.*) \
-	. = ALIGN(8); \
+	__sdata_begin__ = .; \
 	*(.srodata.cst16) \
 	*(.srodata.cst8) \
 	*(.srodata.cst4) \
 	*(.srodata.cst2) \
-	*(.srodata .srodata.*)
+	*(.srodata .srodata.*) \
+	*(.sdata .sdata.* .gnu.linkonce.s.*)
 
 /**
  * FreeRTOS Data Section
@@ -222,7 +230,14 @@
 /**
  * Default BSS Section entrys
  */
-#define BSS_DEFAULT *(.bss) *(.bss*)
+#define BSS_DEFAULT \
+	*(.dynsbss) \
+	*(.sbss .sbss.* .gnu.linkonce.sb.*) \
+	*(.scommon) \
+	*(.bss) \
+	*(.bss*)\
+	PROVIDE(__global_pointer$ = MIN(__sdata_begin__ + 0x800, \
+		            MAX(_start_data + 0x800, __bss_end__ - 0x800)));
 /**
  * FreeRTOS BSS Section
  */
