@@ -416,7 +416,7 @@ int32_t can_setCallback(struct can *can, int32_t filterID, bool (*callback)(stru
 /**
  * Register CAN Filter
  *
- * \waring If a id and a mask is overlapping with another filter only one filter get the messages
+ * \warning If a id and a mask is overlapping with another filter only one filter get the messages
  * \param can CAN instance
  * \param filter Filter
  * \return -1 on error or filterID
