@@ -8,14 +8,14 @@ menuconfig NET
 		depends on NET
 		help
 			Multiply Net driver
-	config NET_THREAD_SAVE
-		bool "Net is Thread Save"
+	config NET_THREAD_SAFE
+		bool "Net is thread safe"
 		depends on NET
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Net Thread save
+			Make Net thread safe
 	config NET_DUMMY
 		bool "Net Dummy Driver"
 		depends on NET

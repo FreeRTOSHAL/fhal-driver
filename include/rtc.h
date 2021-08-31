@@ -62,7 +62,7 @@ struct rtc_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_RTC_THREAD_SAVE
+#ifdef CONFIG_RTC_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

@@ -54,7 +54,7 @@ struct adc_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_ADC_THREAD_SAVE
+#ifdef CONFIG_ADC_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

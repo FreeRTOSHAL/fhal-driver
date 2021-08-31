@@ -8,11 +8,11 @@ menuconfig MAILBOX
 		depends on MAILBOX
 		help
 			Multiply Mailbox driver
-	config MAILBOX_THREAD_SAVE
-		bool "Mailbox is Thread Save"
+	config MAILBOX_THREAD_SAFE
+		bool "Mailbox is thread safe"
 		depends on MAILBOX
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Mailbox Thread save
+			Make Mailbox thread safe

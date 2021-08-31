@@ -18,7 +18,7 @@ int32_t gpio_genericInit(struct gpio *g) {
 		return GPIO_ALREDY_INITED;
 	}
 	gpio->init = true;
-#ifdef CONFIG_GPIO_THREAD_SAVE
+#ifdef CONFIG_GPIO_THREAD_SAFE
 	{
 		int32_t ret = hal_init(gpio);
 		if (ret < 0) {

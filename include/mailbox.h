@@ -61,7 +61,7 @@ struct mailbox_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_MAILBOX_THREAD_SAVE
+#ifdef CONFIG_MAILBOX_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

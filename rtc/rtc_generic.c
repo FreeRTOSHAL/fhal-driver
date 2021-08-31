@@ -12,7 +12,7 @@ int32_t rtc_genericInit(struct rtc *t) {
 	if (hal_isInit(rtc)) {
 		return RTC_ALREDY_INITED;
 	}
-#ifdef CONFIG_RTC_THREAD_SAVE
+#ifdef CONFIG_RTC_THREAD_SAFE
 	{
 		int32_t ret = hal_init(rtc);
 		if (ret < 0) {
@@ -22,7 +22,7 @@ int32_t rtc_genericInit(struct rtc *t) {
 #endif
 	rtc->init = true;
 	return 0;
-#ifdef CONFIG_RTC_THREAD_SAVE
+#ifdef CONFIG_RTC_THREAD_SAFE
 rtc_generic_init_error0:
 	return -1;
 #endif

@@ -17,7 +17,7 @@ int32_t temp_generic_init(struct temp *temp) {
 	if(hal_isInit(s)) {
 		return TEMP_ALREDY_INITED;
 	}
-#ifdef CONFIG_TEMP_THREAD_SAVE
+#ifdef CONFIG_TEMP_THREAD_SAFE
 	{
 		int32_t ret = hal_init(s);
 		if (ret < 0) {
@@ -27,7 +27,7 @@ int32_t temp_generic_init(struct temp *temp) {
 #endif
 	s->init = true;
 	return 0;
-#ifdef CONFIG_TEMP_THREAD_SAVE
+#ifdef CONFIG_TEMP_THREAD_SAFE
 temp_genericInit_error0:
 	return -1;
 #endif

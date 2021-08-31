@@ -369,7 +369,7 @@ struct can_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_CAN_THREAD_SAVE
+#ifdef CONFIG_CAN_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

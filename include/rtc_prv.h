@@ -15,7 +15,7 @@
 #include <hal.h>
 #define RTC_ALREDY_INITED 1
 int32_t rtc_genericInit(struct rtc *rtc);
-#ifdef CONFIG_RTC_THREAD_SAVE
+#ifdef CONFIG_RTC_THREAD_SAFE
 # define rtc_lock(u, w, e) HAL_LOCK(u, w, e)
 # define rtc_unlock(u, e) HAL_UNLOCK(u, e)
 #else

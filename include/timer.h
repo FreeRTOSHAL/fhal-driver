@@ -25,7 +25,7 @@ struct timer;
 /**
  * Generic Timer Interface
  * All Driver shall implement this interface 
- * Thread save access is not supported 
+ * thread safe access is not supported 
  */
 struct timer_generic {
 	/**

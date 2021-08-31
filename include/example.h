@@ -95,7 +95,7 @@ struct example_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_EXAMPLE_THREAD_SAVE
+#ifdef CONFIG_EXAMPLE_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

@@ -15,7 +15,7 @@
 #include <hal.h>
 #define I2C_ALREDY_INITED 1
 int32_t i2c_genericInit(struct i2c *i2c);
-#ifdef CONFIG_I2C_THREAD_SAVE
+#ifdef CONFIG_I2C_THREAD_SAFE
 # define i2c_lock(u, w, e) HAL_LOCK(u, w, e)
 # define i2c_unlock(u, e) HAL_UNLOCK(u, e)
 #else

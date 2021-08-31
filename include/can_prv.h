@@ -15,7 +15,7 @@
 #include <hal.h>
 #define CAN_ALREDY_INITED 1
 int32_t can_genericInit(struct can *can);
-#ifdef CONFIG_CAN_THREAD_SAVE
+#ifdef CONFIG_CAN_THREAD_SAFE
 # define can_lock(u, w, e) HAL_LOCK(u, w, e)
 # define can_unlock(u, e) HAL_UNLOCK(u, e)
 #else

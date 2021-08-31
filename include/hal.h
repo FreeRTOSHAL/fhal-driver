@@ -28,7 +28,7 @@
  * All Driver Interfaces implemented the {@link hal} struct and have a init Function and a deinit Function. The init function return 
  * a Handler to access the instances of the driver. The deinit function disable the driver instance. 
  * 
- * Each Driver has the possibility to make the instances threadsave. With the function lock and unlock the Driver can lock an unlock the instances.
+ * Each Driver has the possibility to make the instances threadsafe. With the function lock and unlock the Driver can lock an unlock the instances.
  * 
  * All Pointer to all Instants stored in a separated Section sored by driver type (like uart, pwm, timer, ..) 
  * 

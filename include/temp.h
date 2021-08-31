@@ -53,7 +53,7 @@ struct temp_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_TEMP_THREAD_SAVE
+#ifdef CONFIG_TEMP_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

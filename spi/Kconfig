@@ -3,13 +3,13 @@ menuconfig SPI
 	depends on MACH_HAS_SPI
 	help
 		Activate SPI Subsystem
-	config SPI_THREAD_SAVE
-		bool "SPI is Therad Save"
+	config SPI_THREAD_SAFE
+		bool "SPI is thread safe"
 		depends on SPI
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
-			Make SPI Thread save
+			Make SPI thread safe
 	config SPI_MULTI
 		bool "Multiply SPIs"
 		depends on SPI

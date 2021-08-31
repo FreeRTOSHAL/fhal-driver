@@ -17,7 +17,7 @@
 #include <hal.h>
 #define ADC_ALREDY_INITED 1
 int32_t adc_generic_init(struct adc *adc);
-#ifdef CONFIG_ADC_THREAD_SAVE
+#ifdef CONFIG_ADC_THREAD_SAFE
 # define adc_lock(u, w, r) HAL_LOCK(u, w, r)
 # define adc_unlock(u, r) HAL_UNLOCK(u, r)
 #else

@@ -12,7 +12,7 @@ int32_t sd_genericInit(struct sd *t, struct sd_setting *settings) {
 	if (hal_isInit(sd)) {
 		return SD_ALREDY_INITED;
 	}
-#ifdef CONFIG_SD_THREAD_SAVE
+#ifdef CONFIG_SD_THREAD_SAFE
 	{
 		int32_t ret = hal_init(sd);
 		if (ret < 0) {
@@ -23,7 +23,7 @@ int32_t sd_genericInit(struct sd *t, struct sd_setting *settings) {
 	sd->init = true;
 	sd->mode = settings->mode;
 	return 0;
-#ifdef CONFIG_SD_THREAD_SAVE
+#ifdef CONFIG_SD_THREAD_SAFE
 sd_generic_init_error0:
 	return -1;
 #endif

@@ -17,7 +17,7 @@ int32_t accel_generic_init(struct accel *accel) {
 	if(hal_isInit(s)) {
 		return ACCEL_ALREDY_INITED;
 	}
-#ifdef CONFIG_ACCEL_THREAD_SAVE
+#ifdef CONFIG_ACCEL_THREAD_SAFE
 	{
 		int32_t ret = hal_init(s);
 		if (ret < 0) {
@@ -27,7 +27,7 @@ int32_t accel_generic_init(struct accel *accel) {
 #endif
 	s->init = true;
 	return 0;
-#ifdef CONFIG_ACCEL_THREAD_SAVE
+#ifdef CONFIG_ACCEL_THREAD_SAFE
 accel_genericInit_error0:
 	return -1;
 #endif

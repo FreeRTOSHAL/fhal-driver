@@ -2,13 +2,13 @@ menuconfig I2C
 	bool "I2C Subsystem"
 	help
 		Activate I2C Subsystem
-	config I2C_THREAD_SAVE
-		bool "I2C is Therad Save"
+	config I2C_THREAD_SAFE
+		bool "I2C is thread safe"
 		depends on I2C
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
-			Make I2C Thread save
+			Make I2C thread safe
 	config I2C_MULTI
 		bool "Multiply I2C"
 		depends on I2C

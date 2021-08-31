@@ -67,7 +67,7 @@ enum sd_responseLength sd_get_responseLength(struct sd *sd, uint32_t command, ui
  *  SD_ERROR_COM_CRC_ERROR -7
  */
 int32_t sd_check_response(struct sd *sd, uint32_t command, uint32_t argument, struct sd_response *response);
-#ifdef CONFIG_SD_THREAD_SAVE
+#ifdef CONFIG_SD_THREAD_SAFE
 # define sd_lock(u, w, e) HAL_LOCK(u, w, e)
 # define sd_unlock(u, e) HAL_UNLOCK(u, e)
 #else

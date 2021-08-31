@@ -44,7 +44,7 @@ struct net_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_NET_THREAD_SAVE
+#ifdef CONFIG_NET_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

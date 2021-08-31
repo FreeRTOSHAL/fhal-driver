@@ -37,15 +37,15 @@
  * \return EXAMPLE_ALREDY_INITED on alredy init 0 on not init < 0 error
  */
 int32_t example_genericInit(struct example *example);
-#ifdef CONFIG_EXAMPLE_THREAD_SAVE
+#ifdef CONFIG_EXAMPLE_THREAD_SAFE
 /**
  * Lock Driver
- * if THREAD_SAVE is not defined this instruction has no function
+ * if THREAD_SAFE is not defined this instruction has no function
  */
 # define example_lock(u, w, e) HAL_LOCK(u, w, e)
 /**
  * Unlock Driver
- * if THREAD_SAVE is not defined this instruction has no function
+ * if THREAD_SAFE is not defined this instruction has no function
  */
 # define example_unlock(u, e) HAL_UNLOCK(u, e)
 #else

@@ -16,7 +16,7 @@ int32_t spi_genericInit(struct spi *spi) {
 	if(hal_isInit(s)) {
 		return SPI_ALREDY_INITED;
 	}
-#ifdef CONFIG_SPI_THREAD_SAVE
+#ifdef CONFIG_SPI_THREAD_SAFE
 	{
 		int32_t ret = hal_init(s);
 		if (ret < 0) {
@@ -26,7 +26,7 @@ int32_t spi_genericInit(struct spi *spi) {
 #endif
 	s->init = true;
 	return 0;
-#ifdef CONFIG_SPI_THREAD_SAVE
+#ifdef CONFIG_SPI_THREAD_SAFE
 spi_genericInit_error0:
 	return -1;
 #endif

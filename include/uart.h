@@ -69,7 +69,7 @@ struct uart_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_UART_THREAD_SAVE
+#ifdef CONFIG_UART_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

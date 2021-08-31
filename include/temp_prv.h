@@ -15,7 +15,7 @@
 #include <hal.h>
 #define TEMP_ALREDY_INITED 1
 int32_t temp_generic_init(struct temp *temp);
-#ifdef CONFIG_TEMP_THREAD_SAVE
+#ifdef CONFIG_TEMP_THREAD_SAFE
 # define temp_lock(u, w, e) HAL_LOCK(u, w, e)
 # define temp_unlock(u, e) HAL_UNLOCK(u, e)
 #else
