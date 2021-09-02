@@ -6,6 +6,7 @@ menuconfig CAN
 	config CAN_THREAD_SAFE
 		bool "CAN is thread safe"
 		depends on CAN
+		default n
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
