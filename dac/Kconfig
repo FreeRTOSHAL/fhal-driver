@@ -2,13 +2,13 @@ menuconfig DAC
 	bool "DAC Subsystem"
 	help
 		Activate DAC Subsystem
-	config DAC_THREAD_SAVE
-		bool "DAC is Thread Save"
+	config DAC_THREAD_SAFE
+		bool "DAC is thread safe"
 		depends on DAC
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
-			Make DAC Thread save
+			Make DAC thread safe
 	config DAC_MULTI
 		bool "Multiple DACs"
 		depends on DAC

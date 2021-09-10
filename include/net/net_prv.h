@@ -26,7 +26,7 @@
  * \return NET_ALREDY_INITED on alredy init 0 on not init < 0 error
  */
 int32_t net_genericInit(struct net *net);
-#ifdef CONFIG_NET_THREAD_SAVE
+#ifdef CONFIG_NET_THREAD_SAFE
 # define net_lock(u, w, e) HAL_LOCK(u, w, e)
 # define net_unlock(u, e) HAL_UNLOCK(u, e)
 #else

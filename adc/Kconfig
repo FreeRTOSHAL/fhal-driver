@@ -2,13 +2,13 @@ menuconfig ADC
 	bool "ADC Subsystem"
 	help
 		Activate ADC Subsystem
-	config ADC_THREAD_SAVE
-		bool "ADC is Therad Save"
+	config ADC_THREAD_SAFE
+		bool "ADC is thread safe"
 		depends on ADC
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
-			Make ADC Thread save
+			Make ADC thread safe
 	config ADC_MULTI
 		bool "Multiply ADCs"
 		depends on ADC

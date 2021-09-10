@@ -17,7 +17,7 @@
 #include <hal.h>
 #define DAC_ALREDY_INITED 1
 int32_t dac_generic_init(struct dac *dac);
-#ifdef CONFIG_DAC_THREAD_SAVE
+#ifdef CONFIG_DAC_THREAD_SAFE
 # define dac_lock(u, w, r) HAL_LOCK(u, w, r)
 # define dac_unlock(u, r) HAL_UNLOCK(u, r)
 #else

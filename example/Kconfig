@@ -9,14 +9,14 @@ menuconfig EXAMPLE
 		depends on EXAMPLE
 		help
 			Multiply Example driver
-	config EXAMPLE_THREAD_SAVE
-		bool "Example is Thread Save"
+	config EXAMPLE_THREAD_SAFE
+		bool "Example is thread safe"
 		depends on EXAMPLE
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Example Thread save
+			Make Example thread safe
 	config EXAMPLE_DEV0
 		bool "Example Driver 0"
 		depends on EXAMPLE

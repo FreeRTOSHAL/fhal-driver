@@ -160,7 +160,7 @@ struct spi_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_SPI_THREAD_SAVE
+#ifdef CONFIG_SPI_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

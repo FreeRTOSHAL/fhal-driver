@@ -53,7 +53,7 @@ struct accel_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_ACCEL_THREAD_SAVE
+#ifdef CONFIG_ACCEL_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

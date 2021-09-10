@@ -12,7 +12,7 @@ int32_t example_genericInit(struct example *t) {
 	if (hal_isInit(example)) {
 		return EXAMPLE_ALREDY_INITED;
 	}
-#ifdef CONFIG_EXAMPLE_THREAD_SAVE
+#ifdef CONFIG_EXAMPLE_THREAD_SAFE
 	{
 		int32_t ret = hal_init(example);
 		if (ret < 0) {
@@ -22,7 +22,7 @@ int32_t example_genericInit(struct example *t) {
 #endif
 	example->init = true;
 	return 0;
-#ifdef CONFIG_EXAMPLE_THREAD_SAVE
+#ifdef CONFIG_EXAMPLE_THREAD_SAFE
 example_generic_init_error0:
 	return -1;
 #endif

@@ -18,7 +18,7 @@ int32_t uart_generic_init(struct uart *u) {
 		return UART_ALREDY_INITED;
 	}
 	uart->init = true;
-#ifdef CONFIG_UART_THREAD_SAVE
+#ifdef CONFIG_UART_THREAD_SAFE
 	{
 		int32_t ret = hal_init(uart);
 		if (ret < 0) {

@@ -9,14 +9,14 @@ menuconfig ACCEL
 	default n
 	help
 		Activate Accelerator Subssystem
-	config ACCEL_THREAD_SAVE
-		bool "Accelerator is Thread Save"
+	config ACCEL_THREAD_SAFE
+		bool "Accelerator is thread safe"
 		depends on ACCEL
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Accelerator Thread save
+			Make Accelerator thread safe
 	config ACCEL_MULTI
 		bool "Multiply Accelerators"
 		depends on ACCEL
@@ -29,14 +29,14 @@ menuconfig GYRO
 	default n
 	help
 		Activate Gyroscope Subssystem
-	config GYRO_THREAD_SAVE
-		bool "Gyro is Thread Save"
+	config GYRO_THREAD_SAFE
+		bool "Gyro is thread safe"
 		depends on GYRO
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Gyroscope Thread save
+			Make Gyroscope thread safe
 	config GYRO_MULTI
 		bool "Multiply Gyros"
 		depends on GYRO
@@ -50,14 +50,14 @@ menuconfig TEMP
 	default n
 	help
 		Activate Temperature Subssystem
-	config TEMP_THREAD_SAVE
-		bool "Temperature Sensor is Thread Save"
+	config TEMP_THREAD_SAFE
+		bool "Temperature Sensor is thread safe"
 		depends on TEMP
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make Temperature Sensor Thread save
+			Make Temperature Sensor thread safe
 	config TEMP_MULTI
 		bool "Multiply Temperature Sensor"
 		depends on TEMP

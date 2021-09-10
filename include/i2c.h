@@ -80,7 +80,7 @@ struct i2c_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_I2C_THREAD_SAVE
+#ifdef CONFIG_I2C_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

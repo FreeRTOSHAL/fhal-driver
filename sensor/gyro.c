@@ -17,7 +17,7 @@ int32_t gyro_generic_init(struct gyro *gyro) {
 	if(hal_isInit(s)) {
 		return GYRO_ALREDY_INITED;
 	}
-#ifdef CONFIG_GYRO_THREAD_SAVE
+#ifdef CONFIG_GYRO_THREAD_SAFE
 	{
 		int32_t ret = hal_init(s);
 		if (ret < 0) {
@@ -27,7 +27,7 @@ int32_t gyro_generic_init(struct gyro *gyro) {
 #endif
 	s->init = true;
 	return 0;
-#ifdef CONFIG_GYRO_THREAD_SAVE
+#ifdef CONFIG_GYRO_THREAD_SAFE
 gyro_genericInit_error0:
 	return -1;
 #endif

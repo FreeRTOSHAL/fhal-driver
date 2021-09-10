@@ -15,7 +15,7 @@
 #include <hal.h>
 #define GYRO_ALREDY_INITED 1
 int32_t gyro_generic_init(struct gyro *gyro);
-#ifdef CONFIG_GYRO_THREAD_SAVE
+#ifdef CONFIG_GYRO_THREAD_SAFE
 # define gyro_lock(u, w, e) HAL_LOCK(u, w, e)
 # define gyro_unlock(u, e) HAL_UNLOCK(u, e)
 #else

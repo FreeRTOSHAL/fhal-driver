@@ -15,7 +15,7 @@
 #include <hal.h>
 #define MAILBOX_ALREDY_INITED 1
 int32_t mailbox_genericInit(struct mailbox *mailbox);
-#ifdef CONFIG_MAILBOX_THREAD_SAVE
+#ifdef CONFIG_MAILBOX_THREAD_SAFE
 # define mailbox_lock(u, w, e) HAL_LOCK(u, w, e)
 # define mailbox_unlock(u, e) HAL_UNLOCK(u, e)
 #else

@@ -15,7 +15,7 @@ int32_t dac_generic_init(struct dac *a) {
 	if(dac->init) {
 		return DAC_ALREDY_INITED;
 	}
-#ifdef CONFIG_DAC_THREAD_SAVE
+#ifdef CONFIG_DAC_THREAD_SAFE
 	{
 		int ret = hal_init(dac);
 		if (ret < 0) {
@@ -25,7 +25,7 @@ int32_t dac_generic_init(struct dac *a) {
 #endif
 	dac->init = true;
 	return 0;
-#ifdef CONFIG_DAC_THREAD_SAVE
+#ifdef CONFIG_DAC_THREAD_SAFE
 dac_genericInit_error0:
 	return -1;
 #endif

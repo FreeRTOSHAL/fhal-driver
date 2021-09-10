@@ -15,7 +15,7 @@ int32_t adc_generic_init(struct adc *a) {
 	if(adc->init) {
 		return ADC_ALREDY_INITED;
 	}
-#ifdef CONFIG_ADC_THREAD_SAVE
+#ifdef CONFIG_ADC_THREAD_SAFE
 	{
 		int ret = hal_init(adc);
 		if (ret < 0) {
@@ -25,7 +25,7 @@ int32_t adc_generic_init(struct adc *a) {
 #endif
 	adc->init = true;
 	return 0;
-#ifdef CONFIG_ADC_THREAD_SAVE
+#ifdef CONFIG_ADC_THREAD_SAFE
 adc_genericInit_error0:
 	return -1;
 #endif

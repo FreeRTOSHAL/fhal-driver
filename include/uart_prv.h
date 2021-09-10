@@ -15,7 +15,7 @@
 #include <hal.h>
 #define UART_ALREDY_INITED 1
 int32_t uart_generic_init(struct uart *uart);
-#ifdef CONFIG_UART_THREAD_SAVE
+#ifdef CONFIG_UART_THREAD_SAFE
 # define uart_lock(u, w, e) HAL_LOCK(u, w, e)
 # define uart_unlock(u, e) HAL_UNLOCK(u, e)
 #else

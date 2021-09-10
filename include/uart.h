@@ -69,7 +69,7 @@ struct uart_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_UART_THREAD_SAVE
+#ifdef CONFIG_UART_THREAD_SAFE
 	/**
 	 * Mutex
 	 */
@@ -233,12 +233,17 @@ inline int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length) {
 	struct uart_generic *u = (struct uart_generic *) uart;
 	return u->ops->uart_writeISR(uart, data, length);
 }
+# else
+int32_t uart_readISR(struct uart *uart, uint8_t *data, size_t length);
+int32_t uart_writeISR(struct uart *uart, uint8_t *data, size_t length);
 # endif
 # ifndef CONFIG_UART_GENERIC_STRING
 inline int32_t uart_putsISR(struct uart *uart, char *s) {
 	struct uart_generic *u = (struct uart_generic *) uart;
 	return u->ops->uart_putsISR(uart, s);
 }
+# else
+int32_t uart_putsISR(struct uart *uart, char *s);
 # endif
 #endif
 /**\}*/

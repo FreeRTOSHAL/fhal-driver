@@ -59,7 +59,7 @@ struct vdev_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_VDEV_THREAD_SAVE
+#ifdef CONFIG_VDEV_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

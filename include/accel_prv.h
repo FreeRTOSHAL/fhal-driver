@@ -15,7 +15,7 @@
 #include <hal.h>
 #define ACCEL_ALREDY_INITED 1
 int32_t accel_generic_init(struct accel *accel);
-#ifdef CONFIG_ACCEL_THREAD_SAVE
+#ifdef CONFIG_ACCEL_THREAD_SAFE
 # define accel_lock(u, w, e) HAL_LOCK(u, w, e)
 # define accel_unlock(u, e) HAL_UNLOCK(u, e)
 #else

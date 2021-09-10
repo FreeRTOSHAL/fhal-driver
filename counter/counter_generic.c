@@ -12,7 +12,7 @@ int32_t counter_genericInit(struct counter *t) {
 	if (hal_isInit(counter)) {
 		return COUNTER_ALREDY_INITED;
 	}
-#ifdef CONFIG_COUNTER_THREAD_SAVE
+#ifdef CONFIG_COUNTER_THREAD_SAFE
 	{
 		int32_t ret = hal_init(counter);
 		if (ret < 0) {

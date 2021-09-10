@@ -13,13 +13,13 @@ menuconfig UART
 		depends on UART
 		help
 			Some Devices can optimize the transfer of hohe Sting by buffer. This Option activate a software Variant without Buffering.
-	config UART_THREAD_SAVE
-		bool "UART is Therad Save"
+	config UART_THREAD_SAFE
+		bool "UART is thread safe"
 		depends on UART
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		help
-			Make UART Thread save
+			Make UART thread safe
 	config UART_MULTI
 		bool "Multiply UARTs"
 		depends on UART

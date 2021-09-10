@@ -467,7 +467,7 @@ ADC_GET(ltc6811, a, waittime) {
 ADC_GET_ISR(ltc6811, a) {
 	uint16_t value;
 	struct adc_ltc6811 *adc = (struct adc_ltc6811 *) a;
-	/* WARING: unsave! it is possible ADC is running, can't prevent this in ISR */
+	/* WARING: unsafe! it is possible ADC is running, can't prevent this in ISR */
 	value = adc->value;
 	return value;
 }

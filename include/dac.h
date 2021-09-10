@@ -51,7 +51,7 @@ struct dac_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_DAC_THREAD_SAVE
+#ifdef CONFIG_DAC_THREAD_SAFE
 	/**
 	 * Mutex
 	 */
@@ -81,6 +81,7 @@ int32_t dac_deinit(struct dac *dac);
 /**
  * Get DAC Value
  * \param dac DAC instance
+ * \param data output value
  * \param waittime max waittime in mutex or isr lock see xSemaphoreTake()
  * \return -1 on error >= 0 Value
  */
@@ -88,6 +89,7 @@ int32_t dac_set(struct dac *dac, uint32_t data, TickType_t waittime);
 /**
  * Get DAC Value in Interrupt Service Routine
  * \param dac DAC instance
+ * \param data output value
  * \return -1 on error >= 0 Value
  */
 int32_t dac_setISR(struct dac *dac, uint32_t data);

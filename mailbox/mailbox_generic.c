@@ -12,7 +12,7 @@ int32_t mailbox_genericInit(struct mailbox *t) {
 	if (hal_isInit(mailbox)) {
 		return MAILBOX_ALREDY_INITED;
 	}
-#ifdef CONFIG_MAILBOX_THREAD_SAVE
+#ifdef CONFIG_MAILBOX_THREAD_SAFE
 	{
 		int32_t ret = hal_init(mailbox);
 		if (ret < 0) {
@@ -22,7 +22,7 @@ int32_t mailbox_genericInit(struct mailbox *t) {
 #endif
 	mailbox->init = true;
 	return 0;
-#ifdef CONFIG_MAILBOX_THREAD_SAVE
+#ifdef CONFIG_MAILBOX_THREAD_SAFE
 mailbox_generic_init_error0:
 	return -1;
 #endif

@@ -8,14 +8,14 @@ menuconfig RTC
 		depends on RTC
 		help
 			Multiply RTC driver
-	config RTC_THREAD_SAVE
-		bool "RTC is Thread Save"
+	config RTC_THREAD_SAFE
+		bool "RTC is thread safe"
 		depends on RTC
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make RTC Thread save
+			Make RTC thread safe
 	config RTC_SOFTWARE
 		bool "Software RTC base on HW Timer"
 		depends on RTC

@@ -13,7 +13,7 @@
 #include <hal.h>
 #define SPI_ALREDY_INITED 1
 int32_t spi_genericInit(struct spi *spi);
-#ifdef CONFIG_SPI_THREAD_SAVE
+#ifdef CONFIG_SPI_THREAD_SAFE
 # define spi_lock(u, w, e) HAL_LOCK(u, w, e)
 # define spi_unlock(u, e) HAL_UNLOCK(u, e)
 #else

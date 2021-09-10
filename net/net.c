@@ -12,7 +12,7 @@ int32_t net_genericInit(struct net *t) {
 	if (hal_isInit(net)) {
 		return NET_ALREDY_INITED;
 	}
-#ifdef CONFIG_NET_THREAD_SAVE
+#ifdef CONFIG_NET_THREAD_SAFE
 	{
 		int32_t ret = hal_init(net);
 		if (ret < 0) {
@@ -22,7 +22,7 @@ int32_t net_genericInit(struct net *t) {
 #endif
 	net->init = true;
 	return 0;
-#ifdef CONFIG_NET_THREAD_SAVE
+#ifdef CONFIG_NET_THREAD_SAFE
 net_generic_init_error0:
 	return -1;
 #endif

@@ -147,7 +147,7 @@ struct sd_generic {
 	 */
 	const char *name;
 #endif
-#ifdef CONFIG_SD_THREAD_SAVE
+#ifdef CONFIG_SD_THREAD_SAFE
 	/**
 	 * Mutex
 	 */

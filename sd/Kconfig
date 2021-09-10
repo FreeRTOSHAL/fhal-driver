@@ -8,11 +8,11 @@ menuconfig SD
 		depends on SD
 		help
 			Multiply SD / SDIO driver
-	config SD_THREAD_SAVE
-		bool "SD is Thread Save"
+	config SD_THREAD_SAFE
+		bool "SD is thread safe"
 		depends on SD
 		select USE_MUTEXES
 		select USE_RECURSIVE_MUTEXES
 		default n
 		help
-			Make SD Thread save
+			Make SD thread safe
