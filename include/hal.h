@@ -10,10 +10,6 @@
 #include <system.h>
 #include <stdbool.h>
 #include <os.h>
-#ifdef __FRAMAC__
-/* include FRAMAC FreeROTS specification */
-# include <framaC/freeRTOS.h>
-#endif
 
 /**
  * \defgroup HAL Hardware Abstraction Layer for FreeRTOS
@@ -256,6 +252,11 @@ extern const char *versionDriver;
 extern const char *versionMach;
 extern const char *versionArch;
 extern const char *versionKernel;
+#endif
+
+#ifdef __FRAMAC__
+/* include FRAMAC FreeROTS and Hal specification */
+# include <framaC/hal.h>
 #endif
 
 /**\}*/
