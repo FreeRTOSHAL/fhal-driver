@@ -22,8 +22,10 @@ int32_t can_genericInit(struct can *t) {
 #endif
 	can->init = true;
 	return 0;
+#ifdef CONFIG_CAN_THREAD_SAFE
 can_genericInit_error0:
 	return -1;
+#endif
 }
 
 #ifdef CONFIG_CAN_MULTI
