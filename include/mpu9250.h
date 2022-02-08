@@ -534,5 +534,7 @@ extern const struct accel_ops mpu9250_accel_ops;
  * Get MPU9250 based on id
  */
 #define MPU9250_ID(id) HAL_GET_ID(hal, mpu9250, mpu9250_##id)
+#define MPU9250_GYRO_ID(id) HAL_GET_ID(gyro, mpu9250, mpu9250_gyro_##id)
+#define MPU9250_ACCEL_ID(id) HAL_GET_ID(accel, mpu9250, mpu9250_accel_##id)
 /**\}*/
 #endif

@@ -254,28 +254,34 @@ struct mpu9250 *mpu9250_init(uint32_t index, struct spi *spi, uint8_t cs, uint16
 	{
 		ret = mpu_send(mpu, MPU_GYRO_CONFIG_1, MPU_GYRO_CONFIG_1_GYRO_DLPFCFG(2) | MPU_GYRO_CONFIG_1_GYRO_FCHOICE | MPU_GYRO_CONFIG_1_GYRO_FS_SEL_2000DPS, waittime);
 		if (ret < 0) {
+			PRINTF("Send Config Failed\n");
 			goto mpu9250_init_error2;
 		}
 		/* Set sample rate to 1.125 kHz */
 		ret = mpu_send(mpu, MPU_GYRO_SMPLRT_DIV, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("Set sample rate to 1.125 kHz Failed\n");
 			goto mpu9250_init_error2;
 		}
 		/* Set sample rate to 1.125 kHz */
 		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_1, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("Set sample rate to 1.125 kHz Failed\n");
 			goto mpu9250_init_error2;
 		}
 		ret = mpu_send(mpu, MPU_ACCEL_SMPLRT_DIV_2, 0x0, waittime);
 		if (ret < 0) {
+			PRINTF("MPU_ACCEL_SMPLRT_DIV_2 Failed\n");
 			goto mpu9250_init_error2;
 		}
 		/* Set accelerometer full-scale to 2 g, maximum sensitivity, and set FCHOICE */
 		ret = mpu_send(mpu, MPU_ACCEL_CONFIG, MPU_ACCEL_CONFIG_ACCEL_FS_SEL_8G | MPU_ACCEL_CONFIG_ACCEL_FCHOICE | MPU_ACCEL_CONFIG_ACCEL_DLPFCFG(0), waittime);
 		if (ret < 0) {
+			PRINTF("Set accelerometer full-scale to 2 g, maximum sensitivity, and set FCHOICE Failed\n");
 			goto mpu9250_init_error2;
 		}
 	}
+	PRINTF("MPU Setup Completed\n");
 	return mpu;
 mpu9250_init_error2:
 	spiSlave_deinit(mpu->slave);

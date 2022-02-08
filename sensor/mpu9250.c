@@ -244,7 +244,7 @@ struct mpu9250 *mpu9250_init(uint32_t index, struct spi *spi, uint8_t cs, uint16
 		goto mpu9250_init_error2;
 	}
 
-	PRINTF("MPU Config");
+	PRINTF("MPU Config\n");
 	{
 		ret = mpu_clearSetBit(
 			mpu, 
